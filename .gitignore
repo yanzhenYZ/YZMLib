@@ -1,0 +1,9 @@
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+
+
+build/
+
+
+.DS_Store

@@ -2,10 +2,13 @@
 //  YZVideoCamera.m
 //  YZMetalLib
 //
-//  Created by 闫振 on 2020/12/9.
+//  Created by yanzhen on 2020/12/9.
 //
 
 #import "YZVideoCamera.h"
+#import <Metal/Metal.h>
+#import "YZMetalRenderingDevice.h"
+#import "YZYUVToRGBConversion.h"
 
 @interface YZVideoCamera ()<AVCaptureVideoDataOutputSampleBufferDelegate>
 
@@ -15,12 +18,15 @@
 @property (nonatomic, strong) AVCaptureVideoDataOutput *output;
 @property (nonatomic, copy) AVCaptureSessionPreset preset;
 
-@property (nonatomic, assign) BOOL fullYUVRange;
+@property (nonatomic, assign) CVMetalTextureCacheRef textureCache;
 
+@property (nonatomic, assign) BOOL fullYUVRange;
+@property (nonatomic, assign) int dropFrames;
 @end
 
 @implementation YZVideoCamera {
     dispatch_queue_t _cameraQueue;
+    dispatch_queue_t _cameraRenderQueue;
     dispatch_semaphore_t _videoSemaphore;
 }
 
@@ -29,9 +35,11 @@
     self = [super init];
     if (self) {
         _cameraQueue = dispatch_queue_create("com.yanzhen.video.camera.queue", 0);
+        _cameraRenderQueue = dispatch_queue_create("com.yanzhen.video.camera.render.queue", 0);
         _videoSemaphore = dispatch_semaphore_create(1);
         _preset = preset;
         [self _configVideoSession];
+        [self _configMetal];
     }
     return self;
 }
@@ -49,21 +57,66 @@
     }
 }
 
-#pragma mark - AVCaptureVideoDataOutputSampleBufferDelegate
+#pragma mark - AVCaptureVideoDataOutputSampleBufferDelegate and metal frame
 - (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
     if (!_session.isRunning) { return; }
     if (_output != output) { return; }
     if (dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_NOW) != 0) {
+        _dropFrames++;
         return;
     }
-    //add a thread
-    if ([_delegate respondsToSelector:@selector(videoCamera:output:)]) {
-        [_delegate videoCamera:self output:sampleBuffer];
+    CFRetain(sampleBuffer);
+    dispatch_async(_cameraRenderQueue, ^{
+        if ([self.delegate respondsToSelector:@selector(videoCamera:output:)]) {
+            [self.delegate videoCamera:self output:sampleBuffer];
+        }
+        [self _processVideoSampleBuffer:sampleBuffer];
+        CFRelease(sampleBuffer);
+        dispatch_semaphore_signal(self->_videoSemaphore);
+    });
+}
+
+- (void)_processVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
+    CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    CVMetalTextureRef texture = NULL;
+    id <MTLTexture> textureY = NULL;
+    id <MTLTexture> textureUV = NULL;
+    //y
+    MTLPixelFormat pixelFormat = MTLPixelFormatR8Unorm;
+    size_t width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 0);
+    size_t height = CVPixelBufferGetHeightOfPlane(pixelBuffer, 0);
+    CVReturn status = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _textureCache, pixelBuffer, NULL, pixelFormat, width, height, 0, &texture);
+    if(status == kCVReturnSuccess) {
+        textureY = CVMetalTextureGetTexture(texture);
+        CFRelease(texture);
+        texture = NULL;
     }
-    dispatch_semaphore_signal(_videoSemaphore);
+    //uv
+    texture = NULL;
+    pixelFormat = MTLPixelFormatRG8Unorm;
+    width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 1);
+    height = CVPixelBufferGetHeightOfPlane(pixelBuffer, 1);
+    
+    status = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _textureCache, pixelBuffer, NULL, pixelFormat, width, height, 1, &texture);
+    if(status == kCVReturnSuccess) {
+        textureUV = CVMetalTextureGetTexture(texture);
+        CFRelease(texture);
+    }
+    
+    matrix_float3x3 conversionMatrix;
+    if (_fullYUVRange) {
+        conversionMatrix = kYZColorConversion601FullRangeMatrix;
+    } else {
+        conversionMatrix = kYZColorConversion601DefaultMatrix;
+    }
+    //根据方向获取旋转矩阵 - todo
+    
 }
 
 #pragma mark - private
+- (void)_configMetal {
+    CVMetalTextureCacheCreate(kCFAllocatorDefault, NULL, YZMetalRenderingDevice.share.device, NULL, &_textureCache);
+}
 
 - (void)_configVideoSession {
     _session = [[AVCaptureSession alloc] init];

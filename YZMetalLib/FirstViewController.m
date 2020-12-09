@@ -2,11 +2,12 @@
 //  FirstViewController.m
 //  YZMetalLib
 //
-//  Created by 闫振 on 2020/12/8.
+//  Created by yanzhen on 2020/12/8.
 //
 
 #import "FirstViewController.h"
 #import "YZVideoCamera.h"
+#import "YZYUVToRGBConversion.h"
 
 @interface FirstViewController ()<YZVideoCameraOutputDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *player;
@@ -27,6 +28,8 @@
     _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
     _camera.delegate = self;
     [_camera startRunning];
+    
+    NSLog(@"%f", kYZColorConversion601DefaultMatrix);
 }
 
 - (void)showPixelBuffer:(CVPixelBufferRef)pixel {

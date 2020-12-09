@@ -2,7 +2,7 @@
 //  YZVideoCamera.h
 //  YZMetalLib
 //
-//  Created by 闫振 on 2020/12/9.
+//  Created by yanzhen on 2020/12/9.
 //
 
 #import <Foundation/Foundation.h>

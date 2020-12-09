@@ -6,8 +6,14 @@
 //
 
 #import "FirstViewController.h"
+#import "YZVideoCamera.h"
 
-@interface FirstViewController ()
+@interface FirstViewController ()<YZVideoCameraOutputDelegate>
+@property (weak, nonatomic) IBOutlet UIImageView *player;
+@property (nonatomic, strong) YZVideoCamera *camera;
+
+
+@property (nonatomic, strong) CIContext *context;
 
 @end
 
@@ -16,16 +22,30 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    _context = [CIContext contextWithOptions:nil];
+    
+    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
+    _camera.delegate = self;
+    [_camera startRunning];
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (void)showPixelBuffer:(CVPixelBufferRef)pixel {
+    CVPixelBufferRetain(pixel);
+    CIImage *ciImage = [CIImage imageWithCVImageBuffer:pixel];
+    size_t width = CVPixelBufferGetWidth(pixel);
+    size_t height = CVPixelBufferGetHeight(pixel);
+    CGImageRef videoImageRef = [_context createCGImage:ciImage fromRect:CGRectMake(0, 0, width, height)];
+    UIImage *image = [UIImage imageWithCGImage:videoImageRef];
+    CGImageRelease(videoImageRef);
+    CVPixelBufferRelease(pixel);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.player.image = image;
+    });
 }
-*/
+
+#pragma mark - YZVideoCameraOutputDelegate
+- (void)videoCamera:(YZVideoCamera *)camera output:(CMSampleBufferRef)sampleBuffer {
+    [self showPixelBuffer:CMSampleBufferGetImageBuffer(sampleBuffer)];
+}
 
 @end

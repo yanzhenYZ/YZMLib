@@ -13,6 +13,7 @@
 		9BB00050257FB7F600207AF3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9BB0004E257FB7F600207AF3 /* LaunchScreen.storyboard */; };
 		9BB00053257FB7F600207AF3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB00052257FB7F600207AF3 /* main.m */; };
 		9BB00062257FBA5500207AF3 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB00061257FBA5500207AF3 /* FirstViewController.m */; };
+		9BB0006A25806D4200207AF3 /* YZVideoCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB0006925806D4200207AF3 /* YZVideoCamera.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,8 @@
 		9BB00052257FB7F600207AF3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9BB00060257FBA5500207AF3 /* FirstViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FirstViewController.h; sourceTree = "<group>"; };
 		9BB00061257FBA5500207AF3 /* FirstViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FirstViewController.m; sourceTree = "<group>"; };
+		9BB0006825806D4200207AF3 /* YZVideoCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZVideoCamera.h; sourceTree = "<group>"; };
+		9BB0006925806D4200207AF3 /* YZVideoCamera.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZVideoCamera.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +65,7 @@
 				9BB00041257FB7F400207AF3 /* AppDelegate.m */,
 				9BB00060257FBA5500207AF3 /* FirstViewController.h */,
 				9BB00061257FBA5500207AF3 /* FirstViewController.m */,
+				9BB0006625806D0600207AF3 /* Metal */,
 				9BB00049257FB7F400207AF3 /* Main.storyboard */,
 				9BB0004C257FB7F600207AF3 /* Assets.xcassets */,
 				9BB0004E257FB7F600207AF3 /* LaunchScreen.storyboard */,
@@ -69,6 +73,23 @@
 				9BB00052257FB7F600207AF3 /* main.m */,
 			);
 			path = YZMetalLib;
+			sourceTree = "<group>";
+		};
+		9BB0006625806D0600207AF3 /* Metal */ = {
+			isa = PBXGroup;
+			children = (
+				9BB0006725806D2500207AF3 /* input */,
+			);
+			path = Metal;
+			sourceTree = "<group>";
+		};
+		9BB0006725806D2500207AF3 /* input */ = {
+			isa = PBXGroup;
+			children = (
+				9BB0006825806D4200207AF3 /* YZVideoCamera.h */,
+				9BB0006925806D4200207AF3 /* YZVideoCamera.m */,
+			);
+			path = input;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -141,6 +162,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9BB00042257FB7F400207AF3 /* AppDelegate.m in Sources */,
+				9BB0006A25806D4200207AF3 /* YZVideoCamera.m in Sources */,
 				9BB00062257FBA5500207AF3 /* FirstViewController.m in Sources */,
 				9BB00053257FB7F600207AF3 /* main.m in Sources */,
 			);

@@ -110,16 +110,20 @@
     [_session commitConfiguration];
 }
 
-//todo new
 + (AVCaptureDevice *)defaultFrontDevice {
-    NSArray<AVCaptureDevice *> *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
-    __block AVCaptureDevice *device = nil;
-    [devices enumerateObjectsUsingBlock:^(AVCaptureDevice * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (obj.position == AVCaptureDevicePositionFront) {
-            device = obj;
-            *stop = YES;
-        }
-    }];
-    return device;
+    if (@available(iOS 10.0, *)) {
+        return [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionFront];
+    } else {
+        NSArray<AVCaptureDevice *> *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+        __block AVCaptureDevice *device = nil;
+        [devices enumerateObjectsUsingBlock:^(AVCaptureDevice * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (obj.position == AVCaptureDevicePositionFront) {
+                device = obj;
+                *stop = YES;
+            }
+        }];
+        return device;
+    }
+    return nil;
 }
 @end

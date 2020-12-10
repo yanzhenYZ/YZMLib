@@ -13,7 +13,7 @@
 @property (nonatomic, assign) UIInterfaceOrientation orientation;
 //video and timestamp
 - (instancetype)initWithOrientation:(UIInterfaceOrientation)orientation width:(size_t)width height:(size_t)height;
-
+- (instancetype)initWithOrientation:(UIInterfaceOrientation)orientation texture:(id<MTLTexture>)texture;
 @end
 
 

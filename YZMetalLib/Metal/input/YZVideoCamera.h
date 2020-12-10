@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
+#import "YZMTKView.h"
 
 @class YZVideoCamera;
 @protocol YZVideoCameraOutputDelegate <NSObject>
@@ -17,6 +18,7 @@
 
 @interface YZVideoCamera : NSObject
 @property (nonatomic, weak) id<YZVideoCameraOutputDelegate> delegate;
+@property (nonatomic, strong) YZMTKView *view;
 
 - (instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset;
 

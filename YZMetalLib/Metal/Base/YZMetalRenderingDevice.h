@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
+#import "YZShaderUniform.h"
 
 @interface YZMetalRenderingDevice : NSObject
 @property (nonatomic, strong, readonly) id<MTLDevice> device;
@@ -17,6 +18,7 @@
 + (instancetype)share;
 
 - (void)generateRenderPipelineState:(BOOL)fullYUV;
+- (YZShaderUniform *)getRenderUniform;
 @end
 
 

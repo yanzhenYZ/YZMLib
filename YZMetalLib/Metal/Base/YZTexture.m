@@ -25,6 +25,17 @@
         if (!_texture) {
             NSLog(@"YZTexture Error to create MTLTexture");
         }
+        //video
+    }
+    return self;
+}
+
+- (instancetype)initWithOrientation:(UIInterfaceOrientation)orientation texture:(id<MTLTexture>)texture {
+    self = [super init];
+    if (self) {
+        _orientation = orientation;
+        _texture = texture;
+        //image
     }
     return self;
 }

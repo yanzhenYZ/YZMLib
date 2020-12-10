@@ -8,11 +8,12 @@
 #import "FirstViewController.h"
 #import "YZVideoCamera.h"
 #import "YZYUVToRGBConversion.h"
+#import "YZMTKView.h"
 
 @interface FirstViewController ()<YZVideoCameraOutputDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *player;
 @property (nonatomic, strong) YZVideoCamera *camera;
-
+@property (nonatomic, strong) YZMTKView *mtkView;
 
 @property (nonatomic, strong) CIContext *context;
 
@@ -25,11 +26,16 @@
     // Do any additional setup after loading the view.
     _context = [CIContext contextWithOptions:nil];
     
+    _mtkView = [[YZMTKView alloc] initWithFrame:UIScreen.mainScreen.bounds];
+    [self.view addSubview:_mtkView];
+    
+    
     _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
+    _camera.view = _mtkView;
     _camera.delegate = self;
     [_camera startRunning];
     
-    NSLog(@"%f", kYZColorConversion601DefaultMatrix);
+    //NSLog(@"%f", kYZColorConversion601DefaultMatrix);
 }
 
 - (void)showPixelBuffer:(CVPixelBufferRef)pixel {

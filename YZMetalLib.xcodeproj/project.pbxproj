@@ -18,7 +18,10 @@
 		9BB000792580B88200207AF3 /* YZYUVToRGBConversion.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000782580B88200207AF3 /* YZYUVToRGBConversion.m */; };
 		9BB000822581BA0900207AF3 /* YZMetalOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000812581BA0900207AF3 /* YZMetalOrientation.m */; };
 		9BB000862581BDC900207AF3 /* YZTexture.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000852581BDC900207AF3 /* YZTexture.m */; };
-		9BB0008C2581CC7800207AF3 /* YZYUVToRGBConversion.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BB0008B2581CC7800207AF3 /* YZYUVToRGBConversion.metal */; };
+		9BB000922581EE4C00207AF3 /* YZShaderUniform.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000912581EE4B00207AF3 /* YZShaderUniform.m */; };
+		9BB000972581FF7600207AF3 /* YZMTKView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000962581FF7600207AF3 /* YZMTKView.m */; };
+		9BB000A12582019400207AF3 /* YZYUVToRGBConversion.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BB0009F2582019400207AF3 /* YZYUVToRGBConversion.metal */; };
+		9BB000A22582019400207AF3 /* YZPassthrough.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000A02582019400207AF3 /* YZPassthrough.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,8 +45,14 @@
 		9BB000812581BA0900207AF3 /* YZMetalOrientation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZMetalOrientation.m; sourceTree = "<group>"; };
 		9BB000842581BDC900207AF3 /* YZTexture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZTexture.h; sourceTree = "<group>"; };
 		9BB000852581BDC900207AF3 /* YZTexture.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZTexture.m; sourceTree = "<group>"; };
-		9BB0008B2581CC7800207AF3 /* YZYUVToRGBConversion.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = YZYUVToRGBConversion.metal; sourceTree = "<group>"; };
 		9BB0008E2581CF1C00207AF3 /* YZShaderTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZShaderTypes.h; sourceTree = "<group>"; };
+		9BB000902581EE4B00207AF3 /* YZShaderUniform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZShaderUniform.h; sourceTree = "<group>"; };
+		9BB000912581EE4B00207AF3 /* YZShaderUniform.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZShaderUniform.m; sourceTree = "<group>"; };
+		9BB000952581FF7600207AF3 /* YZMTKView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZMTKView.h; sourceTree = "<group>"; };
+		9BB000962581FF7600207AF3 /* YZMTKView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZMTKView.m; sourceTree = "<group>"; };
+		9BB0009E2582019400207AF3 /* YZShaderTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZShaderTypes.h; sourceTree = "<group>"; };
+		9BB0009F2582019400207AF3 /* YZYUVToRGBConversion.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = YZYUVToRGBConversion.metal; sourceTree = "<group>"; };
+		9BB000A02582019400207AF3 /* YZPassthrough.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = YZPassthrough.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,9 +102,11 @@
 		9BB0006625806D0600207AF3 /* Metal */ = {
 			isa = PBXGroup;
 			children = (
+				9BB000942581FF5200207AF3 /* Output */,
 				9BB000882581C9FA00207AF3 /* Operations */,
 				9BB000702580B26300207AF3 /* Base */,
 				9BB0006725806D2500207AF3 /* input */,
+				9BB0009D2582015A00207AF3 /* Metal */,
 			);
 			path = Metal;
 			sourceTree = "<group>";
@@ -107,7 +118,6 @@
 				9BB0006925806D4200207AF3 /* YZVideoCamera.m */,
 				9BB000772580B88200207AF3 /* YZYUVToRGBConversion.h */,
 				9BB000782580B88200207AF3 /* YZYUVToRGBConversion.m */,
-				9BB0008B2581CC7800207AF3 /* YZYUVToRGBConversion.metal */,
 				9BB0008E2581CF1C00207AF3 /* YZShaderTypes.h */,
 			);
 			path = input;
@@ -122,6 +132,8 @@
 				9BB000812581BA0900207AF3 /* YZMetalOrientation.m */,
 				9BB000842581BDC900207AF3 /* YZTexture.h */,
 				9BB000852581BDC900207AF3 /* YZTexture.m */,
+				9BB000902581EE4B00207AF3 /* YZShaderUniform.h */,
+				9BB000912581EE4B00207AF3 /* YZShaderUniform.m */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -131,6 +143,25 @@
 			children = (
 			);
 			path = Operations;
+			sourceTree = "<group>";
+		};
+		9BB000942581FF5200207AF3 /* Output */ = {
+			isa = PBXGroup;
+			children = (
+				9BB000952581FF7600207AF3 /* YZMTKView.h */,
+				9BB000962581FF7600207AF3 /* YZMTKView.m */,
+			);
+			path = Output;
+			sourceTree = "<group>";
+		};
+		9BB0009D2582015A00207AF3 /* Metal */ = {
+			isa = PBXGroup;
+			children = (
+				9BB0009E2582019400207AF3 /* YZShaderTypes.h */,
+				9BB000A02582019400207AF3 /* YZPassthrough.metal */,
+				9BB0009F2582019400207AF3 /* YZYUVToRGBConversion.metal */,
+			);
+			path = Metal;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -202,14 +233,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BB000972581FF7600207AF3 /* YZMTKView.m in Sources */,
 				9BB000732580B2C200207AF3 /* YZMetalRenderingDevice.m in Sources */,
 				9BB00042257FB7F400207AF3 /* AppDelegate.m in Sources */,
-				9BB0008C2581CC7800207AF3 /* YZYUVToRGBConversion.metal in Sources */,
+				9BB000A22582019400207AF3 /* YZPassthrough.metal in Sources */,
 				9BB000862581BDC900207AF3 /* YZTexture.m in Sources */,
+				9BB000A12582019400207AF3 /* YZYUVToRGBConversion.metal in Sources */,
 				9BB000792580B88200207AF3 /* YZYUVToRGBConversion.m in Sources */,
 				9BB000822581BA0900207AF3 /* YZMetalOrientation.m in Sources */,
 				9BB0006A25806D4200207AF3 /* YZVideoCamera.m in Sources */,
 				9BB00062257FBA5500207AF3 /* FirstViewController.m in Sources */,
+				9BB000922581EE4C00207AF3 /* YZShaderUniform.m in Sources */,
 				9BB00053257FB7F600207AF3 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

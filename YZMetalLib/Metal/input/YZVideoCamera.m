@@ -9,6 +9,8 @@
 #import <Metal/Metal.h>
 #import "YZMetalRenderingDevice.h"
 #import "YZYUVToRGBConversion.h"
+#import "YZMetalOrientation.h"
+#import "YZTexture.h"
 
 @interface YZVideoCamera ()<AVCaptureVideoDataOutputSampleBufferDelegate>
 
@@ -77,10 +79,11 @@
 }
 
 - (void)_processVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
+    CMTime currentTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
     CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     CVMetalTextureRef texture = NULL;
-    id <MTLTexture> textureY = NULL;
-    id <MTLTexture> textureUV = NULL;
+    id<MTLTexture> textureY = NULL;
+    id<MTLTexture> textureUV = NULL;
     //y
     MTLPixelFormat pixelFormat = MTLPixelFormatR8Unorm;
     size_t width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 0);
@@ -110,6 +113,20 @@
         conversionMatrix = kYZColorConversion601DefaultMatrix;
     }
     //根据方向获取旋转矩阵 - todo
+    width = CVPixelBufferGetWidth(pixelBuffer);
+    height = CVPixelBufferGetHeight(pixelBuffer);
+    size_t outputW = width;
+    size_t outputH = height;
+    BOOL need = [YZMetalOrientation needRotation:UIInterfaceOrientationPortrait width:width height:height];
+    if (need) {
+        outputW = height;
+        outputH = width;
+    }
+    YZTexture *outputTexture = [[YZTexture alloc] initWithOrientation:UIInterfaceOrientationPortrait width:outputW height:outputH];
+    [self _convertYUVToRGB:textureY textureUV:textureUV outputTexture:outputTexture matrix:conversionMatrix];
+}
+
+- (void)_convertYUVToRGB:(id<MTLTexture>)textureY textureUV:(id<MTLTexture>)textureUV outputTexture:(YZTexture *)texture matrix:(matrix_float3x3)matrix {
     
 }
 
@@ -141,8 +158,10 @@
     
     //todo add bgra
     if (self.fullYUVRange) {
+        [YZMetalRenderingDevice.share generateRenderPipelineState:YES];
         [_output setVideoSettings:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_420YpCbCr8BiPlanarFullRange] forKey:(id)kCVPixelBufferPixelFormatTypeKey]];
     } else {
+        [YZMetalRenderingDevice.share generateRenderPipelineState:NO];
         [_output setVideoSettings:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange] forKey:(id)kCVPixelBufferPixelFormatTypeKey]];
     }
     

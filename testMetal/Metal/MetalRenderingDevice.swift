@@ -12,16 +12,6 @@ public class MetalRenderingDevice {
     public let commandQueue: MTLCommandQueue
     public let shaderLibrary: MTLLibrary
     public let metalPerformanceShadersAreSupported: Bool
-    
-    lazy var passthroughRenderState: MTLRenderPipelineState = {
-        let (pipelineState, _) = generateRenderPipelineState(device:self, vertexFunctionName:"oneInputVertex", fragmentFunctionName:"passthroughFragment", operationName:"Passthrough")
-        return pipelineState
-    }()
-
-    lazy var colorSwizzleRenderState: MTLRenderPipelineState = {
-        let (pipelineState, _) = generateRenderPipelineState(device:self, vertexFunctionName:"oneInputVertex", fragmentFunctionName:"colorSwizzleFragment", operationName:"ColorSwizzle")
-        return pipelineState
-    }()
 
     init() {
         guard let device = MTLCreateSystemDefaultDevice() else {fatalError("Could not create Metal Device")}

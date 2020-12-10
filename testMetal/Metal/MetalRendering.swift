@@ -48,18 +48,13 @@ extension MTLCommandBuffer {
 public let f601:[Float] = [1, 1, 1, 0, 0, 0.343, 1.765, 0, 1.4, -0.711, 0, 0]
 
 public func restoreShaderSettings(renderEncoder: MTLRenderCommandEncoder) {
-//    shaderUniformSettingsQueue.sync {
-//        guard (uniformValues.count > 0) else { return }
-//        
         let uniformBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: f601,
                                                                          length: f601.count * MemoryLayout<Float>.size,
                                                                          options: [])!
-        
-        //print(uniformValues.count * MemoryLayout<Float>.size, 222111)
-        
         renderEncoder.setFragmentBuffer(uniformBuffer, offset: 0, index: 1)
-//    }
+
 }
+
 
 func generateRenderPipelineState(device:MetalRenderingDevice, vertexFunctionName:String, fragmentFunctionName:String, operationName:String) -> (MTLRenderPipelineState, [String:(Int, MTLDataType)]) {
     guard let vertexFunction = device.shaderLibrary.makeFunction(name: vertexFunctionName) else {

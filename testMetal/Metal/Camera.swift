@@ -3,25 +3,7 @@ import AVFoundation
 import Metal
 
 
-public let colorConversionMatrix601Default = Matrix3x3(rowMajorValues:[
-    1.164,  1.164, 1.164,
-    0.0, -0.392, 2.017,
-    1.596, -0.813,   0.0
-])
 
-// BT.601 full range (ref: http://www.equasys.de/colorconversion.html)
-public let colorConversionMatrix601FullRangeDefault = Matrix3x3(rowMajorValues:[
-    1.0,    1.0,    1.0,
-    0.0,    -0.343, 1.765,
-    1.4,    -0.711, 0.0,
-])
-
-// BT.709, which is the standard for HDTV.
-public let colorConversionMatrix709Default = Matrix3x3(rowMajorValues:[
-    1.164,  1.164, 1.164,
-    0.0, -0.213, 2.112,
-    1.793, -0.533,   0.0,
-])
 
 //public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBufferDelegate {
 public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -158,12 +140,7 @@ private extension Camera {
         if let concreteLuminanceTextureRef = luminanceTextureRef, let concreteChrominanceTextureRef = chrominanceTextureRef,
             let luminanceTexture = CVMetalTextureGetTexture(concreteLuminanceTextureRef), let chrominanceTexture = CVMetalTextureGetTexture(concreteChrominanceTextureRef) {
             
-            let conversionMatrix:Matrix3x3
-            if (self.supportsFullYUVRange) {
-                conversionMatrix = colorConversionMatrix601FullRangeDefault
-            } else {
-                conversionMatrix = colorConversionMatrix601Default
-            }
+            
             
             let outputWidth = bufferHeight
             let outputHeight = bufferWidth
@@ -174,7 +151,7 @@ private extension Camera {
             
             convertYUVToRGB(pipelineState:self.yuvConversionRenderPipelineState!, lookupTable:self.yuvLookupTable,
                             luminanceTexture:yTexture, chrominanceTexture:uvTexture,
-                            resultTexture:outputTexture, colorConversionMatrix:conversionMatrix)
+                            resultTexture:outputTexture)
             
             self.renderView.newTextureAvailable(outputTexture, fromSourceIndex: 0)
             self.frameRenderingSemaphore.signal()
@@ -182,13 +159,15 @@ private extension Camera {
         
     }
     
-    func convertYUVToRGB(pipelineState:MTLRenderPipelineState, lookupTable:[String:(Int, MTLDataType)], luminanceTexture:Texture, chrominanceTexture:Texture, secondChrominanceTexture:Texture? = nil, resultTexture:Texture, colorConversionMatrix:Matrix3x3) {
+    func convertYUVToRGB(pipelineState:MTLRenderPipelineState, lookupTable:[String:(Int, MTLDataType)], luminanceTexture:Texture, chrominanceTexture:Texture, secondChrominanceTexture:Texture? = nil, resultTexture:Texture) {
         
         guard let commandBuffer = sharedMetalRenderingDevice.commandQueue.makeCommandBuffer() else {return}
         
         let inputTextures = [UInt(0):luminanceTexture, UInt(1):chrominanceTexture]
         
+        //todo
         commandBuffer.renderQuad(pipelineState:pipelineState, inputTextures:inputTextures, useNormalizedTextureCoordinates:true, outputTexture:resultTexture)
+        
         commandBuffer.commit()
     }
 }

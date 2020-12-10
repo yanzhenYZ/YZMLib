@@ -1,5 +1,6 @@
 import Foundation
 
+
 // This reimplements CMTime such that it can reach across to Linux
 public struct TimestampFlags: OptionSet {
     public let rawValue:UInt32
@@ -12,7 +13,7 @@ public struct TimestampFlags: OptionSet {
     public static let indefinite = TimestampFlags(rawValue: 1 << 4)
 }
 
-public struct Timestamp: Comparable {
+public struct Timestamp {
     let value:Int64
     let timescale:Int32
     let flags:TimestampFlags
@@ -34,15 +35,6 @@ public struct Timestamp: Comparable {
 }
 
 public func ==(x:Timestamp, y:Timestamp) -> Bool {
-    // TODO: Fix this
-//    if (x.flags.contains(TimestampFlags.PositiveInfinity) && y.flags.contains(TimestampFlags.PositiveInfinity)) {
-//        return true
-//    } else if (x.flags.contains(TimestampFlags.NegativeInfinity) && y.flags.contains(TimestampFlags.NegativeInfinity)) {
-//        return true
-//    } else if (x.flags.contains(TimestampFlags.Indefinite) || y.flags.contains(TimestampFlags.Indefinite) || x.flags.contains(TimestampFlags.NegativeInfinity) || y.flags.contains(TimestampFlags.NegativeInfinity) || x.flags.contains(TimestampFlags.PositiveInfinity) && y.flags.contains(TimestampFlags.PositiveInfinity)) {
-//        return false
-//    }
-    
     let correctedYValue:Int64
     if (x.timescale != y.timescale) {
         correctedYValue = Int64(round(Double(y.value) * Double(x.timescale) / Double(y.timescale)))
@@ -53,26 +45,4 @@ public func ==(x:Timestamp, y:Timestamp) -> Bool {
     return ((x.value == correctedYValue) && (x.epoch == y.epoch))
 }
 
-public func <(x:Timestamp, y:Timestamp) -> Bool {
-    // TODO: Fix this
-//    if (x.flags.contains(TimestampFlags.PositiveInfinity) || y.flags.contains(TimestampFlags.NegativeInfinity)) {
-//        return false
-//    } else if (x.flags.contains(TimestampFlags.NegativeInfinity) || y.flags.contains(TimestampFlags.PositiveInfinity)) {
-//        return true
-//    }
 
-    if (x.epoch < y.epoch) {
-        return true
-    } else if (x.epoch > y.epoch) {
-        return false
-    }
-
-    let correctedYValue:Int64
-    if (x.timescale != y.timescale) {
-        correctedYValue = Int64(round(Double(y.value) * Double(x.timescale) / Double(y.timescale)))
-    } else {
-        correctedYValue = y.value
-    }
-
-    return (x.value < correctedYValue)
-}

@@ -2,6 +2,27 @@ import Foundation
 import AVFoundation
 import Metal
 
+
+public let colorConversionMatrix601Default = Matrix3x3(rowMajorValues:[
+    1.164,  1.164, 1.164,
+    0.0, -0.392, 2.017,
+    1.596, -0.813,   0.0
+])
+
+// BT.601 full range (ref: http://www.equasys.de/colorconversion.html)
+public let colorConversionMatrix601FullRangeDefault = Matrix3x3(rowMajorValues:[
+    1.0,    1.0,    1.0,
+    0.0,    -0.343, 1.765,
+    1.4,    -0.711, 0.0,
+])
+
+// BT.709, which is the standard for HDTV.
+public let colorConversionMatrix709Default = Matrix3x3(rowMajorValues:[
+    1.164,  1.164, 1.164,
+    0.0, -0.213, 2.112,
+    1.793, -0.533,   0.0,
+])
+
 //public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBufferDelegate {
 public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
 
@@ -68,6 +89,25 @@ public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         videoOutput.setSampleBufferDelegate(self, queue:cameraProcessingQueue)
     }
     
+    public func startCapture() {
+        
+        let _ = frameRenderingSemaphore.wait(timeout:DispatchTime.distantFuture)
+        self.frameRenderingSemaphore.signal()
+        
+        if (!captureSession.isRunning) {
+            captureSession.startRunning()
+        }
+    }
+    
+    public func stopCapture() {
+        if (captureSession.isRunning) {
+            let _ = frameRenderingSemaphore.wait(timeout:DispatchTime.distantFuture)
+            
+            captureSession.stopRunning()
+            self.frameRenderingSemaphore.signal()
+        }
+    }
+    
     deinit {
         cameraFrameProcessingQueue.sync {
             self.stopCapture()
@@ -91,77 +131,64 @@ public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         guard (frameRenderingSemaphore.wait(timeout:DispatchTime.now()) == DispatchTimeoutResult.success) else { return }
         
         //let startTime = CFAbsoluteTimeGetCurrent()
+        let currentTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
         
+        cameraFrameProcessingQueue.async {
+            self.processSampleBuffer(sampleBuffer);
+         
+        }
+    }
+    
+    
+}
+
+private extension Camera {
+    func processSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         let cameraFrame = CMSampleBufferGetImageBuffer(sampleBuffer)!
         let bufferWidth = CVPixelBufferGetWidth(cameraFrame)
         let bufferHeight = CVPixelBufferGetHeight(cameraFrame)
-        let currentTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
         
-        CVPixelBufferLockBaseAddress(cameraFrame, CVPixelBufferLockFlags(rawValue:CVOptionFlags(0)))
+        var luminanceTextureRef:CVMetalTexture? = nil
+        var chrominanceTextureRef:CVMetalTexture? = nil
+        // Luminance plane
+        let _ = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, self.videoTextureCache!, cameraFrame, nil, .r8Unorm, bufferWidth, bufferHeight, 0, &luminanceTextureRef)
+        // Chrominance plane
+        let _ = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, self.videoTextureCache!, cameraFrame, nil, .rg8Unorm, bufferWidth / 2, bufferHeight / 2, 1, &chrominanceTextureRef)
         
-        cameraFrameProcessingQueue.async {
+        if let concreteLuminanceTextureRef = luminanceTextureRef, let concreteChrominanceTextureRef = chrominanceTextureRef,
+            let luminanceTexture = CVMetalTextureGetTexture(concreteLuminanceTextureRef), let chrominanceTexture = CVMetalTextureGetTexture(concreteChrominanceTextureRef) {
             
-            CVPixelBufferUnlockBaseAddress(cameraFrame, CVPixelBufferLockFlags(rawValue:CVOptionFlags(0)))
-            
-            var texture:Texture?
-            if self.captureAsYUV {
-                var luminanceTextureRef:CVMetalTexture? = nil
-                var chrominanceTextureRef:CVMetalTexture? = nil
-                // Luminance plane
-                let _ = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, self.videoTextureCache!, cameraFrame, nil, .r8Unorm, bufferWidth, bufferHeight, 0, &luminanceTextureRef)
-                // Chrominance plane
-                let _ = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, self.videoTextureCache!, cameraFrame, nil, .rg8Unorm, bufferWidth / 2, bufferHeight / 2, 1, &chrominanceTextureRef)
-                
-                if let concreteLuminanceTextureRef = luminanceTextureRef, let concreteChrominanceTextureRef = chrominanceTextureRef,
-                    let luminanceTexture = CVMetalTextureGetTexture(concreteLuminanceTextureRef), let chrominanceTexture = CVMetalTextureGetTexture(concreteChrominanceTextureRef) {
-                    
-                    let conversionMatrix:Matrix3x3
-                    if (self.supportsFullYUVRange) {
-                        conversionMatrix = colorConversionMatrix601FullRangeDefault
-                    } else {
-                        conversionMatrix = colorConversionMatrix601Default
-                    }
-                    
-                    let outputWidth:Int
-                    let outputHeight:Int
-                    
-                    outputWidth = bufferHeight
-                    outputHeight = bufferWidth
-                    
-                    let outputTexture = Texture(device:sharedMetalRenderingDevice.device, orientation:.portrait, width:outputWidth, height:outputHeight, timingStyle: .stillImage)
-                    
-//                    let outputTexture = Texture(device:sharedMetalRenderingDevice.device, orientation:.portrait, width:outputWidth, height:outputHeight, timingStyle: .videoFrame(timestamp: Timestamp(currentTime)))
-                    
-                    convertYUVToRGB(pipelineState:self.yuvConversionRenderPipelineState!, lookupTable:self.yuvLookupTable,
-                                    luminanceTexture:Texture(orientation: .landscapeLeft, texture:luminanceTexture),
-                                    chrominanceTexture:Texture(orientation: .landscapeLeft, texture:chrominanceTexture),
-                                    resultTexture:outputTexture, colorConversionMatrix:conversionMatrix)
-                    texture = outputTexture
-                } else {
-                    texture = nil
-                }
+            let conversionMatrix:Matrix3x3
+            if (self.supportsFullYUVRange) {
+                conversionMatrix = colorConversionMatrix601FullRangeDefault
+            } else {
+                conversionMatrix = colorConversionMatrix601Default
             }
-            self.renderView.newTextureAvailable(texture!, fromSourceIndex: 0)
-            self.frameRenderingSemaphore.signal()
-        }
-    }
-    
-    public func startCapture() {
-        
-        let _ = frameRenderingSemaphore.wait(timeout:DispatchTime.distantFuture)
-        self.frameRenderingSemaphore.signal()
-        
-        if (!captureSession.isRunning) {
-            captureSession.startRunning()
-        }
-    }
-    
-    public func stopCapture() {
-        if (captureSession.isRunning) {
-            let _ = frameRenderingSemaphore.wait(timeout:DispatchTime.distantFuture)
             
-            captureSession.stopRunning()
+            let outputWidth = bufferHeight
+            let outputHeight = bufferWidth
+            
+            let outputTexture = Texture(device:sharedMetalRenderingDevice.device, orientation:.portrait, width:outputWidth, height:outputHeight, timingStyle: .stillImage)
+            let yTexture = Texture(orientation: .landscapeLeft, texture:luminanceTexture)
+            let uvTexture = Texture(orientation: .landscapeLeft, texture:chrominanceTexture)
+            
+            convertYUVToRGB(pipelineState:self.yuvConversionRenderPipelineState!, lookupTable:self.yuvLookupTable,
+                            luminanceTexture:yTexture, chrominanceTexture:uvTexture,
+                            resultTexture:outputTexture, colorConversionMatrix:conversionMatrix)
+            
+            self.renderView.newTextureAvailable(outputTexture, fromSourceIndex: 0)
             self.frameRenderingSemaphore.signal()
         }
+        
+    }
+    
+    func convertYUVToRGB(pipelineState:MTLRenderPipelineState, lookupTable:[String:(Int, MTLDataType)], luminanceTexture:Texture, chrominanceTexture:Texture, secondChrominanceTexture:Texture? = nil, resultTexture:Texture, colorConversionMatrix:Matrix3x3) {
+        
+        guard let commandBuffer = sharedMetalRenderingDevice.commandQueue.makeCommandBuffer() else {return}
+        
+        let inputTextures = [UInt(0):luminanceTexture, UInt(1):chrominanceTexture]
+        
+        commandBuffer.renderQuad(pipelineState:pipelineState, inputTextures:inputTextures, useNormalizedTextureCoordinates:true, outputTexture:resultTexture)
+        commandBuffer.commit()
     }
 }

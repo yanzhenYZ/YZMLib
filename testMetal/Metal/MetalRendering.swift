@@ -6,7 +6,7 @@ public let standardImageVertices:[Float] = [-1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0
 
 extension MTLCommandBuffer {
     
-    func renderQuad(pipelineState:MTLRenderPipelineState, uniformSettings:ShaderUniformSettings? = nil, inputTextures:[UInt:Texture], useNormalizedTextureCoordinates:Bool = true, imageVertices:[Float] = standardImageVertices, outputTexture:Texture, outputOrientation:ImageOrientation = .portrait) {
+    func renderQuad(pipelineState:MTLRenderPipelineState, inputTextures:[UInt:Texture], useNormalizedTextureCoordinates:Bool = true, imageVertices:[Float] = standardImageVertices, outputTexture:Texture, outputOrientation:ImageOrientation = .portrait) {
         let vertexBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: imageVertices,
                                                                         length: imageVertices.count * MemoryLayout<Float>.size,
                                                                         options: [])!
@@ -38,10 +38,27 @@ extension MTLCommandBuffer {
             renderEncoder.setVertexBuffer(textureBuffer, offset: 0, index: 1 + textureIndex)
             renderEncoder.setFragmentTexture(currentTexture.texture, index: textureIndex)
         }
-        uniformSettings?.restoreShaderSettings(renderEncoder: renderEncoder)
+//        uniformSettings?.restoreShaderSettings(renderEncoder: renderEncoder)
+        restoreShaderSettings(renderEncoder: renderEncoder)
         renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         renderEncoder.endEncoding()
     }
+}
+
+public let f601:[Float] = [1, 1, 1, 0, 0, 0.343, 1.765, 0, 1.4, -0.711, 0, 0]
+
+public func restoreShaderSettings(renderEncoder: MTLRenderCommandEncoder) {
+//    shaderUniformSettingsQueue.sync {
+//        guard (uniformValues.count > 0) else { return }
+//        
+        let uniformBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: f601,
+                                                                         length: f601.count * MemoryLayout<Float>.size,
+                                                                         options: [])!
+        
+        //print(uniformValues.count * MemoryLayout<Float>.size, 222111)
+        
+        renderEncoder.setFragmentBuffer(uniformBuffer, offset: 0, index: 1)
+//    }
 }
 
 func generateRenderPipelineState(device:MetalRenderingDevice, vertexFunctionName:String, fragmentFunctionName:String, operationName:String) -> (MTLRenderPipelineState, [String:(Int, MTLDataType)]) {

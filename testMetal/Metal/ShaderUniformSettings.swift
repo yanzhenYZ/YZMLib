@@ -28,7 +28,7 @@ public class ShaderUniformSettings {
         }
     }
     
-    public var usesAspectRatio:Bool { get { return self.uniformLookupTable["aspectRatio"] != nil } }
+    //public var usesAspectRatio:Bool { get { return self.uniformLookupTable["aspectRatio"] != nil } }
     
     private func internalIndex(for index:Int) -> Int {
         if (index == 0) {
@@ -72,23 +72,6 @@ public class ShaderUniformSettings {
         }
     }
 
-    public subscript(key:String) -> Matrix4x4 {
-        get {
-            // TODO: Fix this
-            return Matrix4x4.identity
-        }
-        set(newValue) {
-            shaderUniformSettingsQueue.async {
-                let floatArray = newValue.toFloatArray()
-                guard let index = self.uniformLookupTable[key] else {fatalError("Tried to access value of missing uniform: \(key), make sure this is present and used in your shader.")}
-                var currentIndex = self.internalIndex(for:index)
-                for floatValue in floatArray {
-                    self.uniformValues[currentIndex] = floatValue
-                    currentIndex += 1
-                }
-            }
-        }
-    }
     
     // MARK: -
     // MARK: Uniform buffer memory management
@@ -163,14 +146,5 @@ extension Matrix3x3:UniformConvertible {
 //        return [m11, m12, m13, m21, m22, m23, m31, m32, m33]
     }
 }
-
-extension Matrix4x4:UniformConvertible {
-    public func toFloatArray() -> [Float] {
-        // Row major
-        return [m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44]
-//        return [m11, m21, m31, m41, m12, m22, m32, m42, m13, m23, m33, m43, m14, m24, m34, m44]
-    }
-}
-
 
 

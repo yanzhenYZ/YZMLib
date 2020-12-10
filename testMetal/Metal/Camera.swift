@@ -1,44 +1,12 @@
 import Foundation
 import AVFoundation
 import Metal
-/*
-public enum PhysicalCameraLocation {
-    case backFacing
-    case frontFacing
-    
-    func imageOrientation() -> ImageOrientation {
-        switch self {
-            case .backFacing: return .landscapeRight
-#if os(iOS)
-            case .frontFacing: return .landscapeLeft
-#else
-            case .frontFacing: return .portrait
-#endif
-        }
-    }
-    
-    func captureDevicePosition() -> AVCaptureDevice.Position {
-        switch self {
-        case .backFacing: return .back
-        case .frontFacing: return .front
-        }
-    }
-}*/
-
-public struct CameraError: Error {
-}
-
-let initialBenchmarkFramesToIgnore = 5
-
 
 //public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBufferDelegate {
 public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
 
     public var renderView: RenderView!
-    
-    //public let targets = TargetContainer()
     public let captureSession:AVCaptureSession
-    //public var orientation:ImageOrientation?
     public let inputCamera:AVCaptureDevice!
     let videoInput:AVCaptureDeviceInput!
     let videoOutput:AVCaptureVideoDataOutput!
@@ -55,12 +23,6 @@ public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         label: "com.sunsetlakesoftware.GPUImage.cameraFrameProcessingQueue",
         attributes: [])
     
-    let framesToIgnore = 5
-    var numberOfFramesCaptured = 0
-    var totalFrameTimeDuringCapture:Double = 0.0
-    var framesSinceLastCheck = 0
-    var lastCheckTime = CFAbsoluteTimeGetCurrent()
-    
     public init(sessionPreset:AVCaptureSession.Preset, cameraDevice:AVCaptureDevice? = nil, captureAsYUV:Bool = true) throws {
         //self.location = location
         //self.orientation = orientation
@@ -71,8 +33,6 @@ public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         self.captureAsYUV = captureAsYUV
         
         self.inputCamera = Camera.device()
-        
-        
         self.videoInput = try AVCaptureDeviceInput(device:inputCamera)
         
         if (captureSession.canAddInput(videoInput)) {
@@ -84,6 +44,7 @@ public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         videoOutput.alwaysDiscardsLateVideoFrames = false
         
         if captureAsYUV {
+            supportsFullYUVRange = true
             let (pipelineState, lookupTable) = generateRenderPipelineState(device:sharedMetalRenderingDevice, vertexFunctionName:"twoInputVertex", fragmentFunctionName:"yuvConversionFullRangeFragment", operationName:"YUVToRGB")
             self.yuvConversionRenderPipelineState = pipelineState
             self.yuvLookupTable = lookupTable
@@ -179,11 +140,8 @@ public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
                 } else {
                     texture = nil
                 }
-            } 
-//
+            }
             self.renderView.newTextureAvailable(texture!, fromSourceIndex: 0)
-//            self.updateTargetsWithTexture(texture!)
-
             self.frameRenderingSemaphore.signal()
         }
     }
@@ -191,8 +149,6 @@ public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     public func startCapture() {
         
         let _ = frameRenderingSemaphore.wait(timeout:DispatchTime.distantFuture)
-        self.numberOfFramesCaptured = 0
-        self.totalFrameTimeDuringCapture = 0
         self.frameRenderingSemaphore.signal()
         
         if (!captureSession.isRunning) {

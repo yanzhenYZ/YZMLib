@@ -132,13 +132,13 @@
 }
 
 - (void)_convertYUVToRGB:(id<MTLTexture>)textureY textureUV:(id<MTLTexture>)textureUV outputTexture:(YZTexture *)texture matrix:(matrix_float3x3)matrix {
-    YZTexture *newTextureY = [[YZTexture alloc] initWithOrientation:_orientation texture:textureY];
-    YZTexture *newTextureUV = [[YZTexture alloc] initWithOrientation:_orientation texture:textureUV];
+    YZTexture *newTextureY = [[YZTexture alloc] initWithOrientation:UIInterfaceOrientationLandscapeRight texture:textureY];
+    YZTexture *newTextureUV = [[YZTexture alloc] initWithOrientation:UIInterfaceOrientationLandscapeRight texture:textureUV];
     YZShaderUniform *uniform = [YZMetalRenderingDevice.share getRenderUniform];
     uniform.colorConversionMatrix = matrix;
-    //commandBuffer
     id<MTLCommandBuffer> commandBuffer = [YZMetalRenderingDevice.share.commandQueue commandBuffer];
     
+    //quard
     static const simd_float8 squareVertices[] = {
         -1.0f, 1.0f,
         1.0f, 1.0f,
@@ -146,12 +146,13 @@
         1.0f,  -1.0f,
     };
 
-    id<MTLBuffer> vertexBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:squareVertices length:sizeof(squareVertices) options:MTLResourceCPUCacheModeDefaultCache];
+//    NSLog(@"xxxx___%d", sizeof(simd_float8));
+    id<MTLBuffer> vertexBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:squareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     vertexBuffer.label = @"YZVertices";
     
     MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
     desc.colorAttachments[0].texture = texture.texture;
-    desc.colorAttachments[0].clearColor = MTLClearColorMake(1, 0, 0, 1);
+    desc.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 1, 1);
     desc.colorAttachments[0].storeAction = MTLStoreActionStore;
     desc.colorAttachments[0].loadAction = MTLLoadActionClear;
     
@@ -163,29 +164,49 @@
     [encoder setRenderPipelineState:YZMetalRenderingDevice.share.renderPipelineState];
     [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:0];
     //texture
-    static const simd_float8 uvSquareVertices[] = {
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 0.0f,
+//    static const simd_float8 uvSquareVertices[] = {
+//        1.0f, 0.0f,
+//        1.0f, 1.0f,
+//        0.0f, 0.0f,
+//        0.0f, 1.0f,
+//    };
+    static const simd_float8 yuvSquareVertices[] = {
         0.0f, 1.0f,
+        0.0f, 0.0f,
+        1.0f, 1.0f,
+        1.0f, 0.0f,
     };
-    id<MTLBuffer> yBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:uvSquareVertices length:sizeof(uvSquareVertices) options:MTLResourceCPUCacheModeDefaultCache];
+    id<MTLBuffer> yBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:yuvSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     yBuffer.label = @"YBuffer";
     [encoder setVertexBuffer:yBuffer offset:0 atIndex:1];
     [encoder setFragmentTexture:newTextureY.texture atIndex:0];
     
-    id<MTLBuffer> uvBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:uvSquareVertices length:sizeof(uvSquareVertices) options:MTLResourceCPUCacheModeDefaultCache];
+    id<MTLBuffer> uvBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:yuvSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     uvBuffer.label = @"UVBuffer";
     [encoder setVertexBuffer:uvBuffer offset:0 atIndex:2];
     [encoder setFragmentTexture:newTextureUV.texture atIndex:1];
     
     //todo
-    matrix_float3x3 *ad = &matrix;
-    id<MTLBuffer> uniformBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:ad length:sizeof(matrix_float3x3) options:MTLResourceCPUCacheModeDefaultCache];
+    static const float newtest[] = {
+        1.0f, 1.0f,   1.0f,  0,
+        0.0f, -0.343, 1.765, 0,
+        1.4f, -0.711, 0,     0,
+    };
+//    matrix_float3x4 kYZColorConversion601FullRangeMatrix = (matrix_float3x3){
+//       (simd_float3){1.0,    1.0,    1.0},
+//       (simd_float3){0.0,    -0.343, 1.765},
+//       (simd_float3){1.4,    -0.711, 0.0},
+//    };
+    
+    id<MTLBuffer> uniformBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:newtest length:sizeof(float) * 12 options:MTLResourceCPUCacheModeDefaultCache];
     [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:1];
+    
+    //NSLog(@"xxxx___%d", sizeof(float) * 12);
+    
     
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];
+    
     [commandBuffer commit];
 }
 
@@ -218,10 +239,18 @@
     //todo add bgra
     if (self.fullYUVRange) {
         [YZMetalRenderingDevice.share generateRenderPipelineState:YES];
-        [_output setVideoSettings:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_420YpCbCr8BiPlanarFullRange] forKey:(id)kCVPixelBufferPixelFormatTypeKey]];
+        NSDictionary *dict = @{
+            (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange),
+            (id)kCVPixelBufferMetalCompatibilityKey : @(YES)
+        };
+        _output.videoSettings = dict;
     } else {
         [YZMetalRenderingDevice.share generateRenderPipelineState:NO];
-        [_output setVideoSettings:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange] forKey:(id)kCVPixelBufferPixelFormatTypeKey]];
+        NSDictionary *dict = @{
+            (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange),
+            (id)kCVPixelBufferMetalCompatibilityKey : @(YES)
+        };
+        _output.videoSettings = dict;
     }
     
     [_session beginConfiguration];
@@ -243,7 +272,7 @@
 
 + (AVCaptureDevice *)defaultFrontDevice {
     if (@available(iOS 10.0, *)) {
-        return [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionFront];
+        return [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionBack];
     } else {
         NSArray<AVCaptureDevice *> *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
         __block AVCaptureDevice *device = nil;

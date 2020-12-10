@@ -16,13 +16,22 @@
 
 @implementation YZMTKView
 
-- (instancetype)init
+- (instancetype)initWithFrame:(CGRect)frame
 {
-    self = [super init];
+    self = [super initWithFrame:frame];
     if (self) {
+//        self.delegate = self;
         
-        self.backgroundColor = UIColor.redColor;
-        self.delegate = self;
+        
+        //self.pipelineState = [self.device newRenderPipelineStateWithDescriptor:desc error:NULL];
+    }
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (self) {
         self.device = YZMetalRenderingDevice.share.device;
         
         self.framebufferOnly = NO;
@@ -36,7 +45,14 @@
         desc.rasterSampleCount = 1;
         desc.vertexFunction = vertexFunction;
         desc.fragmentFunction = fragmentFunction;
-        self.pipelineState = [self.device newRenderPipelineStateWithDescriptor:desc error:NULL];
+        
+        NSError *error = nil;
+        MTLAutoreleasedRenderPipelineReflection reflection;
+        MTLPipelineOption option = MTLPipelineOptionArgumentInfo | MTLPipelineOptionBufferTypeInfo;
+        _pipelineState = [self.device newRenderPipelineStateWithDescriptor:desc options:option reflection:&reflection error:&error];
+        if (error) {
+            NSLog(@"YZMetalRenderingDevice new renderPipelineState failed: %@", error);
+        }
     }
     return self;
 }
@@ -52,17 +68,20 @@
     if (!self.currentDrawable || !_texture) {
         return;
     }
+    NSLog(@"1234___1234");
     id<MTLCommandBuffer> commandBuffer = [YZMetalRenderingDevice.share.commandQueue commandBuffer];
     YZTexture *outTexture = [[YZTexture alloc] initWithOrientation:UIInterfaceOrientationPortrait texture:self.currentDrawable.texture];
     
-    static const simd_float8 squareVertices[] = {
+    static const float squareVertices[] = {
         -1.0f, 1.0f,
         1.0f, 1.0f,
         -1.0f,  -1.0f,
         1.0f,  -1.0f,
     };
     id<MTLBuffer> vertexBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:squareVertices length:sizeof(squareVertices) options:MTLResourceCPUCacheModeDefaultCache];
-    vertexBuffer.label = @"YZVertices";
+    vertexBuffer.label = @"YZVertices02";
+    
+    NSLog(@"xxxx___%d", sizeof(squareVertices));
     
     MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
     desc.colorAttachments[0].texture = outTexture.texture;
@@ -75,16 +94,16 @@
         NSLog(@"YZVideoCamera render endcoder Fail");
     }
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
-    [encoder setRenderPipelineState:YZMetalRenderingDevice.share.renderPipelineState];
+    [encoder setRenderPipelineState:_pipelineState];
     [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:0];
     //texture
     static const simd_float8 uvSquareVertices[] = {
-        1.0f, 0.0f,
-        1.0f, 1.0f,
         0.0f, 0.0f,
+        1.0f, 0.0f,
         0.0f, 1.0f,
+        1.0f, 1.0f,
     };
-    id<MTLBuffer> yBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:uvSquareVertices length:sizeof(uvSquareVertices) options:MTLResourceCPUCacheModeDefaultCache];
+    id<MTLBuffer> yBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:uvSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     yBuffer.label = @"bgraBuffer";
     [encoder setVertexBuffer:yBuffer offset:0 atIndex:1];
     [encoder setFragmentTexture:_texture.texture atIndex:0];
@@ -95,6 +114,7 @@
     
     [commandBuffer presentDrawable:self.currentDrawable];
     [commandBuffer commit];
+    _texture = nil;
 }
 
 - (void)drawInMTKView:(MTKView *)view {

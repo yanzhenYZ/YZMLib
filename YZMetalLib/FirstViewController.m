@@ -12,8 +12,9 @@
 
 @interface FirstViewController ()<YZVideoCameraOutputDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *player;
+@property (weak, nonatomic) IBOutlet YZMTKView *mtkView;
 @property (nonatomic, strong) YZVideoCamera *camera;
-@property (nonatomic, strong) YZMTKView *mtkView;
+//@property (nonatomic, strong) YZMTKView *mtkView;
 
 @property (nonatomic, strong) CIContext *context;
 
@@ -24,10 +25,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    _context = [CIContext contextWithOptions:nil];
+//    _context = [CIContext contextWithOptions:nil];
     
-    _mtkView = [[YZMTKView alloc] initWithFrame:UIScreen.mainScreen.bounds];
-    [self.view addSubview:_mtkView];
+//    _mtkView = [[YZMTKView alloc] initWithFrame:UIScreen.mainScreen.bounds];
+//    [self.view addSubview:_mtkView];
     
     
     _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
@@ -54,7 +55,7 @@
 
 #pragma mark - YZVideoCameraOutputDelegate
 - (void)videoCamera:(YZVideoCamera *)camera output:(CMSampleBufferRef)sampleBuffer {
-    [self showPixelBuffer:CMSampleBufferGetImageBuffer(sampleBuffer)];
+    //[self showPixelBuffer:CMSampleBufferGetImageBuffer(sampleBuffer)];
 }
 
 @end

@@ -2,10 +2,8 @@ import Foundation
 import MetalKit
 
 public class RenderView: MTKView {
-    
     var currentTexture: MTLTexture?
     var renderPipelineState:MTLRenderPipelineState!
-    
     public override init(frame frameRect: CGRect, device: MTLDevice?) {
         super.init(frame: frameRect, device: sharedMetalRenderingDevice.device)
         
@@ -18,40 +16,36 @@ public class RenderView: MTKView {
         commonInit()
     }
     
-    private func commonInit() {
-        framebufferOnly = false
-        autoResizeDrawable = true
-        
-        self.device = sharedMetalRenderingDevice.device
-        
-        
-        let vertexFunction = sharedMetalRenderingDevice.shaderLibrary.makeFunction(name: "oneInputVertex")
-        let fragmentFunction = sharedMetalRenderingDevice.shaderLibrary.makeFunction(name: "passthroughFragment")
-        
-        let descriptor = MTLRenderPipelineDescriptor()
-        descriptor.colorAttachments[0].pixelFormat = MTLPixelFormat.bgra8Unorm
-        descriptor.rasterSampleCount = 1
-        descriptor.vertexFunction = vertexFunction
-        descriptor.fragmentFunction = fragmentFunction
-        renderPipelineState = try? sharedMetalRenderingDevice.device.makeRenderPipelineState(descriptor: descriptor)
-
-        
-        enableSetNeedsDisplay = false
-        isPaused = true
-    }
-    
     public func newTextureAvailable(_ texture:MTLTexture, fromSourceIndex:UInt) {
         self.drawableSize = CGSize(width: texture.width, height: texture.height)
         currentTexture = texture
         self.draw()
     }
     
-    public override func draw(_ rect:CGRect) {
-        if let currentDrawable = self.currentDrawable {
+    //使用代理避免重复调用
+//    public override func draw(_ rect:CGRect) {
+//        if let currentDrawable = self.currentDrawable {
+//            let commandBuffer = sharedMetalRenderingDevice.commandQueue.makeCommandBuffer()
+//
+//            renderQuad(commandBuffer:commandBuffer!, outputTexture: currentDrawable.texture)
+//
+//            commandBuffer?.present(currentDrawable)
+//            commandBuffer?.commit()
+//        }
+//    }
+}
+
+extension RenderView: MTKViewDelegate {
+    public func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+        print("drawableSizeWillChange")
+    }
+    
+    public func draw(in view: MTKView) {
+        if let currentDrawable = view.currentDrawable {
             let commandBuffer = sharedMetalRenderingDevice.commandQueue.makeCommandBuffer()
-            
+
             renderQuad(commandBuffer:commandBuffer!, outputTexture: currentDrawable.texture)
-            
+
             commandBuffer?.present(currentDrawable)
             commandBuffer?.commit()
         }
@@ -59,7 +53,7 @@ public class RenderView: MTKView {
 }
 
 
-extension RenderView {
+private extension RenderView {
     func renderQuad(commandBuffer:MTLCommandBuffer, outputTexture:MTLTexture) {
         let imageVertices:[Float] = [-1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0]
         let vertexBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: imageVertices,
@@ -92,5 +86,31 @@ extension RenderView {
         
         renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         renderEncoder.endEncoding()
+    }
+}
+
+private extension RenderView {
+    func commonInit() {
+        framebufferOnly = false
+        autoResizeDrawable = true
+        
+        self.device = sharedMetalRenderingDevice.device
+        
+        
+        let vertexFunction = sharedMetalRenderingDevice.shaderLibrary.makeFunction(name: "oneInputVertex")
+        let fragmentFunction = sharedMetalRenderingDevice.shaderLibrary.makeFunction(name: "passthroughFragment")
+        
+        let descriptor = MTLRenderPipelineDescriptor()
+        descriptor.colorAttachments[0].pixelFormat = MTLPixelFormat.bgra8Unorm
+        descriptor.rasterSampleCount = 1
+        descriptor.vertexFunction = vertexFunction
+        descriptor.fragmentFunction = fragmentFunction
+        renderPipelineState = try? sharedMetalRenderingDevice.device.makeRenderPipelineState(descriptor: descriptor)
+
+        self.backgroundColor = .red
+        enableSetNeedsDisplay = false
+        isPaused = true
+        self.contentMode = .scaleAspectFit
+        self.delegate = self
     }
 }

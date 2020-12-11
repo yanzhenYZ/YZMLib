@@ -14,8 +14,6 @@
 		9BB000CB25823ED900207AF3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9BB000C925823ED900207AF3 /* LaunchScreen.storyboard */; };
 		9BB000DC25823F6A00207AF3 /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000DB25823F6A00207AF3 /* Camera.swift */; };
 		9BB000E2258242A200207AF3 /* MetalRenderingDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000E1258242A200207AF3 /* MetalRenderingDevice.swift */; };
-		9BB000E5258242E500207AF3 /* Texture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000E4258242E500207AF3 /* Texture.swift */; };
-		9BB000EB2582436800207AF3 /* ImageOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000EA2582436800207AF3 /* ImageOrientation.swift */; };
 		9BB000F22582468800207AF3 /* YUVToRGBConversion.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000F02582468800207AF3 /* YUVToRGBConversion.metal */; };
 		9BB000FC258248DC00207AF3 /* Passthrough.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000FB258248DC00207AF3 /* Passthrough.metal */; };
 		9BB000FF2582490D00207AF3 /* RenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000FE2582490D00207AF3 /* RenderView.swift */; };
@@ -31,8 +29,6 @@
 		9BB000CC25823ED900207AF3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9BB000DB25823F6A00207AF3 /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		9BB000E1258242A200207AF3 /* MetalRenderingDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalRenderingDevice.swift; sourceTree = "<group>"; };
-		9BB000E4258242E500207AF3 /* Texture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Texture.swift; sourceTree = "<group>"; };
-		9BB000EA2582436800207AF3 /* ImageOrientation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageOrientation.swift; sourceTree = "<group>"; };
 		9BB000F02582468800207AF3 /* YUVToRGBConversion.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = YUVToRGBConversion.metal; sourceTree = "<group>"; };
 		9BB000F92582472600207AF3 /* OperationShaderTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OperationShaderTypes.h; sourceTree = "<group>"; };
 		9BB000FB258248DC00207AF3 /* Passthrough.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Passthrough.metal; sourceTree = "<group>"; };
@@ -84,8 +80,6 @@
 			isa = PBXGroup;
 			children = (
 				9BB000DB25823F6A00207AF3 /* Camera.swift */,
-				9BB000EA2582436800207AF3 /* ImageOrientation.swift */,
-				9BB000E4258242E500207AF3 /* Texture.swift */,
 				9BB000E1258242A200207AF3 /* MetalRenderingDevice.swift */,
 				9BB000FE2582490D00207AF3 /* RenderView.swift */,
 				9BB000F02582468800207AF3 /* YUVToRGBConversion.metal */,
@@ -165,10 +159,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9BB000EB2582436800207AF3 /* ImageOrientation.swift in Sources */,
 				9BB000FC258248DC00207AF3 /* Passthrough.metal in Sources */,
 				9BB000F22582468800207AF3 /* YUVToRGBConversion.metal in Sources */,
-				9BB000E5258242E500207AF3 /* Texture.swift in Sources */,
 				9BB000E2258242A200207AF3 /* MetalRenderingDevice.swift in Sources */,
 				9BB000C325823ED800207AF3 /* ViewController.swift in Sources */,
 				9BB000BF25823ED800207AF3 /* AppDelegate.swift in Sources */,

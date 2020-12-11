@@ -3,7 +3,7 @@ import MetalKit
 
 public class RenderView: MTKView {
     
-    var currentTexture: Texture?
+    var currentTexture: MTLTexture?
     var renderPipelineState:MTLRenderPipelineState!
     
     public override init(frame frameRect: CGRect, device: MTLDevice?) {
@@ -40,20 +40,17 @@ public class RenderView: MTKView {
         isPaused = true
     }
     
-    public func newTextureAvailable(_ texture:Texture, fromSourceIndex:UInt) {
-        self.drawableSize = CGSize(width: texture.texture.width, height: texture.texture.height)
+    public func newTextureAvailable(_ texture:MTLTexture, fromSourceIndex:UInt) {
+        self.drawableSize = CGSize(width: texture.width, height: texture.height)
         currentTexture = texture
         self.draw()
     }
     
     public override func draw(_ rect:CGRect) {
-        if let currentDrawable = self.currentDrawable, let imageTexture = currentTexture {
+        if let currentDrawable = self.currentDrawable {
             let commandBuffer = sharedMetalRenderingDevice.commandQueue.makeCommandBuffer()
             
-            let outputTexture = Texture(orientation: .portrait, texture: currentDrawable.texture)
-            
-            
-            renderQuad(commandBuffer:commandBuffer!, outputTexture: outputTexture)
+            renderQuad(commandBuffer:commandBuffer!, outputTexture: currentDrawable.texture)
             
             commandBuffer?.present(currentDrawable)
             commandBuffer?.commit()
@@ -63,10 +60,8 @@ public class RenderView: MTKView {
 
 
 extension RenderView {
-    func renderQuad(commandBuffer:MTLCommandBuffer, outputTexture:Texture) {
-        
+    func renderQuad(commandBuffer:MTLCommandBuffer, outputTexture:MTLTexture) {
         let imageVertices:[Float] = [-1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0]
-        let outputOrientation:ImageOrientation = .portrait
         let vertexBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: imageVertices,
                                                                         length: imageVertices.count * MemoryLayout<Float>.size,
                                                                         options: [])!
@@ -74,7 +69,7 @@ extension RenderView {
         
         //print(imageVertices.count * MemoryLayout<Float>.size, 111222)
         let renderPass = MTLRenderPassDescriptor()
-        renderPass.colorAttachments[0].texture = outputTexture.texture
+        renderPass.colorAttachments[0].texture = outputTexture
         renderPass.colorAttachments[0].clearColor = MTLClearColorMake(1, 0, 0, 1)
         renderPass.colorAttachments[0].storeAction = .store
         renderPass.colorAttachments[0].loadAction = .clear
@@ -86,18 +81,14 @@ extension RenderView {
         renderEncoder.setRenderPipelineState(renderPipelineState)
         renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
         
-        
-        let inputTextureCoordinates = currentTexture!.textureCoordinates(for:outputOrientation, normalized:true)
-        
-        
         let input:[Float] = [0, 0, 1, 0, 0, 1, 1, 1]
-        let textureBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: inputTextureCoordinates,
-                                                                         length: inputTextureCoordinates.count * MemoryLayout<Float>.size,
+        let textureBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: input,
+                                                                         length: input.count * MemoryLayout<Float>.size,
                                                                          options: [])!
         textureBuffer.label = "Texture Coordinates"
         
         renderEncoder.setVertexBuffer(textureBuffer, offset: 0, index: 1)
-        renderEncoder.setFragmentTexture(currentTexture!.texture, index: 0)
+        renderEncoder.setFragmentTexture(currentTexture, index: 0)
         
         renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         renderEncoder.endEncoding()

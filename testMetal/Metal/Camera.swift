@@ -151,23 +151,17 @@ private extension Camera {
             textureDescriptor.usage = [.renderTarget, .shaderRead, .shaderWrite]
             
             let newTexture = sharedMetalRenderingDevice.device.makeTexture(descriptor: textureDescriptor)
+            convertYUVToRGB(luminanceTexture:luminanceTexture, chrominanceTexture:chrominanceTexture,
+                            resultTexture:newTexture!)
             
-            
-            let outputTexture = Texture(orientation: .portrait, texture: newTexture!)
-            let yTexture = Texture(orientation: .landscapeLeft, texture:luminanceTexture)
-            let uvTexture = Texture(orientation: .landscapeLeft, texture:chrominanceTexture)
-            
-            convertYUVToRGB(luminanceTexture:yTexture, chrominanceTexture:uvTexture,
-                            resultTexture:outputTexture)
-            
-            self.renderView.newTextureAvailable(outputTexture, fromSourceIndex: 0)
+            self.renderView.newTextureAvailable(newTexture!, fromSourceIndex: 0)
             
             self.frameRenderingSemaphore.signal()
         }
         
     }
     
-    func convertYUVToRGB(luminanceTexture:Texture, chrominanceTexture:Texture, secondChrominanceTexture:Texture? = nil, resultTexture:Texture) {
+    func convertYUVToRGB(luminanceTexture:MTLTexture, chrominanceTexture:MTLTexture, resultTexture:MTLTexture) {
         
         guard let commandBuffer = sharedMetalRenderingDevice.commandQueue.makeCommandBuffer() else {return}
 
@@ -176,7 +170,7 @@ private extension Camera {
         commandBuffer.commit()
     }
     //, inputTextures:[UInt:Texture]
-    func renderQuad(buffer:MTLCommandBuffer, outputTexture:Texture, yTexture:Texture, uvTexture: Texture) {
+    func renderQuad(buffer:MTLCommandBuffer, outputTexture:MTLTexture, yTexture:MTLTexture, uvTexture: MTLTexture) {
         let imageVertices:[Float] = [-1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0]
         let vertexBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: imageVertices,
                                                                         length: imageVertices.count * MemoryLayout<Float>.size,
@@ -185,7 +179,7 @@ private extension Camera {
         
         //print(imageVertices.count * MemoryLayout<Float>.size, 111222)
         let renderPass = MTLRenderPassDescriptor()
-        renderPass.colorAttachments[0].texture = outputTexture.texture
+        renderPass.colorAttachments[0].texture = outputTexture
         renderPass.colorAttachments[0].clearColor = MTLClearColorMake(1, 0, 0, 1)
         renderPass.colorAttachments[0].storeAction = .store
         renderPass.colorAttachments[0].loadAction = .clear
@@ -206,7 +200,7 @@ private extension Camera {
         textureBuffer.label = "Texture Coordinates"
         
         renderEncoder.setVertexBuffer(textureBuffer, offset: 0, index: 1)
-        renderEncoder.setFragmentTexture(currentTexture.texture, index: 0)
+        renderEncoder.setFragmentTexture(currentTexture, index: 0)
         
         
         currentTexture = uvTexture
@@ -215,7 +209,7 @@ private extension Camera {
                                                                          options: [])!
         textureBuffer.label = "Texture Coordinates"
         renderEncoder.setVertexBuffer(textureBufferUV, offset: 0, index: 2)
-        renderEncoder.setFragmentTexture(currentTexture.texture, index: 1)
+        renderEncoder.setFragmentTexture(currentTexture, index: 1)
 
         restoreShaderSettings(renderEncoder: renderEncoder)
         

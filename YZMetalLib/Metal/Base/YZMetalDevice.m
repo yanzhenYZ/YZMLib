@@ -60,4 +60,22 @@ static id _metalDevice;
     return self;
 }
 
+#pragma mark - pipeline
+
+- (id<MTLRenderPipelineState>)newRenderPipeline:(NSString *)vertex fragment:(NSString *)fragment {
+    id<MTLFunction> vertexFunction = [_defaultLibrary newFunctionWithName:vertex];
+    id<MTLFunction> fragmentFunction = [_defaultLibrary newFunctionWithName:fragment];
+    MTLRenderPipelineDescriptor *desc = [[MTLRenderPipelineDescriptor alloc] init];
+    desc.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;//bgra
+    desc.rasterSampleCount = 1;
+    desc.vertexFunction = vertexFunction;
+    desc.fragmentFunction = fragmentFunction;
+    
+    NSError *error = nil;
+    id<MTLRenderPipelineState> pipeline = [_device newRenderPipelineStateWithDescriptor:desc error:&error];
+    if (error) {
+        NSLog(@"YZMetalRenderingDevice new renderPipelineState failed: %@", error);
+    }
+    return pipeline;
+}
 @end

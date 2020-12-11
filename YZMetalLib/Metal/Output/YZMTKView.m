@@ -19,7 +19,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        [self _config];
+        [self _configSelf];
     }
     return self;
 }
@@ -28,37 +28,9 @@
 {
     self = [super initWithCoder:coder];
     if (self) {
-        [self _config];
+        [self _configSelf];
     }
     return self;
-}
-
-- (void)_config {
-    
-    self.framebufferOnly = NO;
-    self.autoResizeDrawable = YES;
-    
-    self.device = YZMetalDevice.defaultDevice.device;
-
-    
-    id<MTLFunction> vertexFunction = [YZMetalDevice.defaultDevice.defaultLibrary newFunctionWithName:@"oneInputVertex"];
-    id<MTLFunction> fragmentFunction = [YZMetalDevice.defaultDevice.defaultLibrary newFunctionWithName:@"passthroughFragment"];
-    MTLRenderPipelineDescriptor *desc = [[MTLRenderPipelineDescriptor alloc] init];
-    desc.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;//bgra
-    desc.rasterSampleCount = 1;
-    desc.vertexFunction = vertexFunction;
-    desc.fragmentFunction = fragmentFunction;
-    
-    NSError *error = nil;
-    _pipelineState = [self.device newRenderPipelineStateWithDescriptor:desc error:&error];
-    if (error) {
-        NSLog(@"YZMetalRenderingDevice new renderPipelineState failed: %@", error);
-    }
-    
-    self.enableSetNeedsDisplay = NO;
-    self.paused = YES;
-    
-    self.delegate = self;
 }
 
 - (void)newTextureAvailable:(id<MTLTexture>)texture index:(NSInteger)index {
@@ -72,7 +44,6 @@
     if (!self.currentDrawable || !_texture) {
         return;
     }
-    
     
     id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice.commandQueue commandBuffer];
     id<MTLTexture> outTexture = view.currentDrawable.texture;
@@ -122,5 +93,15 @@
 
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {
     
+}
+
+#pragma mark - private config
+- (void)_configSelf {
+    self.paused = YES;
+    self.delegate = self;
+    self.framebufferOnly = NO;
+    self.enableSetNeedsDisplay = NO;
+    self.device = YZMetalDevice.defaultDevice.device;
+    _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"oneInputVertex" fragment:@"passthroughFragment"];
 }
 @end

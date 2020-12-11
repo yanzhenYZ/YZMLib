@@ -2,7 +2,7 @@
 //  YZPassthrough.metal
 //  YZMetalLib
 //
-//  Created by 闫振 on 2020/12/10.
+//  Created by yanzhen on 2020/12/10.
 //
 
 #include <metal_stdlib>

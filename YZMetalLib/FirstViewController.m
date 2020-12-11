@@ -24,12 +24,28 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 
-    [self test_001];
+//    [self test_001];
+    
+    [self test002];
+}
+
+- (void)test002 {
+    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
+    
+    _mtkView2 = [[YZMTKView alloc] initWithFrame:UIScreen.mainScreen.bounds];
+    [self.view addSubview:_mtkView2];
+    _camera.view = _mtkView2;
+    
+    _camera.delegate = self;
+    [_camera startRunning];
 }
 
 - (void)test_001 {
 
-    
+    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
+    _camera.view = _mtkView;
+    _camera.delegate = self;
+    [_camera startRunning];
     
 }
 

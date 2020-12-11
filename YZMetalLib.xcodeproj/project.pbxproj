@@ -91,19 +91,19 @@
 			children = (
 				9BB000942581FF5200207AF3 /* Output */,
 				9BB000702580B26300207AF3 /* Base */,
-				9BB0006725806D2500207AF3 /* input */,
+				9BB0006725806D2500207AF3 /* Input */,
 				9BB0009D2582015A00207AF3 /* Metal */,
 			);
 			path = Metal;
 			sourceTree = "<group>";
 		};
-		9BB0006725806D2500207AF3 /* input */ = {
+		9BB0006725806D2500207AF3 /* Input */ = {
 			isa = PBXGroup;
 			children = (
 				9BB0006825806D4200207AF3 /* YZVideoCamera.h */,
 				9BB0006925806D4200207AF3 /* YZVideoCamera.m */,
 			);
-			path = input;
+			path = Input;
 			sourceTree = "<group>";
 		};
 		9BB000702580B26300207AF3 /* Base */ = {
@@ -354,6 +354,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 200;
 				DEVELOPMENT_TEAM = 7XP66VHL84;
 				INFOPLIST_FILE = YZMetalLib/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -361,7 +362,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.3ttech.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -374,6 +375,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 200;
 				DEVELOPMENT_TEAM = 7XP66VHL84;
 				INFOPLIST_FILE = YZMetalLib/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -381,7 +383,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.3ttech.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";

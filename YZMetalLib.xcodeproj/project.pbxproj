@@ -16,7 +16,7 @@
 		9BB0006A25806D4200207AF3 /* YZVideoCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB0006925806D4200207AF3 /* YZVideoCamera.m */; };
 		9BB000972581FF7600207AF3 /* YZMTKView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000962581FF7600207AF3 /* YZMTKView.m */; };
 		9BB000A12582019400207AF3 /* YZYUVToRGBConversion.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BB0009F2582019400207AF3 /* YZYUVToRGBConversion.metal */; };
-		9BB000A22582019400207AF3 /* YZPassthrough.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000A02582019400207AF3 /* YZPassthrough.metal */; };
+		9BB000A22582019400207AF3 /* YZMTKView.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000A02582019400207AF3 /* YZMTKView.metal */; };
 		9BB00123258365C900207AF3 /* YZMetalDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB00122258365C900207AF3 /* YZMetalDevice.m */; };
 		9BB001432583852000207AF3 /* YZMetalOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB001422583852000207AF3 /* YZMetalOrientation.m */; };
 /* End PBXBuildFile section */
@@ -38,7 +38,7 @@
 		9BB000962581FF7600207AF3 /* YZMTKView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZMTKView.m; sourceTree = "<group>"; };
 		9BB0009E2582019400207AF3 /* YZShaderTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZShaderTypes.h; sourceTree = "<group>"; };
 		9BB0009F2582019400207AF3 /* YZYUVToRGBConversion.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = YZYUVToRGBConversion.metal; sourceTree = "<group>"; };
-		9BB000A02582019400207AF3 /* YZPassthrough.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = YZPassthrough.metal; sourceTree = "<group>"; };
+		9BB000A02582019400207AF3 /* YZMTKView.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = YZMTKView.metal; sourceTree = "<group>"; };
 		9BB00121258365C900207AF3 /* YZMetalDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZMetalDevice.h; sourceTree = "<group>"; };
 		9BB00122258365C900207AF3 /* YZMetalDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZMetalDevice.m; sourceTree = "<group>"; };
 		9BB001412583852000207AF3 /* YZMetalOrientation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZMetalOrientation.h; sourceTree = "<group>"; };
@@ -133,7 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				9BB0009E2582019400207AF3 /* YZShaderTypes.h */,
-				9BB000A02582019400207AF3 /* YZPassthrough.metal */,
+				9BB000A02582019400207AF3 /* YZMTKView.metal */,
 				9BB0009F2582019400207AF3 /* YZYUVToRGBConversion.metal */,
 			);
 			path = Metal;
@@ -210,7 +210,7 @@
 			files = (
 				9BB000972581FF7600207AF3 /* YZMTKView.m in Sources */,
 				9BB00042257FB7F400207AF3 /* AppDelegate.m in Sources */,
-				9BB000A22582019400207AF3 /* YZPassthrough.metal in Sources */,
+				9BB000A22582019400207AF3 /* YZMTKView.metal in Sources */,
 				9BB000A12582019400207AF3 /* YZYUVToRGBConversion.metal in Sources */,
 				9BB0006A25806D4200207AF3 /* YZVideoCamera.m in Sources */,
 				9BB00062257FBA5500207AF3 /* FirstViewController.m in Sources */,

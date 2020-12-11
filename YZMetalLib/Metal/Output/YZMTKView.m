@@ -90,6 +90,6 @@
     self.framebufferOnly = NO;
     self.enableSetNeedsDisplay = NO;
     self.device = YZMetalDevice.defaultDevice.device;
-    _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"oneInputVertex" fragment:@"passthroughFragment"];
+    _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZMTKViewInputVertex" fragment:@"YZMTKViewFragment"];
 }
 @end

@@ -1,5 +1,5 @@
 //
-//  YZPassthrough.metal
+//  YZMTKView.metal
 //  YZMetalLib
 //
 //  Created by yanzhen on 2020/12/10.
@@ -10,15 +10,15 @@
 
 using namespace metal;
 
-struct SingleInputVertexIO
+struct YZMTKViewVertexIO
 {
     float4 position [[position]];
     float2 textureCoordinate;
 };
 
-vertex SingleInputVertexIO oneInputVertex(const device packed_float2 *position [[buffer(YZMTKViewVertexIndexPosition)]], const device packed_float2 *texturecoord [[buffer(YZMTKViewVertexIndexTextureCoordinate)]], uint vertexID [[vertex_id]])
+vertex YZMTKViewVertexIO YZMTKViewInputVertex(const device packed_float2 *position [[buffer(YZMTKViewVertexIndexPosition)]], const device packed_float2 *texturecoord [[buffer(YZMTKViewVertexIndexTextureCoordinate)]], uint vertexID [[vertex_id]])
 {
-    SingleInputVertexIO outputVertices;
+    YZMTKViewVertexIO outputVertices;
     
     outputVertices.position = float4(position[vertexID], 0, 1.0);
     outputVertices.textureCoordinate = texturecoord[vertexID];
@@ -26,10 +26,9 @@ vertex SingleInputVertexIO oneInputVertex(const device packed_float2 *position [
     return outputVertices;
 }
 
-fragment half4 passthroughFragment(SingleInputVertexIO fragmentInput [[stage_in]], texture2d<half> inputTexture [[texture(YZMTKViewFragmentTextureIndexTexture)]])
+fragment half4 YZMTKViewFragment(YZMTKViewVertexIO fragmentInput [[stage_in]], texture2d<half> inputTexture [[texture(YZMTKViewFragmentTextureIndexTexture)]])
 {
     constexpr sampler quadSampler;
     half4 color = inputTexture.sample(quadSampler, fragmentInput.textureCoordinate);
-    
     return color;
 }

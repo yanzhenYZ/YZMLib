@@ -4,44 +4,14 @@ import Metal
 import UIKit
 #endif
 
-public enum TextureTimingStyle {
-    case stillImage
-    case videoFrame
-    
-    func isTransient() -> Bool {
-        switch self {
-        case .stillImage: return false
-        case .videoFrame: return true
-        }
-    }
-}
-
 public class Texture {
-    public var timingStyle: TextureTimingStyle
     public var orientation: ImageOrientation
     
     public let texture: MTLTexture
     
-    public init(orientation: ImageOrientation, texture: MTLTexture, timingStyle: TextureTimingStyle  = .stillImage) {
+    public init(orientation: ImageOrientation, texture: MTLTexture) {
         self.orientation = orientation
         self.texture = texture
-        self.timingStyle = timingStyle
-    }
-    
-    public init(device:MTLDevice, orientation: ImageOrientation, pixelFormat: MTLPixelFormat = .bgra8Unorm, width: Int, height: Int, mipmapped:Bool = false, timingStyle: TextureTimingStyle  = .stillImage) {
-        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .bgra8Unorm,
-                                                                         width: width,
-                                                                         height: height,
-                                                                         mipmapped: false)
-        textureDescriptor.usage = [.renderTarget, .shaderRead, .shaderWrite]
-        
-        guard let newTexture = sharedMetalRenderingDevice.device.makeTexture(descriptor: textureDescriptor) else {
-            fatalError("Could not create texture of size: (\(width), \(height))")
-        }
-
-        self.orientation = orientation
-        self.texture = newTexture
-        self.timingStyle = timingStyle
     }
 }
 

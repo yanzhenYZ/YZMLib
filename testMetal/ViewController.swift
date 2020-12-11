@@ -21,12 +21,6 @@ class ViewController: UIViewController {
         
         do {
             camera = try Camera(sessionPreset: .vga640x480)
-//            camera.runBenchmark = true
-//            camera --> operation --> renderView
-            
-
-//            let renderView = RenderView(frame: UIScreen.main.bounds, device: sharedMetalRenderingDevice.device)
-//            camera.renderView = renderView;
             
             camera.renderView = xibRenderView
             

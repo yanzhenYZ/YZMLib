@@ -44,8 +44,6 @@ public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         
         if captureAsYUV {
             supportsFullYUVRange = true
-            
-            
             let vertexFunction = sharedMetalRenderingDevice.shaderLibrary.makeFunction(name: "twoInputVertex")
             let fragmentFunction = sharedMetalRenderingDevice.shaderLibrary.makeFunction(name: "yuvConversionFullRangeFragment")
             
@@ -146,8 +144,16 @@ private extension Camera {
             
             let outputWidth = bufferHeight
             let outputHeight = bufferWidth
+            let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .bgra8Unorm,
+                                                                             width: outputWidth,
+                                                                             height: outputHeight,
+                                                                             mipmapped: false)
+            textureDescriptor.usage = [.renderTarget, .shaderRead, .shaderWrite]
             
-            let outputTexture = Texture(device:sharedMetalRenderingDevice.device, orientation:.portrait, width:outputWidth, height:outputHeight, timingStyle: .stillImage)
+            let newTexture = sharedMetalRenderingDevice.device.makeTexture(descriptor: textureDescriptor)
+            
+            
+            let outputTexture = Texture(orientation: .portrait, texture: newTexture!)
             let yTexture = Texture(orientation: .landscapeLeft, texture:luminanceTexture)
             let uvTexture = Texture(orientation: .landscapeLeft, texture:chrominanceTexture)
             
@@ -171,9 +177,7 @@ private extension Camera {
     }
     //, inputTextures:[UInt:Texture]
     func renderQuad(buffer:MTLCommandBuffer, outputTexture:Texture, yTexture:Texture, uvTexture: Texture) {
-        
-        let imageVertices = standardImageVertices
-        let outputOrientation = ImageOrientation.portrait
+        let imageVertices:[Float] = [-1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0]
         let vertexBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: imageVertices,
                                                                         length: imageVertices.count * MemoryLayout<Float>.size,
                                                                         options: [])!
@@ -195,7 +199,7 @@ private extension Camera {
         
         //uv
         var currentTexture = yTexture
-        let inputTextureCoordinates = currentTexture.textureCoordinates(for:outputOrientation, normalized:true)
+        let inputTextureCoordinates = currentTexture.textureCoordinates(for:.portrait, normalized:true)
         let textureBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: inputTextureCoordinates,
                                                                          length: inputTextureCoordinates.count * MemoryLayout<Float>.size,
                                                                          options: [])!

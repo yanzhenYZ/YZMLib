@@ -8,6 +8,7 @@
 #import "YZMTKView.h"
 #import "YZMetalDevice.h"
 #import "YZMetalOrientation.h"
+//#import "YZShaderTypes.h"
 
 @interface YZMTKView ()<MTKViewDelegate>
 @property (nonatomic, strong) id<MTLRenderPipelineState> pipelineState;

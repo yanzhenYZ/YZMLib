@@ -12,12 +12,12 @@ using namespace metal;
 
 vertex SingleInputVertexIO oneInputVertex(const device packed_float2 *position [[buffer(0)]],
                                           const device packed_float2 *texturecoord [[buffer(1)]],
-                                          uint vid [[vertex_id]])
+                                          uint vertexID [[vertex_id]])
 {
     SingleInputVertexIO outputVertices;
     
-    outputVertices.position = float4(position[vid], 0, 1.0);
-    outputVertices.textureCoordinate = texturecoord[vid];
+    outputVertices.position = float4(position[vertexID], 0, 1.0);
+    outputVertices.textureCoordinate = texturecoord[vertexID];
     
     return outputVertices;
 }

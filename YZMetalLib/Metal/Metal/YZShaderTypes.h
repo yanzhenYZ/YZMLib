@@ -24,4 +24,16 @@ struct TwoInputVertexIO
     float2 textureCoordinate2 [[user(texturecoord2)]];
 };
 
+
+typedef enum YZMTKViewVertexIndex
+{
+    YZMTKViewVertexIndexPosition = 0,
+    YZMTKViewVertexIndexTextureCoordinate = 1,
+} YZMTKViewVertexIndex;
+
+typedef enum YZMTKViewFragmentTextureIndex
+{
+    YZMTKViewFragmentTextureIndexTexture = 0,
+} YZMTKViewFragmentTextureIndex;
+
 #endif /* YZShaderTypes_h */

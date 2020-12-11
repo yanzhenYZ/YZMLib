@@ -6,14 +6,13 @@
 //
 
 import UIKit
-/**
- 1.0.5 MTKView手动初始化问题
- */
+
 class ViewController: UIViewController {
 
     var camera:Camera!
     
-    @IBOutlet weak var xibRenderView: RenderView!
+    private var renderView: RenderView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -21,7 +20,11 @@ class ViewController: UIViewController {
         do {
             camera = try Camera(sessionPreset: .vga640x480)
             
-            camera.renderView = xibRenderView
+//            camera.renderView = xibRenderView
+            
+            renderView = RenderView(frame: UIScreen.main.bounds, device: sharedMetalRenderingDevice.device)
+            self.view.addSubview(renderView)
+            camera.renderView = renderView
             
             camera.startCapture()
         } catch {

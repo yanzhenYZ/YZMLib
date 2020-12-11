@@ -5,7 +5,7 @@ import Metal
 //public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBufferDelegate {
 public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
 
-    public var renderView: RenderView!
+    public var renderView: RenderView?
     public let captureSession:AVCaptureSession
     public let inputCamera:AVCaptureDevice!
     let videoInput:AVCaptureDeviceInput!
@@ -154,7 +154,7 @@ private extension Camera {
             convertYUVToRGB(luminanceTexture:luminanceTexture, chrominanceTexture:chrominanceTexture,
                             resultTexture:newTexture!)
             
-            self.renderView.newTextureAvailable(newTexture!, fromSourceIndex: 0)
+            self.renderView?.newTextureAvailable(newTexture!, fromSourceIndex: 0)
             
             self.frameRenderingSemaphore.signal()
         }

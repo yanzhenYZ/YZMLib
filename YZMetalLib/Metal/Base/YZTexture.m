@@ -6,10 +6,10 @@
 //
 
 #import "YZTexture.h"
-#import "YZMetalRenderingDevice.h"
+#import "YZMetalDevice.h"
 
 @interface YZTexture ()
-//@property (nonatomic, )
+
 @end
 
 @implementation YZTexture
@@ -21,7 +21,7 @@
         MTLTextureDescriptor *desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:width height:height mipmapped:NO];
         desc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
         
-        _texture = [YZMetalRenderingDevice.share.device newTextureWithDescriptor:desc];
+        _texture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:desc];
         if (!_texture) {
             NSLog(@"YZTexture Error to create MTLTexture");
         }

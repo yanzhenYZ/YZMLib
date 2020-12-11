@@ -6,7 +6,7 @@
 //
 
 #import "YZMTKView.h"
-#import "YZMetalRenderingDevice.h"
+#import "YZMetalDevice.h"
 #import "YZTexture.h"
 
 @interface YZMTKView ()<MTKViewDelegate>
@@ -39,11 +39,11 @@
     self.framebufferOnly = NO;
     self.autoResizeDrawable = YES;
     
-    self.device = YZMetalRenderingDevice.share.device;
+    self.device = YZMetalDevice.defaultDevice.device;
 
     
-    id<MTLFunction> vertexFunction = [YZMetalRenderingDevice.share.defaultLibrary newFunctionWithName:@"oneInputVertex"];
-    id<MTLFunction> fragmentFunction = [YZMetalRenderingDevice.share.defaultLibrary newFunctionWithName:@"passthroughFragment"];
+    id<MTLFunction> vertexFunction = [YZMetalDevice.defaultDevice.defaultLibrary newFunctionWithName:@"oneInputVertex"];
+    id<MTLFunction> fragmentFunction = [YZMetalDevice.defaultDevice.defaultLibrary newFunctionWithName:@"passthroughFragment"];
     MTLRenderPipelineDescriptor *desc = [[MTLRenderPipelineDescriptor alloc] init];
     desc.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;//bgra
     desc.rasterSampleCount = 1;
@@ -73,7 +73,7 @@
     if (!self.currentDrawable || !_texture) {
         return;
     }
-    id<MTLCommandBuffer> commandBuffer = [YZMetalRenderingDevice.share.commandQueue commandBuffer];
+    id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice.commandQueue commandBuffer];
     YZTexture *outTexture = [[YZTexture alloc] initWithOrientation:UIInterfaceOrientationPortrait texture:self.currentDrawable.texture];
     
     static const float squareVertices[] = {
@@ -82,7 +82,7 @@
         -1.0f,  -1.0f,
         1.0f,  -1.0f,
     };
-    id<MTLBuffer> vertexBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:squareVertices length:sizeof(squareVertices) options:MTLResourceCPUCacheModeDefaultCache];
+    id<MTLBuffer> vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:squareVertices length:sizeof(squareVertices) options:MTLResourceCPUCacheModeDefaultCache];
     vertexBuffer.label = @"YZVertices02";
     
     MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
@@ -105,7 +105,7 @@
         0.0f, 1.0f,
         1.0f, 1.0f,
     };
-    id<MTLBuffer> yBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:uvSquareVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
+    id<MTLBuffer> yBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:uvSquareVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
     yBuffer.label = @"bgraBuffer";
     [encoder setVertexBuffer:yBuffer offset:0 atIndex:1];
     [encoder setFragmentTexture:_texture atIndex:0];

@@ -1,41 +1,40 @@
 //
-//  YZMetalRenderingDevice.m
+//  YZMetalDevice.m
 //  YZMetalLib
 //
-//  Created by yanzhen on 2020/12/9.
+//  Created by yanzhen on 2020/12/11.
 //
 
-#import "YZMetalRenderingDevice.h"
+#import "YZMetalDevice.h"
 
-@interface YZMetalRenderingDevice ()
-@property (nonatomic, copy) NSArray<MTLStructMember *> *members;
+@interface YZMetalDevice ()
+
 @end
 
-@implementation YZMetalRenderingDevice
+@implementation YZMetalDevice
+static id _metalDevice;
 
-static id _share;
-
-+ (instancetype)share
++ (instancetype)defaultDevice
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _share = [[self alloc] init];
+        _metalDevice = [[self alloc] init];
     });
-    return _share;
+    return _metalDevice;
 }
 
 +(instancetype)allocWithZone:(struct _NSZone *)zone
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _share = [super allocWithZone:zone];
+        _metalDevice = [super allocWithZone:zone];
     });
-    return _share;
+    return _metalDevice;
 }
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    return _share;
+    return _metalDevice;
 }
 
 - (instancetype)init
@@ -87,7 +86,7 @@ static id _share;
     
     for (MTLArgument *argument in reflection.fragmentArguments) {
         if (argument.type == MTLArgumentTypeBuffer && argument.bufferDataType == MTLDataTypeStruct) {
-            _members = argument.bufferStructType.members;
+            //_members = argument.bufferStructType.members;
             //NSLog(@"%@-----%d", _members.firstObject.name, _members.firstObject.dataType);
             /*
             [argument.bufferStructType.members enumerateObjectsUsingBlock:^(MTLStructMember * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -97,7 +96,4 @@ static id _share;
     }
 }
 
-- (YZShaderUniform *)getRenderUniform {
-    return [[YZShaderUniform alloc] initWithMembers:_members];
-}
 @end

@@ -190,21 +190,31 @@
     _output = [[AVCaptureVideoDataOutput alloc] init];
     _output.alwaysDiscardsLateVideoFrames = NO;
     [_output setSampleBufferDelegate:self queue:_cameraQueue];
-    
-    NSArray<NSNumber *> *availableVideoCVPixelFormatTypes = _output.availableVideoCVPixelFormatTypes;
-    [availableVideoCVPixelFormatTypes enumerateObjectsUsingBlock:^(NSNumber * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (obj.longLongValue == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
-            self.fullYUVRange = YES;
+        
+    BOOL useYUV = YES;
+    if (useYUV) {
+        NSArray<NSNumber *> *availableVideoCVPixelFormatTypes = _output.availableVideoCVPixelFormatTypes;
+        [availableVideoCVPixelFormatTypes enumerateObjectsUsingBlock:^(NSNumber * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (obj.longLongValue == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
+                //self.fullYUVRange = YES;
+            }
+        }];
+        
+        if (self.fullYUVRange) {
+            _renderPipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZYUVToRGBVertex" fragment:@"YZYUVConversionFullRangeFragment"];
+            NSDictionary *dict = @{
+                (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange)
+            };
+            _output.videoSettings = dict;
+        } else {
+            _renderPipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZYUVToRGBVertex" fragment:@"YZYUVConversionVideoRangeFragment"];
+            NSDictionary *dict = @{
+                (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)
+            };
+            _output.videoSettings = dict;
         }
-    }];
-    
-    //todo add bgra
-    if (self.fullYUVRange) {
-        _renderPipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZYUVToRGBVertex" fragment:@"YZYUVConversionFullRangeFragment"];
-        NSDictionary *dict = @{
-            (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange)
-        };
-        _output.videoSettings = dict;
+    } else {//BGRA
+        
     }
     
     if ([_session canAddOutput:_output]) {

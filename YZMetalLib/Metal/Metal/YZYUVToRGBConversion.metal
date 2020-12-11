@@ -52,7 +52,7 @@ fragment half4 YZYUVConversionFullRangeFragment(YZYUVToRGBVertexIO fragmentInput
     return half4(rgb, 1.0);
 }
 
-fragment half4 yuvConversionVideoRangeFragment(YZYUVToRGBVertexIO fragmentInput [[stage_in]],
+fragment half4 YZYUVConversionVideoRangeFragment(YZYUVToRGBVertexIO fragmentInput [[stage_in]],
                                               texture2d<half> inputTexture [[texture(0)]],
                                               texture2d<half> inputTexture2 [[texture(1)]],
                                               constant YZYUVConversionUniform& uniform [[ buffer(YZFullRangeUniform) ]])

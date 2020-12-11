@@ -70,7 +70,7 @@
     id<MTLBuffer> vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:vertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
     vertexBuffer.label = @"YZMTKView VertexBuffer";
     [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:YZMTKViewVertexIndexTextureCoordinate];
-    [encoder setFragmentTexture:_texture atIndex:YZMTKViewFragmentTextureIndexTexture];
+    [encoder setFragmentTexture:_texture atIndex:YZMTKViewFragmentIndexTexture];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];
     

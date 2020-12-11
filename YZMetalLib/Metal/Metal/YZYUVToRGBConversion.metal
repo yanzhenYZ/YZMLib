@@ -11,7 +11,7 @@
 using namespace metal;
 
 
-struct TwoInputVertexIO
+struct YZYUVToRGBVertexIO
 {
     float4 position [[position]];
     float2 textureCoordinate [[user(texturecoord)]];
@@ -21,26 +21,26 @@ struct TwoInputVertexIO
 typedef struct
 {
     float3x3 colorConversionMatrix;
-} YUVConversionUniform;
+} YZYUVConversionUniform;
 
-vertex TwoInputVertexIO twoInputVertex(const device packed_float2 *position [[buffer(0)]],
-                                       const device packed_float2 *texturecoord [[buffer(1)]],
-                                       const device packed_float2 *texturecoord2 [[buffer(2)]],
-                                       uint vid [[vertex_id]])
+vertex YZYUVToRGBVertexIO YZYUVToRGBVertex(const device packed_float2 *position [[buffer(YZFullRangeVertexIndexPosition)]],
+                                       const device packed_float2 *texturecoord [[buffer(YZFullRangeVertexIndexY)]],
+                                       const device packed_float2 *texturecoord2 [[buffer(YZFullRangeVertexIndexUV)]],
+                                       uint vertexID [[vertex_id]])
 {
-    TwoInputVertexIO outputVertices;
+    YZYUVToRGBVertexIO outputVertices;
     
-    outputVertices.position = float4(position[vid], 0, 1.0);
-    outputVertices.textureCoordinate = texturecoord[vid];
-    outputVertices.textureCoordinate2 = texturecoord2[vid];
+    outputVertices.position = float4(position[vertexID], 0, 1.0);//x,y,z,w
+    outputVertices.textureCoordinate = texturecoord[vertexID];
+    outputVertices.textureCoordinate2 = texturecoord2[vertexID];
 
     return outputVertices;
 }
 
-fragment half4 yuvConversionFullRangeFragment(TwoInputVertexIO fragmentInput [[stage_in]],
-                                     texture2d<half> inputTexture [[texture(0)]],
-                                     texture2d<half> inputTexture2 [[texture(1)]],
-                                     constant YUVConversionUniform& uniform [[ buffer(1) ]])
+fragment half4 YZYUVConversionFullRangeFragment(YZYUVToRGBVertexIO fragmentInput [[stage_in]],
+                                     texture2d<half> inputTexture [[texture(YZFullRangeFragmentIndexTextureY)]],
+                                     texture2d<half> inputTexture2 [[texture(YZFullRangeFragmentIndexTextureUV)]],
+                                     constant YZYUVConversionUniform& uniform [[ buffer(1) ]])
 {
     constexpr sampler quadSampler;
     half3 yuv;
@@ -52,10 +52,10 @@ fragment half4 yuvConversionFullRangeFragment(TwoInputVertexIO fragmentInput [[s
     return half4(rgb, 1.0);
 }
 
-fragment half4 yuvConversionVideoRangeFragment(TwoInputVertexIO fragmentInput [[stage_in]],
+fragment half4 yuvConversionVideoRangeFragment(YZYUVToRGBVertexIO fragmentInput [[stage_in]],
                                               texture2d<half> inputTexture [[texture(0)]],
                                               texture2d<half> inputTexture2 [[texture(1)]],
-                                              constant YUVConversionUniform& uniform [[ buffer(1) ]])
+                                              constant YZYUVConversionUniform& uniform [[ buffer(1) ]])
 {
     constexpr sampler quadSampler;
     half3 yuv;

@@ -8,17 +8,18 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSInteger, YZOrientation) {
-    YZOrientationUnknown            = 0,
-    YZOrientationPortrait           = 1,
-    YZOrientationPortraitUpsideDown = 2,
-    YZOrientationLandscapeLeft      = 3,
-    YZOrientationLandscapeRight     = 4
+    YZOrientationUnknown    = 0,
+    YZOrientationPortrait   = 1,
+    YZOrientationUpsideDown = 2,
+    YZOrientationLeft       = 3,
+    YZOrientationRight      = 4
 };
 
 @interface YZMetalOrientation : NSObject
 
 + (const float *)defaultVertices;
-+ (const float *)defaultCoordinates;
 
++ (const float *)defaultCoordinates;
++ (const float *)getCoordinates:(YZOrientation)orientation;
 @end
 

@@ -9,6 +9,8 @@
 #import <Metal/Metal.h>
 #import "YZMetalDevice.h"
 #import "YZVideoCamera.h"
+#import "YZMetalOrientation.h"
+#import "YZShaderTypes.h"
 
 @interface YZVideoCamera ()<AVCaptureVideoDataOutputSampleBufferDelegate>
 
@@ -20,7 +22,7 @@
 
 @property (nonatomic, strong) id<MTLRenderPipelineState> renderPipelineState;
 @property (nonatomic, assign) CVMetalTextureCacheRef textureCache;
-@property (nonatomic, assign) UIInterfaceOrientation orientation;
+@property (nonatomic, assign) YZOrientation orientation;
 @property (nonatomic, assign) BOOL fullYUVRange;
 @property (nonatomic, assign) int dropFrames;
 @end
@@ -35,7 +37,7 @@
 {
     self = [super init];
     if (self) {
-        _orientation = UIInterfaceOrientationPortrait;
+        _orientation = YZOrientationPortrait;
         _cameraQueue = dispatch_queue_create("com.yanzhen.video.camera.queue", 0);
         _cameraRenderQueue = dispatch_queue_create("com.yanzhen.video.camera.render.queue", 0);
         _videoSemaphore = dispatch_semaphore_create(1);
@@ -47,16 +49,20 @@
 }
 
 - (void)startRunning {
+    dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
     if (!_session.isRunning) {
         [_session startRunning];
     }
+    dispatch_semaphore_signal(_videoSemaphore);
 }
 
 - (void)stopRunning
 {
+    dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
     if (_session.isRunning) {
         [_session stopRunning];
     }
+    dispatch_semaphore_signal(_videoSemaphore);
 }
 
 #pragma mark - AVCaptureVideoDataOutputSampleBufferDelegate and metal frame
@@ -80,56 +86,46 @@
 
 - (void)_processVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
     CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-    CVMetalTextureRef yMetalTexture = NULL;
-    CVMetalTextureRef uvMetalTexture = NULL;
+    CVMetalTextureRef textureRef = NULL;
     id<MTLTexture> textureY = NULL;
-    id<MTLTexture> textureUV = NULL;
     //y
-    MTLPixelFormat pixelFormat = MTLPixelFormatR8Unorm;
     size_t width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 0);
     size_t height = CVPixelBufferGetHeightOfPlane(pixelBuffer, 0);
-    CVReturn status = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _textureCache, pixelBuffer, NULL, pixelFormat, width, height, 0, &yMetalTexture);
+    CVReturn status = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _textureCache, pixelBuffer, NULL, MTLPixelFormatR8Unorm, width, height, 0, &textureRef);
     if(status == kCVReturnSuccess) {
-        textureY = CVMetalTextureGetTexture(yMetalTexture);
-        CFRelease(yMetalTexture);
-        yMetalTexture = NULL;
+        textureY = CVMetalTextureGetTexture(textureRef);
+        CFRelease(textureRef);
+        textureRef = NULL;
     }
     //uv
-    pixelFormat = MTLPixelFormatRG8Unorm;
+    id<MTLTexture> textureUV = NULL;
     width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 1);
     height = CVPixelBufferGetHeightOfPlane(pixelBuffer, 1);
-    
-    status = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _textureCache, pixelBuffer, NULL, pixelFormat, width, height, 1, &uvMetalTexture);
+    status = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _textureCache, pixelBuffer, NULL, MTLPixelFormatRG8Unorm, width, height, 1, &textureRef);
     if(status == kCVReturnSuccess) {
-        textureUV = CVMetalTextureGetTexture(uvMetalTexture);
-        CFRelease(uvMetalTexture);
+        textureUV = CVMetalTextureGetTexture(textureRef);
+        CFRelease(textureRef);
+        textureRef = NULL;
     }
     
-    matrix_float3x3 conversionMatrix;
     width = CVPixelBufferGetWidth(pixelBuffer);
     height = CVPixelBufferGetHeight(pixelBuffer);
     size_t outputW = width;
     size_t outputH = height;
     MTLTextureDescriptor *desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:outputW height:outputH mipmapped:NO];
     desc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
-    
     id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:desc];
     
+    [self _convertYUVToRGB:textureY textureUV:textureUV outputTexture:outputTexture];
     
-    [self _convertYUVToRGB:textureY textureUV:textureUV outputTexture:outputTexture matrix:conversionMatrix];
     [self.view newTextureAvailable:outputTexture index:0];
 }
 
-- (void)_convertYUVToRGB:(id<MTLTexture>)textureY textureUV:(id<MTLTexture>)textureUV outputTexture:(id<MTLTexture>)texture matrix:(matrix_float3x3)matrix {
+- (void)_convertYUVToRGB:(id<MTLTexture>)textureY textureUV:(id<MTLTexture>)textureUV outputTexture:(id<MTLTexture>)texture {
     id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice.commandQueue commandBuffer];
-    static const float squareVertices[] = {
-        -1.0f, 1.0f,
-        1.0f, 1.0f,
-        -1.0f,  -1.0f,
-        1.0f,  -1.0f,
-    };
+    const float *squareVertices = [YZMetalOrientation defaultVertices];
     id<MTLBuffer> vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:squareVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
-    vertexBuffer.label = @"YZVertices";
+    vertexBuffer.label = @"YZVideoCamera VertexBuffer";
     
     MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
     desc.colorAttachments[0].texture = texture;
@@ -143,23 +139,21 @@
     }
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
     [encoder setRenderPipelineState:self.renderPipelineState];
-    [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:0];
-    static const float yuvSquareVertices[] = {
-        0.0f, 1.0f,
-        0.0f, 0.0f,
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-    };
+    [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:YZFullRangeVertexIndexPosition];
+    
+    //yuv
+    const float *yuvSquareVertices = [YZMetalOrientation getCoordinates:YZOrientationLeft];
     id<MTLBuffer> yBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:yuvSquareVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
-    yBuffer.label = @"YBuffer";
-    [encoder setVertexBuffer:yBuffer offset:0 atIndex:1];
-    [encoder setFragmentTexture:textureY atIndex:0];
+    yBuffer.label = @"YZVideoCamera YBuffer";
+    [encoder setVertexBuffer:yBuffer offset:0 atIndex:YZFullRangeVertexIndexY];
+    [encoder setFragmentTexture:textureY atIndex:YZFullRangeFragmentIndexTextureY];
     
     id<MTLBuffer> uvBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:yuvSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
-    uvBuffer.label = @"UVBuffer";
-    [encoder setVertexBuffer:uvBuffer offset:0 atIndex:2];
-    [encoder setFragmentTexture:textureUV atIndex:1];
+    uvBuffer.label = @"YZVideoCamera UVBuffer";
+    [encoder setVertexBuffer:uvBuffer offset:0 atIndex:YZFullRangeVertexIndexUV];
+    [encoder setFragmentTexture:textureUV atIndex:YZFullRangeFragmentIndexTextureUV];
     
+    //转换矩阵
     static const float newtest[] = {
         1.0f, 1.0f,   1.0f,  0,
         0.0f, 0.343, 1.765, 0,
@@ -206,21 +200,7 @@
     
     //todo add bgra
     if (self.fullYUVRange) {
-        
-        id<MTLFunction> vertexFunction = [YZMetalDevice.defaultDevice.defaultLibrary newFunctionWithName:@"twoInputVertex"];
-        id<MTLFunction> fragmentFunction = [YZMetalDevice.defaultDevice.defaultLibrary newFunctionWithName:@"yuvConversionFullRangeFragment"];
-        
-        MTLRenderPipelineDescriptor *desc = [[MTLRenderPipelineDescriptor alloc] init];
-        desc.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;//bgra
-        desc.rasterSampleCount = 1;
-        desc.vertexFunction = vertexFunction;
-        desc.fragmentFunction = fragmentFunction;
-        
-         _renderPipelineState = [YZMetalDevice.defaultDevice.device newRenderPipelineStateWithDescriptor:desc error:&error];
-        if (error) {
-            NSLog(@"YZVideoCamera new renderPipelineState failed: %@", error);
-        }
-        
+        _renderPipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZYUVToRGBVertex" fragment:@"YZYUVConversionFullRangeFragment"];
         NSDictionary *dict = @{
             (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange)
         };

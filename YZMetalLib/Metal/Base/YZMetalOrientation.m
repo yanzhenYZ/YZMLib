@@ -21,6 +21,13 @@ static const float defaultCoordinates[] = {
     1.0,  1.0,
 };
 
+static const float leftCoordinates[] = {
+    0.0f, 1.0f,
+    0.0f, 0.0f,
+    1.0f, 1.0f,
+    1.0f, 0.0f,
+};
+
 
 @implementation YZMetalOrientation
 
@@ -29,6 +36,18 @@ static const float defaultCoordinates[] = {
 }
 
 + (const float *)defaultCoordinates {
+    return defaultCoordinates;
+}
+
++ (const float *)getCoordinates:(YZOrientation)orientation {
+    switch (orientation) {
+        case YZOrientationLeft:
+            return leftCoordinates;
+            break;
+            
+        default:
+            break;
+    }
     return defaultCoordinates;
 }
 @end

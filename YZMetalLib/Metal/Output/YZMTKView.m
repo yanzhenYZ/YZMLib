@@ -8,7 +8,7 @@
 #import "YZMTKView.h"
 #import "YZMetalDevice.h"
 #import "YZMetalOrientation.h"
-//#import "YZShaderTypes.h"
+#import "YZShaderTypes.h"
 
 @interface YZMTKView ()<MTKViewDelegate>
 @property (nonatomic, strong) id<MTLRenderPipelineState> pipelineState;
@@ -64,13 +64,13 @@
     }
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
     [encoder setRenderPipelineState:_pipelineState];
-    [encoder setVertexBuffer:outputVertexBuffer offset:0 atIndex:0];
+    [encoder setVertexBuffer:outputVertexBuffer offset:0 atIndex:YZMTKViewVertexIndexPosition];
     
     const float *vertices = [YZMetalOrientation defaultCoordinates];
     id<MTLBuffer> vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:vertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
     vertexBuffer.label = @"YZMTKView VertexBuffer";
-    [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:1];
-    [encoder setFragmentTexture:_texture atIndex:0];
+    [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:YZMTKViewVertexIndexTextureCoordinate];
+    [encoder setFragmentTexture:_texture atIndex:YZMTKViewFragmentTextureIndexTexture];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];
     

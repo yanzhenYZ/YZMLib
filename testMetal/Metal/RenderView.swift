@@ -24,8 +24,17 @@ public class RenderView: MTKView {
         
         self.device = sharedMetalRenderingDevice.device
         
-        let (pipelineState, _) = generateRenderPipelineState(device:sharedMetalRenderingDevice, vertexFunctionName:"oneInputVertex", fragmentFunctionName:"passthroughFragment", operationName:"RenderView")
-        self.renderPipelineState = pipelineState
+        
+        let vertexFunction = sharedMetalRenderingDevice.shaderLibrary.makeFunction(name: "oneInputVertex")
+        let fragmentFunction = sharedMetalRenderingDevice.shaderLibrary.makeFunction(name: "passthroughFragment")
+        
+        let descriptor = MTLRenderPipelineDescriptor()
+        descriptor.colorAttachments[0].pixelFormat = MTLPixelFormat.bgra8Unorm
+        descriptor.rasterSampleCount = 1
+        descriptor.vertexFunction = vertexFunction
+        descriptor.fragmentFunction = fragmentFunction
+        renderPipelineState = try? sharedMetalRenderingDevice.device.makeRenderPipelineState(descriptor: descriptor)
+
         
         enableSetNeedsDisplay = false
         isPaused = true

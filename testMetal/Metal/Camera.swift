@@ -15,7 +15,6 @@ public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     var supportsFullYUVRange:Bool = false
     let captureAsYUV:Bool
     let yuvConversionRenderPipelineState:MTLRenderPipelineState?
-    var yuvLookupTable:[String:(Int, MTLDataType)] = [:]
     
     let frameRenderingSemaphore = DispatchSemaphore(value:1)
     let cameraProcessingQueue = DispatchQueue.global()
@@ -45,9 +44,17 @@ public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         
         if captureAsYUV {
             supportsFullYUVRange = true
-            let (pipelineState, lookupTable) = generateRenderPipelineState(device:sharedMetalRenderingDevice, vertexFunctionName:"twoInputVertex", fragmentFunctionName:"yuvConversionFullRangeFragment", operationName:"YUVToRGB")
-            self.yuvConversionRenderPipelineState = pipelineState
-            self.yuvLookupTable = lookupTable
+            
+            
+            let vertexFunction = sharedMetalRenderingDevice.shaderLibrary.makeFunction(name: "twoInputVertex")
+            let fragmentFunction = sharedMetalRenderingDevice.shaderLibrary.makeFunction(name: "yuvConversionFullRangeFragment")
+            
+            let descriptor = MTLRenderPipelineDescriptor()
+            descriptor.colorAttachments[0].pixelFormat = MTLPixelFormat.bgra8Unorm
+            descriptor.rasterSampleCount = 1
+            descriptor.vertexFunction = vertexFunction
+            descriptor.fragmentFunction = fragmentFunction
+            self.yuvConversionRenderPipelineState = try? sharedMetalRenderingDevice.device.makeRenderPipelineState(descriptor: descriptor)
             videoOutput.videoSettings = [kCVPixelBufferMetalCompatibilityKey as String: true,
                                          kCVPixelBufferPixelFormatTypeKey as String:NSNumber(value:Int32(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange))]
         } else {
@@ -144,8 +151,7 @@ private extension Camera {
             let yTexture = Texture(orientation: .landscapeLeft, texture:luminanceTexture)
             let uvTexture = Texture(orientation: .landscapeLeft, texture:chrominanceTexture)
             
-            convertYUVToRGB(lookupTable:self.yuvLookupTable,
-                            luminanceTexture:yTexture, chrominanceTexture:uvTexture,
+            convertYUVToRGB(luminanceTexture:yTexture, chrominanceTexture:uvTexture,
                             resultTexture:outputTexture)
             
             self.renderView.newTextureAvailable(outputTexture, fromSourceIndex: 0)
@@ -155,7 +161,7 @@ private extension Camera {
         
     }
     
-    func convertYUVToRGB(lookupTable:[String:(Int, MTLDataType)], luminanceTexture:Texture, chrominanceTexture:Texture, secondChrominanceTexture:Texture? = nil, resultTexture:Texture) {
+    func convertYUVToRGB(luminanceTexture:Texture, chrominanceTexture:Texture, secondChrominanceTexture:Texture? = nil, resultTexture:Texture) {
         
         guard let commandBuffer = sharedMetalRenderingDevice.commandQueue.makeCommandBuffer() else {return}
 

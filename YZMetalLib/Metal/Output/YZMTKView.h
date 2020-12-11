@@ -9,5 +9,5 @@
 
 @class YZTexture;
 @interface YZMTKView : MTKView
-- (void)newTextureAvailable:(YZTexture *)texture index:(NSInteger)index;
+- (void)newTextureAvailable:(id<MTLTexture>)texture index:(NSInteger)index;
 @end

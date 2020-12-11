@@ -9,12 +9,16 @@
 #import "YZVideoCamera.h"
 #import "YZYUVToRGBConversion.h"
 #import "YZMTKView.h"
+#import "YZCamera.h"
 
 @interface FirstViewController ()<YZVideoCameraOutputDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *player;
 @property (weak, nonatomic) IBOutlet YZMTKView *mtkView;
 @property (nonatomic, strong) YZVideoCamera *camera;
-//@property (nonatomic, strong) YZMTKView *mtkView;
+@property (nonatomic, strong) YZMTKView *mtkView2;
+
+
+@property (nonatomic, strong) YZCamera *testCamera;
 
 @property (nonatomic, strong) CIContext *context;
 
@@ -25,18 +29,31 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-//    _context = [CIContext contextWithOptions:nil];
+
+    [self test_001];
     
-//    _mtkView = [[YZMTKView alloc] initWithFrame:UIScreen.mainScreen.bounds];
-//    [self.view addSubview:_mtkView];
-    
-    
-    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
-    _camera.view = _mtkView;
-    _camera.delegate = self;
-    [_camera startRunning];
-    
-    //NSLog(@"%f", kYZColorConversion601DefaultMatrix);
+//    [self test002];
+}
+
+- (void)test002 {
+    _testCamera = [[YZCamera alloc] init];
+    _testCamera.view = _mtkView;
+    [_testCamera startRunning];
+}
+
+- (void)test_001 {
+    //    _context = [CIContext contextWithOptions:nil];
+        
+    //    _mtkView2 = [[YZMTKView alloc] initWithFrame:UIScreen.mainScreen.bounds];
+    //    [self.view addSubview:_mtkView2];
+        
+        
+        _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
+        _camera.view = _mtkView;
+        _camera.delegate = self;
+        [_camera startRunning];
+        
+        //NSLog(@"%f", kYZColorConversion601DefaultMatrix);
 }
 
 - (void)showPixelBuffer:(CVPixelBufferRef)pixel {
@@ -55,7 +72,7 @@
 
 #pragma mark - YZVideoCameraOutputDelegate
 - (void)videoCamera:(YZVideoCamera *)camera output:(CMSampleBufferRef)sampleBuffer {
-    //[self showPixelBuffer:CMSampleBufferGetImageBuffer(sampleBuffer)];
+    [self showPixelBuffer:CMSampleBufferGetImageBuffer(sampleBuffer)];
 }
 
 @end

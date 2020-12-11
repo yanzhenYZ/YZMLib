@@ -44,4 +44,3 @@ fragment half4 yuvConversionVideoRangeFragment(TwoInputVertexIO fragmentInput [[
     
     return half4(rgb, 1.0);
 }
-

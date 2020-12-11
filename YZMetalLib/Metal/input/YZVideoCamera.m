@@ -21,6 +21,7 @@
 @property (nonatomic, strong) AVCaptureVideoDataOutput *output;
 @property (nonatomic, copy) AVCaptureSessionPreset preset;
 
+@property (nonatomic, strong) id<MTLRenderPipelineState> renderPipelineState;
 @property (nonatomic, assign) CVMetalTextureCacheRef textureCache;
 @property (nonatomic, assign) UIInterfaceOrientation orientation;
 @property (nonatomic, assign) BOOL fullYUVRange;
@@ -81,31 +82,30 @@
 }
 
 - (void)_processVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
-    CMTime currentTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
     CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-    CVMetalTextureRef texture = NULL;
+    CVMetalTextureRef yMetalTexture = NULL;
+    CVMetalTextureRef uvMetalTexture = NULL;
     id<MTLTexture> textureY = NULL;
     id<MTLTexture> textureUV = NULL;
     //y
     MTLPixelFormat pixelFormat = MTLPixelFormatR8Unorm;
     size_t width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 0);
     size_t height = CVPixelBufferGetHeightOfPlane(pixelBuffer, 0);
-    CVReturn status = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _textureCache, pixelBuffer, NULL, pixelFormat, width, height, 0, &texture);
+    CVReturn status = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _textureCache, pixelBuffer, NULL, pixelFormat, width, height, 0, &yMetalTexture);
     if(status == kCVReturnSuccess) {
-        textureY = CVMetalTextureGetTexture(texture);
-        CFRelease(texture);
-        texture = NULL;
+        textureY = CVMetalTextureGetTexture(yMetalTexture);
+        CFRelease(yMetalTexture);
+        yMetalTexture = NULL;
     }
     //uv
-    texture = NULL;
     pixelFormat = MTLPixelFormatRG8Unorm;
     width = CVPixelBufferGetWidthOfPlane(pixelBuffer, 1);
     height = CVPixelBufferGetHeightOfPlane(pixelBuffer, 1);
     
-    status = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _textureCache, pixelBuffer, NULL, pixelFormat, width, height, 1, &texture);
+    status = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _textureCache, pixelBuffer, NULL, pixelFormat, width, height, 1, &uvMetalTexture);
     if(status == kCVReturnSuccess) {
-        textureUV = CVMetalTextureGetTexture(texture);
-        CFRelease(texture);
+        textureUV = CVMetalTextureGetTexture(uvMetalTexture);
+        CFRelease(uvMetalTexture);
     }
     
     matrix_float3x3 conversionMatrix;
@@ -124,22 +124,29 @@
         outputW = height;
         outputH = width;
     }
-    YZTexture *outputTexture = [[YZTexture alloc] initWithOrientation:_orientation width:outputW height:outputH];
+    //YZTexture *outputTexture = [[YZTexture alloc] initWithOrientation:_orientation width:outputW height:outputH];
+    MTLTextureDescriptor *desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:outputW height:outputH mipmapped:NO];
+    desc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
+    
+    id<MTLTexture> outputTexture = [YZMetalRenderingDevice.share.device newTextureWithDescriptor:desc];
+    
+    
     [self _convertYUVToRGB:textureY textureUV:textureUV outputTexture:outputTexture matrix:conversionMatrix];
     
     //todo
     [self.view newTextureAvailable:outputTexture index:0];
 }
 
-- (void)_convertYUVToRGB:(id<MTLTexture>)textureY textureUV:(id<MTLTexture>)textureUV outputTexture:(YZTexture *)texture matrix:(matrix_float3x3)matrix {
-    YZTexture *newTextureY = [[YZTexture alloc] initWithOrientation:UIInterfaceOrientationLandscapeRight texture:textureY];
-    YZTexture *newTextureUV = [[YZTexture alloc] initWithOrientation:UIInterfaceOrientationLandscapeRight texture:textureUV];
-    YZShaderUniform *uniform = [YZMetalRenderingDevice.share getRenderUniform];
-    uniform.colorConversionMatrix = matrix;
+- (void)_convertYUVToRGB:(id<MTLTexture>)textureY textureUV:(id<MTLTexture>)textureUV outputTexture:(id<MTLTexture>)texture matrix:(matrix_float3x3)matrix {
+//    YZTexture *newTextureY = [[YZTexture alloc] initWithOrientation:UIInterfaceOrientationLandscapeRight texture:textureY];
+//    YZTexture *newTextureUV = [[YZTexture alloc] initWithOrientation:UIInterfaceOrientationLandscapeRight texture:textureUV];
+//    YZShaderUniform *uniform = [YZMetalRenderingDevice.share getRenderUniform];
+//    uniform.colorConversionMatrix = matrix;
+    
     id<MTLCommandBuffer> commandBuffer = [YZMetalRenderingDevice.share.commandQueue commandBuffer];
     
     //quard
-    static const simd_float8 squareVertices[] = {
+    static const float squareVertices[] = {
         -1.0f, 1.0f,
         1.0f, 1.0f,
         -1.0f,  -1.0f,
@@ -147,11 +154,11 @@
     };
 
 //    NSLog(@"xxxx___%d", sizeof(simd_float8));
-    id<MTLBuffer> vertexBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:squareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
+    id<MTLBuffer> vertexBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:squareVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
     vertexBuffer.label = @"YZVertices";
     
     MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
-    desc.colorAttachments[0].texture = texture.texture;
+    desc.colorAttachments[0].texture = texture;
     desc.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 1, 1);
     desc.colorAttachments[0].storeAction = MTLStoreActionStore;
     desc.colorAttachments[0].loadAction = MTLLoadActionClear;
@@ -161,7 +168,7 @@
         NSLog(@"YZVideoCamera render endcoder Fail");
     }
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
-    [encoder setRenderPipelineState:YZMetalRenderingDevice.share.renderPipelineState];
+    [encoder setRenderPipelineState:self.renderPipelineState];
     [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:0];
     //texture
 //    static const simd_float8 uvSquareVertices[] = {
@@ -170,26 +177,26 @@
 //        0.0f, 0.0f,
 //        0.0f, 1.0f,
 //    };
-    static const simd_float8 yuvSquareVertices[] = {
+    static const float yuvSquareVertices[] = {
         0.0f, 1.0f,
         0.0f, 0.0f,
         1.0f, 1.0f,
         1.0f, 0.0f,
     };
-    id<MTLBuffer> yBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:yuvSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
+    id<MTLBuffer> yBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:yuvSquareVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
     yBuffer.label = @"YBuffer";
     [encoder setVertexBuffer:yBuffer offset:0 atIndex:1];
-    [encoder setFragmentTexture:newTextureY.texture atIndex:0];
+    [encoder setFragmentTexture:textureY atIndex:0];
     
     id<MTLBuffer> uvBuffer = [YZMetalRenderingDevice.share.device newBufferWithBytes:yuvSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     uvBuffer.label = @"UVBuffer";
     [encoder setVertexBuffer:uvBuffer offset:0 atIndex:2];
-    [encoder setFragmentTexture:newTextureUV.texture atIndex:1];
+    [encoder setFragmentTexture:textureUV atIndex:1];
     
     //todo
     static const float newtest[] = {
         1.0f, 1.0f,   1.0f,  0,
-        0.0f, -0.343, 1.765, 0,
+        0.0f, 0.343, 1.765, 0,
         1.4f, -0.711, 0,     0,
     };
 //    matrix_float3x4 kYZColorConversion601FullRangeMatrix = (matrix_float3x3){
@@ -224,6 +231,11 @@
         NSLog(@"YZVideoCamera error:%@", error);
         return;
     }
+    [_session beginConfiguration];
+    
+    if ([_session canAddInput:_input]) {
+        [_session addInput:_input];
+    }
     
     _output = [[AVCaptureVideoDataOutput alloc] init];
     _output.alwaysDiscardsLateVideoFrames = NO;
@@ -238,26 +250,37 @@
     
     //todo add bgra
     if (self.fullYUVRange) {
-        [YZMetalRenderingDevice.share generateRenderPipelineState:YES];
+        
+        id<MTLFunction> vertexFunction = [YZMetalRenderingDevice.share.defaultLibrary newFunctionWithName:@"twoInputVertex"];
+        id<MTLFunction> fragmentFunction = [YZMetalRenderingDevice.share.defaultLibrary newFunctionWithName:@"yuvConversionFullRangeFragment"];
+        
+        MTLRenderPipelineDescriptor *desc = [[MTLRenderPipelineDescriptor alloc] init];
+        desc.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;//bgra
+        desc.rasterSampleCount = 1;
+        desc.vertexFunction = vertexFunction;
+        desc.fragmentFunction = fragmentFunction;
+        
+         _renderPipelineState = [YZMetalRenderingDevice.share.device newRenderPipelineStateWithDescriptor:desc error:&error];
+        if (error) {
+            NSLog(@"YZVideoCamera new renderPipelineState failed: %@", error);
+        }
+        
         NSDictionary *dict = @{
             (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange),
             (id)kCVPixelBufferMetalCompatibilityKey : @(YES)
         };
         _output.videoSettings = dict;
-    } else {
-        [YZMetalRenderingDevice.share generateRenderPipelineState:NO];
-        NSDictionary *dict = @{
-            (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange),
-            (id)kCVPixelBufferMetalCompatibilityKey : @(YES)
-        };
-        _output.videoSettings = dict;
     }
+//    else {
+//        [YZMetalRenderingDevice.share generateRenderPipelineState:NO];
+//        NSDictionary *dict = @{
+//            (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange),
+//            (id)kCVPixelBufferMetalCompatibilityKey : @(YES)
+//        };
+//        _output.videoSettings = dict;
+//    }
     
-    [_session beginConfiguration];
     
-    if ([_session canAddInput:_input]) {
-        [_session addInput:_input];
-    }
     
     if ([_session canAddOutput:_output]) {
         [_session addOutput:_output];

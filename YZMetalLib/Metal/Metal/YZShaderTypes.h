@@ -8,9 +8,8 @@
 #ifndef YZShaderTypes_h
 #define YZShaderTypes_h
 
-//#include <simd/simd.h>
-
-constant half3 luminanceWeighting = half3(0.2125, 0.7154, 0.0721);  // Values from "Graphics Shaders: Theory and
+// Luminance Constants
+constant half3 luminanceWeighting = half3(0.2125, 0.7154, 0.0721);  // Values from "Graphics Shaders: Theory and Practice" by Bailey and Cunningham
 
 struct SingleInputVertexIO
 {

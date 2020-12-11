@@ -7,7 +7,6 @@
 
 #import "YZMTKView.h"
 #import "YZMetalDevice.h"
-#import "YZTexture.h"
 
 @interface YZMTKView ()<MTKViewDelegate>
 @property (nonatomic, strong) id<MTLRenderPipelineState> pipelineState;
@@ -73,8 +72,10 @@
     if (!self.currentDrawable || !_texture) {
         return;
     }
+    
+    
     id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice.commandQueue commandBuffer];
-    YZTexture *outTexture = [[YZTexture alloc] initWithOrientation:UIInterfaceOrientationPortrait texture:self.currentDrawable.texture];
+    id<MTLTexture> outTexture = view.currentDrawable.texture;
     
     static const float squareVertices[] = {
         -1.0f, 1.0f,
@@ -86,7 +87,7 @@
     vertexBuffer.label = @"YZVertices02";
     
     MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
-    desc.colorAttachments[0].texture = outTexture.texture;
+    desc.colorAttachments[0].texture = outTexture;
     desc.colorAttachments[0].clearColor = MTLClearColorMake(1, 0, 0, 1);
     desc.colorAttachments[0].storeAction = MTLStoreActionStore;
     desc.colorAttachments[0].loadAction = MTLLoadActionClear;

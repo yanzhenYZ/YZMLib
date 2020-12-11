@@ -8,9 +8,6 @@
 #import "YZVideoCamera.h"
 #import <Metal/Metal.h>
 #import "YZMetalDevice.h"
-#import "YZYUVToRGBConversion.h"
-#import "YZMetalOrientation.h"
-#import "YZTexture.h"
 #import "YZVideoCamera.h"
 
 @interface YZVideoCamera ()<AVCaptureVideoDataOutputSampleBufferDelegate>
@@ -109,22 +106,10 @@
     }
     
     matrix_float3x3 conversionMatrix;
-    if (_fullYUVRange) {
-        conversionMatrix = kYZColorConversion601FullRangeMatrix;
-    } else {
-        conversionMatrix = kYZColorConversion601DefaultMatrix;
-    }
-    //根据方向获取旋转矩阵 - todo
     width = CVPixelBufferGetWidth(pixelBuffer);
     height = CVPixelBufferGetHeight(pixelBuffer);
     size_t outputW = width;
     size_t outputH = height;
-    BOOL need = [YZMetalOrientation needRotation:_orientation width:width height:height];
-    if (need) {
-        outputW = height;
-        outputH = width;
-    }
-    //YZTexture *outputTexture = [[YZTexture alloc] initWithOrientation:_orientation width:outputW height:outputH];
     MTLTextureDescriptor *desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:outputW height:outputH mipmapped:NO];
     desc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
     
@@ -132,28 +117,17 @@
     
     
     [self _convertYUVToRGB:textureY textureUV:textureUV outputTexture:outputTexture matrix:conversionMatrix];
-    
-    //todo
     [self.view newTextureAvailable:outputTexture index:0];
 }
 
 - (void)_convertYUVToRGB:(id<MTLTexture>)textureY textureUV:(id<MTLTexture>)textureUV outputTexture:(id<MTLTexture>)texture matrix:(matrix_float3x3)matrix {
-//    YZTexture *newTextureY = [[YZTexture alloc] initWithOrientation:UIInterfaceOrientationLandscapeRight texture:textureY];
-//    YZTexture *newTextureUV = [[YZTexture alloc] initWithOrientation:UIInterfaceOrientationLandscapeRight texture:textureUV];
-//    YZShaderUniform *uniform = [YZMetalDevice.defaultDevice getRenderUniform];
-//    uniform.colorConversionMatrix = matrix;
-    
     id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice.commandQueue commandBuffer];
-    
-    //quard
     static const float squareVertices[] = {
         -1.0f, 1.0f,
         1.0f, 1.0f,
         -1.0f,  -1.0f,
         1.0f,  -1.0f,
     };
-
-//    NSLog(@"xxxx___%d", sizeof(simd_float8));
     id<MTLBuffer> vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:squareVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
     vertexBuffer.label = @"YZVertices";
     
@@ -170,13 +144,6 @@
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
     [encoder setRenderPipelineState:self.renderPipelineState];
     [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:0];
-    //texture
-//    static const simd_float8 uvSquareVertices[] = {
-//        1.0f, 0.0f,
-//        1.0f, 1.0f,
-//        0.0f, 0.0f,
-//        0.0f, 1.0f,
-//    };
     static const float yuvSquareVertices[] = {
         0.0f, 1.0f,
         0.0f, 0.0f,
@@ -193,24 +160,13 @@
     [encoder setVertexBuffer:uvBuffer offset:0 atIndex:2];
     [encoder setFragmentTexture:textureUV atIndex:1];
     
-    //todo
     static const float newtest[] = {
         1.0f, 1.0f,   1.0f,  0,
         0.0f, 0.343, 1.765, 0,
         1.4f, -0.711, 0,     0,
     };
-//    matrix_float3x4 kYZColorConversion601FullRangeMatrix = (matrix_float3x3){
-//       (simd_float3){1.0,    1.0,    1.0},
-//       (simd_float3){0.0,    -0.343, 1.765},
-//       (simd_float3){1.4,    -0.711, 0.0},
-//    };
-    
     id<MTLBuffer> uniformBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:newtest length:sizeof(float) * 12 options:MTLResourceCPUCacheModeDefaultCache];
     [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:1];
-    
-    //NSLog(@"xxxx___%d", sizeof(float) * 12);
-    
-    
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];
     
@@ -266,21 +222,10 @@
         }
         
         NSDictionary *dict = @{
-            (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange),
-            (id)kCVPixelBufferMetalCompatibilityKey : @(YES)
+            (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange)
         };
         _output.videoSettings = dict;
     }
-//    else {
-//        [YZMetalDevice.defaultDevice generateRenderPipelineState:NO];
-//        NSDictionary *dict = @{
-//            (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange),
-//            (id)kCVPixelBufferMetalCompatibilityKey : @(YES)
-//        };
-//        _output.videoSettings = dict;
-//    }
-    
-    
     
     if ([_session canAddOutput:_output]) {
         [_session addOutput:_output];

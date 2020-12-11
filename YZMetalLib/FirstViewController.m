@@ -7,7 +7,6 @@
 
 #import "FirstViewController.h"
 #import "YZVideoCamera.h"
-#import "YZYUVToRGBConversion.h"
 #import "YZMTKView.h"
 
 @interface FirstViewController ()<YZVideoCameraOutputDelegate>

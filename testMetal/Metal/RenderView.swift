@@ -65,7 +65,7 @@ public class RenderView: MTKView {
 extension RenderView {
     func renderQuad(commandBuffer:MTLCommandBuffer, outputTexture:Texture) {
         
-        let imageVertices:[Float] = standardImageVertices
+        let imageVertices:[Float] = [-1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0]
         let outputOrientation:ImageOrientation = .portrait
         let vertexBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: imageVertices,
                                                                         length: imageVertices.count * MemoryLayout<Float>.size,
@@ -88,6 +88,9 @@ extension RenderView {
         
         
         let inputTextureCoordinates = currentTexture!.textureCoordinates(for:outputOrientation, normalized:true)
+        
+        
+        let input:[Float] = [0, 0, 1, 0, 0, 1, 1, 1]
         let textureBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: inputTextureCoordinates,
                                                                          length: inputTextureCoordinates.count * MemoryLayout<Float>.size,
                                                                          options: [])!

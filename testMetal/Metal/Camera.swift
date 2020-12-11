@@ -199,9 +199,9 @@ private extension Camera {
         
         //uv
         var currentTexture = yTexture
-        let inputTextureCoordinates = currentTexture.textureCoordinates(for:.portrait, normalized:true)
-        let textureBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: inputTextureCoordinates,
-                                                                         length: inputTextureCoordinates.count * MemoryLayout<Float>.size,
+        let input:[Float] = [0, 1, 0, 0, 1, 1, 1, 0]
+        let textureBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: input,
+                                                                         length: input.count * MemoryLayout<Float>.size,
                                                                          options: [])!
         textureBuffer.label = "Texture Coordinates"
         
@@ -210,8 +210,8 @@ private extension Camera {
         
         
         currentTexture = uvTexture
-        let textureBufferUV = sharedMetalRenderingDevice.device.makeBuffer(bytes: inputTextureCoordinates,
-                                                                         length: inputTextureCoordinates.count * MemoryLayout<Float>.size,
+        let textureBufferUV = sharedMetalRenderingDevice.device.makeBuffer(bytes: input,
+                                                                         length: input.count * MemoryLayout<Float>.size,
                                                                          options: [])!
         textureBuffer.label = "Texture Coordinates"
         renderEncoder.setVertexBuffer(textureBufferUV, offset: 0, index: 2)

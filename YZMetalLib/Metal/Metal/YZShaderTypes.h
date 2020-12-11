@@ -8,6 +8,7 @@
 #ifndef YZShaderTypes_h
 #define YZShaderTypes_h
 
+#pragma mark - YZVideoCamera
 
 typedef enum YZFullRangeVertexIndex
 {
@@ -22,6 +23,11 @@ typedef enum YZFullRangeFragmentIndex
     YZFullRangeFragmentIndexTextureY  = 0,
     YZFullRangeFragmentIndexTextureUV = 1,
 } YZFullRangeFragmentIndex;
+
+typedef enum YZFullRangeUniformIndex
+{
+    YZFullRangeUniform = 0,
+} YZFullRangeUniformIndex;
 
 #pragma mark - YZMTKView
 typedef enum YZMTKViewVertexIndex

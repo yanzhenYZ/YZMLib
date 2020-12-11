@@ -18,7 +18,7 @@ struct YZYUVToRGBVertexIO
     float2 textureCoordinate2 [[user(texturecoord2)]];
 };
 
-typedef struct
+typedef struct//必须四个每行
 {
     float3x3 colorConversionMatrix;
 } YZYUVConversionUniform;
@@ -30,7 +30,7 @@ vertex YZYUVToRGBVertexIO YZYUVToRGBVertex(const device packed_float2 *position 
 {
     YZYUVToRGBVertexIO outputVertices;
     
-    outputVertices.position = float4(position[vertexID], 0, 1.0);//x,y,z,w
+    outputVertices.position = float4(position[vertexID], 0, 1.0);
     outputVertices.textureCoordinate = texturecoord[vertexID];
     outputVertices.textureCoordinate2 = texturecoord2[vertexID];
 
@@ -40,7 +40,7 @@ vertex YZYUVToRGBVertexIO YZYUVToRGBVertex(const device packed_float2 *position 
 fragment half4 YZYUVConversionFullRangeFragment(YZYUVToRGBVertexIO fragmentInput [[stage_in]],
                                      texture2d<half> inputTexture [[texture(YZFullRangeFragmentIndexTextureY)]],
                                      texture2d<half> inputTexture2 [[texture(YZFullRangeFragmentIndexTextureUV)]],
-                                     constant YZYUVConversionUniform& uniform [[ buffer(1) ]])
+                                     constant YZYUVConversionUniform& uniform [[ buffer(YZFullRangeUniform) ]])
 {
     constexpr sampler quadSampler;
     half3 yuv;
@@ -55,7 +55,7 @@ fragment half4 YZYUVConversionFullRangeFragment(YZYUVToRGBVertexIO fragmentInput
 fragment half4 yuvConversionVideoRangeFragment(YZYUVToRGBVertexIO fragmentInput [[stage_in]],
                                               texture2d<half> inputTexture [[texture(0)]],
                                               texture2d<half> inputTexture2 [[texture(1)]],
-                                              constant YZYUVConversionUniform& uniform [[ buffer(1) ]])
+                                              constant YZYUVConversionUniform& uniform [[ buffer(YZFullRangeUniform) ]])
 {
     constexpr sampler quadSampler;
     half3 yuv;

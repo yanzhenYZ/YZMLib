@@ -154,13 +154,13 @@
     [encoder setFragmentTexture:textureUV atIndex:YZFullRangeFragmentIndexTextureUV];
     
     //转换矩阵
-    static const float newtest[] = {
+    static const float conversion[] = {
         1.0f, 1.0f,   1.0f,  0,
-        0.0f, 0.343, 1.765, 0,
+        0.0f, 0.343,  1.765, 0,
         1.4f, -0.711, 0,     0,
     };
-    id<MTLBuffer> uniformBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:newtest length:sizeof(float) * 12 options:MTLResourceCPUCacheModeDefaultCache];
-    [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:1];
+    id<MTLBuffer> uniformBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:conversion length:sizeof(float) * 12 options:MTLResourceCPUCacheModeDefaultCache];
+    [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:YZFullRangeUniform];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];
     

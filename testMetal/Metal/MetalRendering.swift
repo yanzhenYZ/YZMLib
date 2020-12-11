@@ -39,20 +39,10 @@ extension MTLCommandBuffer {
             renderEncoder.setFragmentTexture(currentTexture.texture, index: textureIndex)
         }
 //        uniformSettings?.restoreShaderSettings(renderEncoder: renderEncoder)
-        restoreShaderSettings(renderEncoder: renderEncoder)
+        //restoreShaderSettings(renderEncoder: renderEncoder)
         renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         renderEncoder.endEncoding()
     }
-}
-
-public let f601:[Float] = [1, 1, 1, 0, 0, 0.343, 1.765, 0, 1.4, -0.711, 0, 0]
-
-public func restoreShaderSettings(renderEncoder: MTLRenderCommandEncoder) {
-        let uniformBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: f601,
-                                                                         length: f601.count * MemoryLayout<Float>.size,
-                                                                         options: [])!
-        renderEncoder.setFragmentBuffer(uniformBuffer, offset: 0, index: 1)
-
 }
 
 

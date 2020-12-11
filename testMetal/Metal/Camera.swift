@@ -111,10 +111,8 @@ public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         
         guard (frameRenderingSemaphore.wait(timeout:DispatchTime.now()) == DispatchTimeoutResult.success) else { return }
-        
         //let startTime = CFAbsoluteTimeGetCurrent()
-        let currentTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-        
+        //let currentTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
         cameraFrameProcessingQueue.async {
             self.processSampleBuffer(sampleBuffer);
          
@@ -124,6 +122,7 @@ public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
 }
 
+let f601:[Float] = [1, 1, 1, 0, 0, 0.343, 1.765, 0, 1.4, -0.711, 0, 0]
 private extension Camera {
     func processSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         let cameraFrame = CMSampleBufferGetImageBuffer(sampleBuffer)!
@@ -149,7 +148,7 @@ private extension Camera {
             let yTexture = Texture(orientation: .landscapeLeft, texture:luminanceTexture)
             let uvTexture = Texture(orientation: .landscapeLeft, texture:chrominanceTexture)
             
-            convertYUVToRGB(pipelineState:self.yuvConversionRenderPipelineState!, lookupTable:self.yuvLookupTable,
+            convertYUVToRGB(lookupTable:self.yuvLookupTable,
                             luminanceTexture:yTexture, chrominanceTexture:uvTexture,
                             resultTexture:outputTexture)
             
@@ -159,15 +158,71 @@ private extension Camera {
         
     }
     
-    func convertYUVToRGB(pipelineState:MTLRenderPipelineState, lookupTable:[String:(Int, MTLDataType)], luminanceTexture:Texture, chrominanceTexture:Texture, secondChrominanceTexture:Texture? = nil, resultTexture:Texture) {
+    func convertYUVToRGB(lookupTable:[String:(Int, MTLDataType)], luminanceTexture:Texture, chrominanceTexture:Texture, secondChrominanceTexture:Texture? = nil, resultTexture:Texture) {
         
         guard let commandBuffer = sharedMetalRenderingDevice.commandQueue.makeCommandBuffer() else {return}
-        
-        let inputTextures = [UInt(0):luminanceTexture, UInt(1):chrominanceTexture]
-        
-        //todo
-        commandBuffer.renderQuad(pipelineState:pipelineState, inputTextures:inputTextures, useNormalizedTextureCoordinates:true, outputTexture:resultTexture)
+
+        renderQuad(buffer:commandBuffer, outputTexture:resultTexture, yTexture: luminanceTexture, uvTexture: chrominanceTexture)
         
         commandBuffer.commit()
+    }
+    //, inputTextures:[UInt:Texture]
+    func renderQuad(buffer:MTLCommandBuffer, outputTexture:Texture, yTexture:Texture, uvTexture: Texture) {
+        
+        let imageVertices = standardImageVertices
+        let outputOrientation = ImageOrientation.portrait
+        let vertexBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: imageVertices,
+                                                                        length: imageVertices.count * MemoryLayout<Float>.size,
+                                                                        options: [])!
+        vertexBuffer.label = "Vertices"
+        
+        //print(imageVertices.count * MemoryLayout<Float>.size, 111222)
+        let renderPass = MTLRenderPassDescriptor()
+        renderPass.colorAttachments[0].texture = outputTexture.texture
+        renderPass.colorAttachments[0].clearColor = MTLClearColorMake(1, 0, 0, 1)
+        renderPass.colorAttachments[0].storeAction = .store
+        renderPass.colorAttachments[0].loadAction = .clear
+        
+        guard let renderEncoder = buffer.makeRenderCommandEncoder(descriptor: renderPass) else {
+            fatalError("Could not create render encoder")
+        }
+        renderEncoder.setFrontFacing(.counterClockwise)
+        renderEncoder.setRenderPipelineState(self.yuvConversionRenderPipelineState!)
+        renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+        
+        //uv
+        var currentTexture = yTexture
+        let inputTextureCoordinates = currentTexture.textureCoordinates(for:outputOrientation, normalized:true)
+        let textureBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: inputTextureCoordinates,
+                                                                         length: inputTextureCoordinates.count * MemoryLayout<Float>.size,
+                                                                         options: [])!
+        textureBuffer.label = "Texture Coordinates"
+        
+        renderEncoder.setVertexBuffer(textureBuffer, offset: 0, index: 1)
+        renderEncoder.setFragmentTexture(currentTexture.texture, index: 0)
+        
+        
+        currentTexture = uvTexture
+        let textureBufferUV = sharedMetalRenderingDevice.device.makeBuffer(bytes: inputTextureCoordinates,
+                                                                         length: inputTextureCoordinates.count * MemoryLayout<Float>.size,
+                                                                         options: [])!
+        textureBuffer.label = "Texture Coordinates"
+        renderEncoder.setVertexBuffer(textureBufferUV, offset: 0, index: 2)
+        renderEncoder.setFragmentTexture(currentTexture.texture, index: 1)
+
+        restoreShaderSettings(renderEncoder: renderEncoder)
+        
+        renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+        renderEncoder.endEncoding()
+    }
+    
+    
+
+    func restoreShaderSettings(renderEncoder: MTLRenderCommandEncoder) {
+            let uniformBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: f601,
+                                                                             length: f601.count * MemoryLayout<Float>.size,
+                                                                             options: [])!
+            renderEncoder.setFragmentBuffer(uniformBuffer, offset: 0, index: 1)
+
     }
 }

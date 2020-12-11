@@ -6,21 +6,12 @@ import UIKit
 
 public enum TextureTimingStyle {
     case stillImage
-    case videoFrame(timestamp:Timestamp)
+    case videoFrame
     
     func isTransient() -> Bool {
         switch self {
         case .stillImage: return false
         case .videoFrame: return true
-        }
-    }
-    
-    var timestamp:Timestamp? {
-        get {
-            switch self {
-            case .stillImage: return nil
-            case let .videoFrame(timestamp): return timestamp
-            }
         }
     }
 }

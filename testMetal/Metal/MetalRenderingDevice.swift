@@ -2,6 +2,7 @@ import Foundation
 import Metal
 import MetalPerformanceShaders
 
+public let standardImageVertices:[Float] = [-1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0]
 public let sharedMetalRenderingDevice = MetalRenderingDevice()
 
 public class MetalRenderingDevice {

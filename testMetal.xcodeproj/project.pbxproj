@@ -16,7 +16,6 @@
 		9BB000DF2582427E00207AF3 /* MetalRendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000DE2582427E00207AF3 /* MetalRendering.swift */; };
 		9BB000E2258242A200207AF3 /* MetalRenderingDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000E1258242A200207AF3 /* MetalRenderingDevice.swift */; };
 		9BB000E5258242E500207AF3 /* Texture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000E4258242E500207AF3 /* Texture.swift */; };
-		9BB000E82582431E00207AF3 /* Timestamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000E72582431E00207AF3 /* Timestamp.swift */; };
 		9BB000EB2582436800207AF3 /* ImageOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000EA2582436800207AF3 /* ImageOrientation.swift */; };
 		9BB000F22582468800207AF3 /* YUVToRGBConversion.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000F02582468800207AF3 /* YUVToRGBConversion.metal */; };
 		9BB000FC258248DC00207AF3 /* Passthrough.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000FB258248DC00207AF3 /* Passthrough.metal */; };
@@ -35,7 +34,6 @@
 		9BB000DE2582427E00207AF3 /* MetalRendering.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalRendering.swift; sourceTree = "<group>"; };
 		9BB000E1258242A200207AF3 /* MetalRenderingDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalRenderingDevice.swift; sourceTree = "<group>"; };
 		9BB000E4258242E500207AF3 /* Texture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Texture.swift; sourceTree = "<group>"; };
-		9BB000E72582431E00207AF3 /* Timestamp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Timestamp.swift; sourceTree = "<group>"; };
 		9BB000EA2582436800207AF3 /* ImageOrientation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageOrientation.swift; sourceTree = "<group>"; };
 		9BB000F02582468800207AF3 /* YUVToRGBConversion.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = YUVToRGBConversion.metal; sourceTree = "<group>"; };
 		9BB000F92582472600207AF3 /* OperationShaderTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OperationShaderTypes.h; sourceTree = "<group>"; };
@@ -89,14 +87,13 @@
 			children = (
 				9BB000DB25823F6A00207AF3 /* Camera.swift */,
 				9BB000EA2582436800207AF3 /* ImageOrientation.swift */,
-				9BB000E72582431E00207AF3 /* Timestamp.swift */,
 				9BB000E4258242E500207AF3 /* Texture.swift */,
 				9BB000DE2582427E00207AF3 /* MetalRendering.swift */,
 				9BB000E1258242A200207AF3 /* MetalRenderingDevice.swift */,
+				9BB000FE2582490D00207AF3 /* RenderView.swift */,
 				9BB000F02582468800207AF3 /* YUVToRGBConversion.metal */,
 				9BB000F92582472600207AF3 /* OperationShaderTypes.h */,
 				9BB000FB258248DC00207AF3 /* Passthrough.metal */,
-				9BB000FE2582490D00207AF3 /* RenderView.swift */,
 			);
 			path = Metal;
 			sourceTree = "<group>";
@@ -172,7 +169,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				9BB000EB2582436800207AF3 /* ImageOrientation.swift in Sources */,
-				9BB000E82582431E00207AF3 /* Timestamp.swift in Sources */,
 				9BB000FC258248DC00207AF3 /* Passthrough.metal in Sources */,
 				9BB000F22582468800207AF3 /* YUVToRGBConversion.metal in Sources */,
 				9BB000DF2582427E00207AF3 /* MetalRendering.swift in Sources */,
@@ -329,6 +325,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 104;
 				DEVELOPMENT_TEAM = 7XP66VHL84;
 				INFOPLIST_FILE = testMetal/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -336,6 +333,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.3ttech.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -349,6 +347,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 104;
 				DEVELOPMENT_TEAM = 7XP66VHL84;
 				INFOPLIST_FILE = testMetal/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -356,6 +355,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.3ttech.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

@@ -7,8 +7,6 @@
 
 import UIKit
 /**
- 1.0.1 清理资源
- 1.0.2 拆解流程
  1.0.3 MTKView手动初始化问题
  1.0.4 MTKView delegate问题
  */

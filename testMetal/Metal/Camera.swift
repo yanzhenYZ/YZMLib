@@ -2,9 +2,6 @@ import Foundation
 import AVFoundation
 import Metal
 
-
-
-
 //public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBufferDelegate {
 public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
 
@@ -122,7 +119,6 @@ public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
 }
 
-let f601:[Float] = [1, 1, 1, 0, 0, 0.343, 1.765, 0, 1.4, -0.711, 0, 0]
 private extension Camera {
     func processSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         let cameraFrame = CMSampleBufferGetImageBuffer(sampleBuffer)!
@@ -153,6 +149,7 @@ private extension Camera {
                             resultTexture:outputTexture)
             
             self.renderView.newTextureAvailable(outputTexture, fromSourceIndex: 0)
+            
             self.frameRenderingSemaphore.signal()
         }
         
@@ -219,6 +216,7 @@ private extension Camera {
     
 
     func restoreShaderSettings(renderEncoder: MTLRenderCommandEncoder) {
+        let f601:[Float] = [1, 1, 1, 0, 0, 0.343, 1.765, 0, 1.4, -0.711, 0, 0]
             let uniformBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: f601,
                                                                              length: f601.count * MemoryLayout<Float>.size,
                                                                              options: [])!

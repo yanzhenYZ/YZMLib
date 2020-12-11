@@ -29,10 +29,7 @@
 
 - (void)test_001 {
 
-    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
-    _camera.view = _mtkView;
-    _camera.delegate = self;
-    [_camera startRunning];
+    
     
 }
 

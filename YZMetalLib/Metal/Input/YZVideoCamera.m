@@ -196,7 +196,7 @@
         NSArray<NSNumber *> *availableVideoCVPixelFormatTypes = _output.availableVideoCVPixelFormatTypes;
         [availableVideoCVPixelFormatTypes enumerateObjectsUsingBlock:^(NSNumber * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if (obj.longLongValue == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
-                //self.fullYUVRange = YES;
+                self.fullYUVRange = YES;
             }
         }];
         

@@ -24,6 +24,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 
+    _context = [CIContext contextWithOptions:nil];
 //    [self test_001];
     
     [self test002];
@@ -35,7 +36,7 @@
     _mtkView2 = [[YZMTKView alloc] initWithFrame:UIScreen.mainScreen.bounds];
     [self.view addSubview:_mtkView2];
     _camera.view = _mtkView2;
-    
+//
     _camera.delegate = self;
     [_camera startRunning];
 }
@@ -55,7 +56,7 @@
     size_t width = CVPixelBufferGetWidth(pixel);
     size_t height = CVPixelBufferGetHeight(pixel);
     CGImageRef videoImageRef = [_context createCGImage:ciImage fromRect:CGRectMake(0, 0, width, height)];
-    UIImage *image = [UIImage imageWithCGImage:videoImageRef];
+    UIImage *image = [UIImage imageWithCGImage:videoImageRef scale:1 orientation:UIImageOrientationRight];
     CGImageRelease(videoImageRef);
     CVPixelBufferRelease(pixel);
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -65,7 +66,7 @@
 
 #pragma mark - YZVideoCameraOutputDelegate
 - (void)videoCamera:(YZVideoCamera *)camera output:(CMSampleBufferRef)sampleBuffer {
-    [self showPixelBuffer:CMSampleBufferGetImageBuffer(sampleBuffer)];
+    //[self showPixelBuffer:CMSampleBufferGetImageBuffer(sampleBuffer)];
 }
 
 @end

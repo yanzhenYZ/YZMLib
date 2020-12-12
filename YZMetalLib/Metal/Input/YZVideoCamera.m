@@ -227,8 +227,11 @@
             };
             _output.videoSettings = dict;
         }
-    } else {//BGRA
-        
+    } else {//todo
+        NSDictionary *dict = @{
+            (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA)
+        };
+        _output.videoSettings = dict;
     }
     
     if ([_session canAddOutput:_output]) {

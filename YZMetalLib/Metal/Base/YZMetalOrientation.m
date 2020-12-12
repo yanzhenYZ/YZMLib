@@ -28,6 +28,13 @@ static const float leftCoordinates[] = {
     1.0f, 0.0f,
 };
 
+static const float rightCoordinates[] = {
+    0.0f, 1.0f,
+    0.0f, 0.0f,
+    1.0f, 1.0f,
+    1.0f, 0.0f,
+};
+
 
 @implementation YZMetalOrientation
 

@@ -24,6 +24,7 @@
 @property (nonatomic, strong) id<MTLRenderPipelineState> renderPipelineState;
 @property (nonatomic, assign) CVMetalTextureCacheRef textureCache;
 @property (nonatomic, assign) YZOrientation orientation;
+@property (nonatomic, assign) BOOL userBGRA;
 @property (nonatomic, assign) BOOL fullYUVRange;
 @property (nonatomic, assign) int dropFrames;
 @end
@@ -43,6 +44,7 @@
         _cameraQueue = dispatch_queue_create("com.yanzhen.video.camera.queue", 0);
         _cameraRenderQueue = dispatch_queue_create("com.yanzhen.video.camera.render.queue", 0);
         _videoSemaphore = dispatch_semaphore_create(1);
+        _userBGRA = YES;
         _preset = preset;
         [self _configVideoSession];
         [self _configMetal];
@@ -80,13 +82,32 @@
         if ([self.delegate respondsToSelector:@selector(videoCamera:output:)]) {
             [self.delegate videoCamera:self output:sampleBuffer];
         }
-        [self _processVideoSampleBuffer:sampleBuffer];
+        if (self.userBGRA) {
+            [self _processBGRAVideoSampleBuffer:sampleBuffer];
+        } else {
+            [self _processYUVVideoSampleBuffer:sampleBuffer];
+        }
         CFRelease(sampleBuffer);
         dispatch_semaphore_signal(self->_videoSemaphore);
     });
 }
 
-- (void)_processVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
+- (void)_processBGRAVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
+    CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    size_t width = CVPixelBufferGetWidth(pixelBuffer);
+    size_t height = CVPixelBufferGetHeight(pixelBuffer);
+    CVMetalTextureRef textureRef = NULL;
+    id<MTLTexture> texture = NULL;
+    CVReturn status = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _textureCache, pixelBuffer, nil, MTLPixelFormatBGRA8Unorm, width, height, 0, &textureRef);
+    if (status == kCVReturnSuccess) {
+        texture = CVMetalTextureGetTexture(textureRef);
+        CFRelease(textureRef);
+        textureRef = NULL;
+    }
+    [self.view newTextureAvailable:texture index:0];
+}
+
+- (void)_processYUVVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
     CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     CVMetalTextureRef textureRef = NULL;
     id<MTLTexture> textureY = NULL;
@@ -205,8 +226,12 @@
     _output.alwaysDiscardsLateVideoFrames = NO;
     [_output setSampleBufferDelegate:self queue:_cameraQueue];
         
-    BOOL useYUV = YES;
-    if (useYUV) {
+    if (_userBGRA) {
+        NSDictionary *dict = @{
+            (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA)
+        };
+        _output.videoSettings = dict;
+    } else {//todo
         NSArray<NSNumber *> *availableVideoCVPixelFormatTypes = _output.availableVideoCVPixelFormatTypes;
         [availableVideoCVPixelFormatTypes enumerateObjectsUsingBlock:^(NSNumber * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if (obj.longLongValue == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
@@ -227,11 +252,6 @@
             };
             _output.videoSettings = dict;
         }
-    } else {//todo
-        NSDictionary *dict = @{
-            (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA)
-        };
-        _output.videoSettings = dict;
     }
     
     if ([_session canAddOutput:_output]) {

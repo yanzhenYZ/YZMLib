@@ -90,6 +90,7 @@
     self.framebufferOnly = NO;
     self.enableSetNeedsDisplay = NO;
     self.device = YZMetalDevice.defaultDevice.device;
+    self.contentMode = UIViewContentModeScaleAspectFit;
     _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZMTKViewInputVertex" fragment:@"YZMTKViewFragment"];
 }
 @end

@@ -74,7 +74,7 @@ static id _metalDevice;
     NSError *error = nil;
     id<MTLRenderPipelineState> pipeline = [_device newRenderPipelineStateWithDescriptor:desc error:&error];
     if (error) {
-        NSLog(@"YZMetalRenderingDevice new renderPipelineState failed: %@", error);
+        NSLog(@"YZMetalDevice new renderPipelineState failed: %@", error);
     }
     return pipeline;
 }

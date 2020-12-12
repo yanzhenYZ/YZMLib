@@ -108,10 +108,8 @@
         textureRef = NULL;
     }
     
-    width = CVPixelBufferGetWidth(pixelBuffer);
-    height = CVPixelBufferGetHeight(pixelBuffer);
-    size_t outputW = width;
-    size_t outputH = height;
+    size_t outputW = CVPixelBufferGetHeight(pixelBuffer);
+    size_t outputH = CVPixelBufferGetWidth(pixelBuffer);
     MTLTextureDescriptor *desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:outputW height:outputH mipmapped:NO];
     desc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
     id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:desc];
@@ -196,7 +194,7 @@
         NSArray<NSNumber *> *availableVideoCVPixelFormatTypes = _output.availableVideoCVPixelFormatTypes;
         [availableVideoCVPixelFormatTypes enumerateObjectsUsingBlock:^(NSNumber * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if (obj.longLongValue == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
-                //self.fullYUVRange = YES;
+                self.fullYUVRange = YES;
             }
         }];
         

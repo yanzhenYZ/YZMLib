@@ -110,8 +110,8 @@
     
     width = CVPixelBufferGetWidth(pixelBuffer);
     height = CVPixelBufferGetHeight(pixelBuffer);
-    size_t outputW = width;
-    size_t outputH = height;
+    size_t outputW = height;
+    size_t outputH = width;
     MTLTextureDescriptor *desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:outputW height:outputH mipmapped:NO];
     desc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
     id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:desc];

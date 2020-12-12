@@ -9,10 +9,17 @@
 #import "YZMetalDevice.h"
 #import "YZMetalOrientation.h"
 #import "YZShaderTypes.h"
+#import <MetalPerformanceShaders/MetalPerformanceShaders.h>
+
+#define METALFILTER 0
 
 @interface YZMTKView ()<MTKViewDelegate>
-@property (nonatomic, strong) id<MTLRenderPipelineState> pipelineState;
 @property (nonatomic, strong) id<MTLTexture> texture;
+#if METALFILTER
+@property (nonatomic, strong) MPSImageGaussianBlur *filter;
+#else
+@property (nonatomic, strong) id<MTLRenderPipelineState> pipelineState;
+#endif
 @end
 
 @implementation YZMTKView
@@ -42,6 +49,21 @@
 }
 
 #pragma mark - MTKViewDelegate
+#if METALFILTER
+- (void)drawInMTKView:(MTKView *)view {
+    if (self.texture == NULL) { return; }
+    id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice.commandQueue commandBuffer];
+    id<MTLTexture> drawingTexture = view.currentDrawable.texture;
+    if (!drawingTexture) {
+        NSLog(@"M Error: view not has currentDrawable");
+        return;
+    }
+    [_filter encodeToCommandBuffer:commandBuffer sourceTexture:self.texture destinationTexture:drawingTexture];
+    [commandBuffer presentDrawable:view.currentDrawable];
+    [commandBuffer commit];
+    self.texture = NULL;
+}
+#else
 - (void)drawInMTKView:(MTKView *)view {
     if (!view.currentDrawable || !_texture) { return; }
     
@@ -78,7 +100,7 @@
     [commandBuffer commit];
     _texture = nil;
 }
-
+#endif
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {
     
 }
@@ -90,6 +112,11 @@
     self.framebufferOnly = NO;
     self.enableSetNeedsDisplay = NO;
     self.device = YZMetalDevice.defaultDevice.device;
+    self.contentMode = UIViewContentModeScaleAspectFit;
+#if METALFILTER
+    _filter = [[MPSImageGaussianBlur alloc] initWithDevice:self.device sigma:0];
+#else
     _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZMTKViewInputVertex" fragment:@"YZMTKViewFragment"];
+#endif
 }
 @end

@@ -47,20 +47,34 @@
             </objects>
             <point key="canvasLocation" x="137.68115942028987" y="87.723214285714278"/>
         </scene>
-        <!--View Controller-->
+        <!--Image View Controller-->
         <scene sceneID="EJB-sd-piY">
             <objects>
-                <viewController id="WJQ-1L-kfO" sceneMemberID="viewController">
+                <viewController id="WJQ-1L-kfO" customClass="ImageViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="cgd-Da-qjg">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ckF-J1-XIm">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                            </imageView>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="eu6-pj-qlX"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="ckF-J1-XIm" firstAttribute="leading" secondItem="eu6-pj-qlX" secondAttribute="leading" id="OUR-0s-gOt"/>
+                            <constraint firstItem="eu6-pj-qlX" firstAttribute="trailing" secondItem="ckF-J1-XIm" secondAttribute="trailing" id="YsQ-4t-4d0"/>
+                            <constraint firstAttribute="bottom" secondItem="ckF-J1-XIm" secondAttribute="bottom" id="iWI-hk-x09"/>
+                            <constraint firstItem="ckF-J1-XIm" firstAttribute="top" secondItem="cgd-Da-qjg" secondAttribute="top" id="u0b-gj-Bxc"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="player" destination="ckF-J1-XIm" id="N8V-bi-mVk"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Td2-Dn-wew" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1009" y="88"/>
+            <point key="canvasLocation" x="1008.6956521739131" y="87.723214285714278"/>
         </scene>
     </scenes>
     <resources>

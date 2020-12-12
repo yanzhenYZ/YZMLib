@@ -19,6 +19,7 @@
 		9BB000A22582019400207AF3 /* YZMTKView.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000A02582019400207AF3 /* YZMTKView.metal */; };
 		9BB00123258365C900207AF3 /* YZMetalDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB00122258365C900207AF3 /* YZMetalDevice.m */; };
 		9BB001432583852000207AF3 /* YZMetalOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB001422583852000207AF3 /* YZMetalOrientation.m */; };
+		9BB0014C2584643000207AF3 /* ImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB0014B2584643000207AF3 /* ImageViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +44,8 @@
 		9BB00122258365C900207AF3 /* YZMetalDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZMetalDevice.m; sourceTree = "<group>"; };
 		9BB001412583852000207AF3 /* YZMetalOrientation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZMetalOrientation.h; sourceTree = "<group>"; };
 		9BB001422583852000207AF3 /* YZMetalOrientation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZMetalOrientation.m; sourceTree = "<group>"; };
+		9BB0014A2584643000207AF3 /* ImageViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageViewController.h; sourceTree = "<group>"; };
+		9BB0014B2584643000207AF3 /* ImageViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +82,8 @@
 				9BB00041257FB7F400207AF3 /* AppDelegate.m */,
 				9BB00060257FBA5500207AF3 /* FirstViewController.h */,
 				9BB00061257FBA5500207AF3 /* FirstViewController.m */,
+				9BB0014A2584643000207AF3 /* ImageViewController.h */,
+				9BB0014B2584643000207AF3 /* ImageViewController.m */,
 				9BB0006625806D0600207AF3 /* Metal */,
 				9BB00049257FB7F400207AF3 /* Main.storyboard */,
 				9BB0004C257FB7F600207AF3 /* Assets.xcassets */,
@@ -208,6 +213,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BB0014C2584643000207AF3 /* ImageViewController.m in Sources */,
 				9BB000972581FF7600207AF3 /* YZMTKView.m in Sources */,
 				9BB00042257FB7F400207AF3 /* AppDelegate.m in Sources */,
 				9BB000A22582019400207AF3 /* YZMTKView.metal in Sources */,

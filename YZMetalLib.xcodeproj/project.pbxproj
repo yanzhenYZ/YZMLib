@@ -19,6 +19,7 @@
 		9BB000A22582019400207AF3 /* YZMTKView.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BB000A02582019400207AF3 /* YZMTKView.metal */; };
 		9BB00123258365C900207AF3 /* YZMetalDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB00122258365C900207AF3 /* YZMetalDevice.m */; };
 		9BB001432583852000207AF3 /* YZMetalOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB001422583852000207AF3 /* YZMetalOrientation.m */; };
+		9BB0015D2584CB9400207AF3 /* YZYUVToRGBConversion.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB0015C2584CB9400207AF3 /* YZYUVToRGBConversion.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +44,8 @@
 		9BB00122258365C900207AF3 /* YZMetalDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZMetalDevice.m; sourceTree = "<group>"; };
 		9BB001412583852000207AF3 /* YZMetalOrientation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZMetalOrientation.h; sourceTree = "<group>"; };
 		9BB001422583852000207AF3 /* YZMetalOrientation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZMetalOrientation.m; sourceTree = "<group>"; };
+		9BB0015B2584CB9400207AF3 /* YZYUVToRGBConversion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZYUVToRGBConversion.h; sourceTree = "<group>"; };
+		9BB0015C2584CB9400207AF3 /* YZYUVToRGBConversion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZYUVToRGBConversion.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +119,8 @@
 				9BB00122258365C900207AF3 /* YZMetalDevice.m */,
 				9BB001412583852000207AF3 /* YZMetalOrientation.h */,
 				9BB001422583852000207AF3 /* YZMetalOrientation.m */,
+				9BB0015B2584CB9400207AF3 /* YZYUVToRGBConversion.h */,
+				9BB0015C2584CB9400207AF3 /* YZYUVToRGBConversion.m */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -212,6 +217,7 @@
 				9BB00042257FB7F400207AF3 /* AppDelegate.m in Sources */,
 				9BB000A22582019400207AF3 /* YZMTKView.metal in Sources */,
 				9BB000A12582019400207AF3 /* YZYUVToRGBConversion.metal in Sources */,
+				9BB0015D2584CB9400207AF3 /* YZYUVToRGBConversion.m in Sources */,
 				9BB0006A25806D4200207AF3 /* YZVideoCamera.m in Sources */,
 				9BB00062257FBA5500207AF3 /* FirstViewController.m in Sources */,
 				9BB00123258365C900207AF3 /* YZMetalDevice.m in Sources */,

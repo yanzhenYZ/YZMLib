@@ -113,6 +113,32 @@
     MTLTextureDescriptor *desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:outputW height:outputH mipmapped:NO];
     desc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
     id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:desc];
+    CFTypeRef attachment = CVBufferGetAttachment(pixelBuffer, kCVImageBufferYCbCrMatrixKey, NULL);
+    
+    if (attachment != NULL) {
+        if(CFStringCompare(attachment, kCVImageBufferYCbCrMatrix_ITU_R_601_4, 0) == kCFCompareEqualTo) {
+            if (_fullYUVRange) {
+                //_preferredConversion = kT3ColorConversion601FullRange;
+            }
+            else
+            {
+                //_preferredConversion = kT3ColorConversion601;
+            }
+        } else {
+            //_preferredConversion = kT3ColorConversion709;
+        }
+    }
+    else
+    {
+        if (_fullYUVRange)
+        {
+            //_preferredConversion = kT3ColorConversion601FullRange;
+        }
+        else
+        {
+            //_preferredConversion = kT3ColorConversion601;
+        }
+    }
     
     [self _convertYUVToRGB:textureY textureUV:textureUV outputTexture:outputTexture];
     
@@ -150,15 +176,25 @@
     uvBuffer.label = @"YZVideoCamera UVBuffer";
     [encoder setVertexBuffer:uvBuffer offset:0 atIndex:YZFullRangeVertexIndexUV];
     [encoder setFragmentTexture:textureUV atIndex:YZFullRangeFragmentIndexTextureUV];
+
+    if (_fullYUVRange) {
+        static const float conversion[] = {
+            1.0f, 1.0f,   1.0f,  0,
+            0.0f, -0.343, 1.765, 0,
+            1.4f, -0.711, 0,     0,
+        };
+        id<MTLBuffer> uniformBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:conversion length:sizeof(float) * 12 options:MTLResourceCPUCacheModeDefaultCache];
+        [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:YZFullRangeUniform];
+    } else {
+        static const float conversion[] = {
+            1.164, 1.164,  1.164,  0,
+            0.0,   -0.213, 2.112,  0,
+            1.793, -0.533, 0,      0,
+        };
+        id<MTLBuffer> uniformBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:conversion length:sizeof(float) * 12 options:MTLResourceCPUCacheModeDefaultCache];
+        [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:YZFullRangeUniform];
+    }
     
-    //转换矩阵
-    static const float conversion[] = {
-        1.0f, 1.0f,   1.0f,  0,
-        0.0f, 0.343,  1.765, 0,
-        1.4f, -0.711, 0,     0,
-    };
-    id<MTLBuffer> uniformBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:conversion length:sizeof(float) * 12 options:MTLResourceCPUCacheModeDefaultCache];
-    [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:YZFullRangeUniform];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];
     
@@ -194,7 +230,7 @@
         NSArray<NSNumber *> *availableVideoCVPixelFormatTypes = _output.availableVideoCVPixelFormatTypes;
         [availableVideoCVPixelFormatTypes enumerateObjectsUsingBlock:^(NSNumber * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if (obj.longLongValue == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
-                self.fullYUVRange = YES;
+                //self.fullYUVRange = YES;
             }
         }];
         

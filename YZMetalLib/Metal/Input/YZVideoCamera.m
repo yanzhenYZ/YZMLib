@@ -105,15 +105,13 @@
         textureRef = NULL;
     }
     
-    //交换宽高
     MTLTextureDescriptor *desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:height height:width mipmapped:NO];
     desc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
     id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:desc];
     
     [self _converWH:texture outputTexture:outputTexture];
-    [self.view newTextureAvailable:outputTexture index:0];
     
-//    [self.view newTextureAvailable:texture index:0];
+    [self.view newTextureAvailable:outputTexture index:0];
 }
 
 - (void)_converWH:(id<MTLTexture>)bgraTexture outputTexture:(id<MTLTexture>)texture {
@@ -134,14 +132,14 @@
     }
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
     [encoder setRenderPipelineState:self.renderPipelineState];
-    [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:YZFullRangeVertexIndexPosition];
+    [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:YZRGBVertexIndexPosition];
     
     //bgra
     const float *bgraSquareVertices = [YZMetalOrientation getCoordinates:YZOrientationLeft];
-    id<MTLBuffer> yBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:bgraSquareVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
-    yBuffer.label = @"YZVideoCamera YBuffer";
-    [encoder setVertexBuffer:yBuffer offset:0 atIndex:YZFullRangeVertexIndexY];
-    [encoder setFragmentTexture:bgraTexture atIndex:YZFullRangeFragmentIndexTextureY];
+    id<MTLBuffer> rgbBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:bgraSquareVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
+    rgbBuffer.label = @"YZVideoCamera RGBBuffer";
+    [encoder setVertexBuffer:rgbBuffer offset:0 atIndex:YZRGBVertexIndexRGB];
+    [encoder setFragmentTexture:bgraTexture atIndex:YZRGBFragmentIndexTexture];
     
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];

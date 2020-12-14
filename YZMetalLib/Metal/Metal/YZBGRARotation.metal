@@ -6,8 +6,6 @@
 //
 
 #include <metal_stdlib>
-using namespace metal;
-
 #import "YZShaderTypes.h"
 
 using namespace metal;
@@ -19,9 +17,9 @@ struct YZRGBVertexIO
     float2 textureCoordinate [[user(texturecoord)]];
 };
 
-vertex YZRGBVertexIO YZYRGBVertex(const device packed_float2 *position [[buffer(YZFullRangeVertexIndexPosition)]],
-                                       const device packed_float2 *texturecoord [[buffer(YZFullRangeVertexIndexY)]],
-                                       uint vertexID [[vertex_id]])
+vertex YZRGBVertexIO YZYRGBVertex(const device packed_float2 *position [[buffer(YZRGBVertexIndexPosition)]],
+                                  const device packed_float2 *texturecoord [[buffer(YZRGBVertexIndexRGB)]],
+                                  uint vertexID [[vertex_id]])
 {
     YZRGBVertexIO outputVertices;
     
@@ -31,15 +29,9 @@ vertex YZRGBVertexIO YZYRGBVertex(const device packed_float2 *position [[buffer(
 }
 
 fragment half4 YZRGBRotationFragment(YZRGBVertexIO fragmentInput [[stage_in]],
-                                     texture2d<half> inputTexture [[texture(YZFullRangeFragmentIndexTextureY)]])
+                                     texture2d<half> inputTexture [[texture(YZRGBFragmentIndexTexture)]])
 {
-//    constexpr sampler quadSampler;
-//    half3 yuv;
-//    yuv.x = inputTexture.sample(quadSampler, fragmentInput.textureCoordinate).r;
-//
-//
-//    return half4(yuv, 1.0);
-    constexpr sampler quadSampler;
-    return inputTexture.sample(quadSampler, fragmentInput.textureCoordinate);
+    constexpr sampler textureSampler (mag_filter::linear, min_filter::linear);
+    return inputTexture.sample(textureSampler, fragmentInput.textureCoordinate);
 }
 

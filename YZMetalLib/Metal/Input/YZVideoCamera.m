@@ -44,7 +44,7 @@
         _cameraQueue = dispatch_queue_create("com.yanzhen.video.camera.queue", 0);
         _cameraRenderQueue = dispatch_queue_create("com.yanzhen.video.camera.render.queue", 0);
         _videoSemaphore = dispatch_semaphore_create(1);
-        _userBGRA = YES;
+//        _userBGRA = YES;
         _preset = preset;
         [self _configVideoSession];
         [self _configMetal];
@@ -104,7 +104,48 @@
         CFRelease(textureRef);
         textureRef = NULL;
     }
-    [self.view newTextureAvailable:texture index:0];
+    
+    MTLTextureDescriptor *desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:height height:width mipmapped:NO];
+    desc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
+    id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:desc];
+    
+    [self _converWH:texture outputTexture:outputTexture];
+    
+    [self.view newTextureAvailable:outputTexture index:0];
+}
+
+- (void)_converWH:(id<MTLTexture>)bgraTexture outputTexture:(id<MTLTexture>)texture {
+    id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice.commandQueue commandBuffer];
+    const float *squareVertices = [YZMetalOrientation defaultVertices];
+    id<MTLBuffer> vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:squareVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
+    vertexBuffer.label = @"YZVideoCamera VertexBuffer";
+    
+    MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
+    desc.colorAttachments[0].texture = texture;
+    desc.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 1, 1);
+    desc.colorAttachments[0].storeAction = MTLStoreActionStore;
+    desc.colorAttachments[0].loadAction = MTLLoadActionClear;
+    
+    id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:desc];
+    if (!encoder) {
+        NSLog(@"YZVideoCamera render endcoder Fail");
+    }
+    [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
+    [encoder setRenderPipelineState:self.renderPipelineState];
+    [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:YZRGBVertexIndexPosition];
+    
+    //bgra
+    const float *bgraSquareVertices = [YZMetalOrientation getCoordinates:YZOrientationLeft];
+    id<MTLBuffer> rgbBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:bgraSquareVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
+    rgbBuffer.label = @"YZVideoCamera RGBBuffer";
+    [encoder setVertexBuffer:rgbBuffer offset:0 atIndex:YZRGBVertexIndexRGB];
+    [encoder setFragmentTexture:bgraTexture atIndex:YZRGBFragmentIndexTexture];
+    
+    [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
+    [encoder endEncoding];
+    
+    [commandBuffer commit];
+    
 }
 
 - (void)_processYUVVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
@@ -227,11 +268,12 @@
     [_output setSampleBufferDelegate:self queue:_cameraQueue];
         
     if (_userBGRA) {
+        _renderPipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZYRGBVertex" fragment:@"YZRGBRotationFragment"];
         NSDictionary *dict = @{
             (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA)
         };
         _output.videoSettings = dict;
-    } else {//todo
+    } else {
         NSArray<NSNumber *> *availableVideoCVPixelFormatTypes = _output.availableVideoCVPixelFormatTypes;
         [availableVideoCVPixelFormatTypes enumerateObjectsUsingBlock:^(NSNumber * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if (obj.longLongValue == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {

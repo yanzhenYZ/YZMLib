@@ -9,6 +9,17 @@
 #define YZShaderTypes_h
 
 #pragma mark - YZVideoCamera
+typedef enum YZRGBVertexIndex
+{
+    YZRGBVertexIndexPosition  = 0,
+    YZRGBVertexIndexRGB       = 1,
+} YZRGBVertexIndex;
+
+
+typedef enum YZRGBFragmentIndex
+{
+    YZRGBFragmentIndexTexture = 0,
+} YZRGBFragmentIndex;
 
 typedef enum YZFullRangeVertexIndex
 {

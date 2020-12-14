@@ -20,6 +20,7 @@
 		9BB00123258365C900207AF3 /* YZMetalDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB00122258365C900207AF3 /* YZMetalDevice.m */; };
 		9BB001432583852000207AF3 /* YZMetalOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB001422583852000207AF3 /* YZMetalOrientation.m */; };
 		9BB0015D2584CB9400207AF3 /* YZYUVToRGBConversion.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB0015C2584CB9400207AF3 /* YZYUVToRGBConversion.m */; };
+		9BC784A62587A43000F2A437 /* YZRGBRotation.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BC784A52587A43000F2A437 /* YZRGBRotation.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 		9BB001422583852000207AF3 /* YZMetalOrientation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZMetalOrientation.m; sourceTree = "<group>"; };
 		9BB0015B2584CB9400207AF3 /* YZYUVToRGBConversion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZYUVToRGBConversion.h; sourceTree = "<group>"; };
 		9BB0015C2584CB9400207AF3 /* YZYUVToRGBConversion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZYUVToRGBConversion.m; sourceTree = "<group>"; };
+		9BC784A52587A43000F2A437 /* YZRGBRotation.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = YZRGBRotation.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,6 +142,7 @@
 				9BB0009E2582019400207AF3 /* YZShaderTypes.h */,
 				9BB000A02582019400207AF3 /* YZMTKView.metal */,
 				9BB0009F2582019400207AF3 /* YZYUVToRGBConversion.metal */,
+				9BC784A52587A43000F2A437 /* YZRGBRotation.metal */,
 			);
 			path = Metal;
 			sourceTree = "<group>";
@@ -216,6 +219,7 @@
 				9BB000972581FF7600207AF3 /* YZMTKView.m in Sources */,
 				9BB00042257FB7F400207AF3 /* AppDelegate.m in Sources */,
 				9BB000A22582019400207AF3 /* YZMTKView.metal in Sources */,
+				9BC784A62587A43000F2A437 /* YZRGBRotation.metal in Sources */,
 				9BB000A12582019400207AF3 /* YZYUVToRGBConversion.metal in Sources */,
 				9BB0015D2584CB9400207AF3 /* YZYUVToRGBConversion.m in Sources */,
 				9BB0006A25806D4200207AF3 /* YZVideoCamera.m in Sources */,
@@ -366,7 +370,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 202;
+				CURRENT_PROJECT_VERSION = 203;
 				DEVELOPMENT_TEAM = 7XP66VHL84;
 				INFOPLIST_FILE = YZMetalLib/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -374,7 +378,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.2;
+				MARKETING_VERSION = 2.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.3ttech.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -387,7 +391,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 202;
+				CURRENT_PROJECT_VERSION = 203;
 				DEVELOPMENT_TEAM = 7XP66VHL84;
 				INFOPLIST_FILE = YZMetalLib/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -395,7 +399,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.2;
+				MARKETING_VERSION = 2.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.3ttech.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";

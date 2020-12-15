@@ -13,7 +13,7 @@
 @protocol YZVideoCameraOutputDelegate <NSObject>
 
 - (void)videoCamera:(YZVideoCamera *)camera output:(CMSampleBufferRef)sampleBuffer;
-
+- (void)outputBuffer:(CVPixelBufferRef)buffer;
 @end
 
 @interface YZVideoCamera : NSObject

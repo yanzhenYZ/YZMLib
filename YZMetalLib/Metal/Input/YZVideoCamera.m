@@ -44,7 +44,7 @@
         _cameraQueue = dispatch_queue_create("com.yanzhen.video.camera.queue", 0);
         _cameraRenderQueue = dispatch_queue_create("com.yanzhen.video.camera.render.queue", 0);
         _videoSemaphore = dispatch_semaphore_create(1);
-//        _userBGRA = YES;
+        //_userBGRA = YES;
         _preset = preset;
         [self _configVideoSession];
         [self _configMetal];
@@ -198,7 +198,45 @@
     
     [self _convertYUVToRGB:textureY textureUV:textureUV outputTexture:outputTexture];
     
+//    [self testPixelBuffer:outputTexture];
+    
     [self.view newTextureAvailable:outputTexture index:0];
+}
+
+- (void)testPixelBuffer:(id<MTLTexture>)texture {
+    
+    NSUInteger width = texture.width;
+    NSUInteger height = texture.height;
+    
+    NSDictionary *pixelAttributes = @{(NSString *)kCVPixelBufferIOSurfacePropertiesKey:@{}};
+    
+    CVPixelBufferRef pixelBuffer = NULL;
+    CVReturn result = CVPixelBufferCreate(kCFAllocatorDefault,
+                                            width,
+                                            height,
+                                            kCVPixelFormatType_32BGRA,
+                                            (__bridge CFDictionaryRef)(pixelAttributes),
+                                            &pixelBuffer);
+    if (result != kCVReturnSuccess) {
+        NSLog(@"Unable to create cvpixelbuffer %d", result);
+        return;
+    }
+    CVPixelBufferLockBaseAddress(pixelBuffer, 0);
+    void *address = CVPixelBufferGetBaseAddress(pixelBuffer);
+    if (address) {
+        size_t bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
+        
+        MTLRegion region = MTLRegionMake2D(0, 0, width, height);
+        [texture getBytes:address bytesPerRow:bytesPerRow fromRegion:region mipmapLevel:0];
+//        NSLog(@"%@", pixelBuffer);
+    }
+    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
+    
+    if ([_delegate respondsToSelector:@selector(outputBuffer:)]) {
+        [_delegate outputBuffer:pixelBuffer];
+    }
+    
+    CVPixelBufferRelease(pixelBuffer);
 }
 
 - (void)_convertYUVToRGB:(id<MTLTexture>)textureY textureUV:(id<MTLTexture>)textureUV outputTexture:(id<MTLTexture>)texture {

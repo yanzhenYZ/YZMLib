@@ -21,6 +21,7 @@
 		9BB001432583852000207AF3 /* YZMetalOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB001422583852000207AF3 /* YZMetalOrientation.m */; };
 		9BB0015D2584CB9400207AF3 /* YZYUVToRGBConversion.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB0015C2584CB9400207AF3 /* YZYUVToRGBConversion.m */; };
 		9BC784A62587A43000F2A437 /* YZRGBRotation.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BC784A52587A43000F2A437 /* YZRGBRotation.metal */; };
+		9BC784B92588EEC700F2A437 /* YZPixelBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BC784B82588EEC700F2A437 /* YZPixelBuffer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +49,8 @@
 		9BB0015B2584CB9400207AF3 /* YZYUVToRGBConversion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZYUVToRGBConversion.h; sourceTree = "<group>"; };
 		9BB0015C2584CB9400207AF3 /* YZYUVToRGBConversion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZYUVToRGBConversion.m; sourceTree = "<group>"; };
 		9BC784A52587A43000F2A437 /* YZRGBRotation.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = YZRGBRotation.metal; sourceTree = "<group>"; };
+		9BC784B72588EEC700F2A437 /* YZPixelBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZPixelBuffer.h; sourceTree = "<group>"; };
+		9BC784B82588EEC700F2A437 /* YZPixelBuffer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZPixelBuffer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +135,8 @@
 			children = (
 				9BB000952581FF7600207AF3 /* YZMTKView.h */,
 				9BB000962581FF7600207AF3 /* YZMTKView.m */,
+				9BC784B72588EEC700F2A437 /* YZPixelBuffer.h */,
+				9BC784B82588EEC700F2A437 /* YZPixelBuffer.m */,
 			);
 			path = Output;
 			sourceTree = "<group>";
@@ -217,6 +222,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9BB000972581FF7600207AF3 /* YZMTKView.m in Sources */,
+				9BC784B92588EEC700F2A437 /* YZPixelBuffer.m in Sources */,
 				9BB00042257FB7F400207AF3 /* AppDelegate.m in Sources */,
 				9BB000A22582019400207AF3 /* YZMTKView.metal in Sources */,
 				9BC784A62587A43000F2A437 /* YZRGBRotation.metal in Sources */,

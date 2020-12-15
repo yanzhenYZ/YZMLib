@@ -8,6 +8,7 @@
 #import "FirstViewController.h"
 #import "YZVideoCamera.h"
 #import "YZMTKView.h"
+#import "YZPixelBuffer.h"
 
 @interface FirstViewController ()<YZVideoCameraOutputDelegate, YZMTKViewDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *player;
@@ -26,6 +27,8 @@
 
     _context = [CIContext contextWithOptions:nil];
     
+    YZPixelBuffer *buffer = [[YZPixelBuffer alloc] initWithRender:YES];
+    self.mtkView.pixelBuffer = buffer;
 //    [self test_001];
     self.mtkView.mtkDelegate = self;
     [self test002];

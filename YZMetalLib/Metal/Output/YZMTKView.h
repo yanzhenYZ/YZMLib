@@ -6,6 +6,7 @@
 //
 
 #import <MetalKit/MetalKit.h>
+#import "YZPixelBuffer.h"
 
 @protocol YZMTKViewDelegate <NSObject>
 
@@ -16,6 +17,7 @@
 @class YZTexture;
 @interface YZMTKView : MTKView
 @property (nonatomic, weak) id<YZMTKViewDelegate> mtkDelegate;
+@property (nonatomic, strong) YZPixelBuffer *pixelBuffer;
 
 - (void)newTextureAvailable:(id<MTLTexture>)texture index:(NSInteger)index;
 

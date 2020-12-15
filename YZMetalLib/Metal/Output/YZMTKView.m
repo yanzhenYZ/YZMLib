@@ -77,8 +77,10 @@
     [commandBuffer presentDrawable:view.currentDrawable];
     [commandBuffer commit];
     
-    [self testPixelBuffer:_texture];
-    
+    [self.pixelBuffer cretePixelBuffer:outTexture];
+    if ([_mtkDelegate respondsToSelector:@selector(outputBuffer:)]) {
+        [_mtkDelegate outputBuffer:[self.pixelBuffer outputPixelBuffer]];
+    }
     _texture = nil;
 }
 

@@ -9,7 +9,15 @@
 #import <CoreVideo/CVPixelBuffer.h>
 #import <Metal/Metal.h>
 
+
+@protocol YZPixelBufferDelegate <NSObject>
+
+- (void)outputPixelBuffer:(CVPixelBufferRef)buffer;
+
+@end
+
 @interface YZPixelBuffer : NSObject
+@property (nonatomic, weak) id<YZPixelBufferDelegate> delegate;
 
 - (instancetype)initWithRender:(BOOL)render;
 

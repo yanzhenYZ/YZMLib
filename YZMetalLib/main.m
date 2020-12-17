@@ -14,6 +14,8 @@
  2.0.5 旋转方向
  2.0.6 输出bgra buffer
  2.0.7 YZMTKView 显示模式问题
+ 
+ 2.0.8 性能对比 GPU
  */
 
 int main(int argc, char * argv[]) {

@@ -6,7 +6,10 @@
 //
 
 #import "YZPixelBuffer.h"
+#import <Metal/Metal.h>
 #import "YZMetalDevice.h"
+#import "YZMetalOrientation.h"
+#import "YZShaderTypes.h"
 
 @interface YZPixelBuffer ()
 @property (nonatomic, assign) BOOL render;
@@ -38,18 +41,66 @@
 
 - (void)cretePixelBuffer:(id<MTLTexture>)texture {
     if (_render) {
-        [self _createPixelBuffer:texture];
+        [self _createRenderPixelBuffer:texture];
     } else {
-        NSLog(@"123");
+        [self _createPixelBuffer:texture];
     }
 }
 
 - (CVPixelBufferRef)outputPixelBuffer {
     return _pixelBuffer;
 }
-
-#pragma mark - private
+#pragma mark - private not render
 - (void)_createPixelBuffer:(id<MTLTexture>)texture {
+    NSUInteger width = texture.width;
+    NSUInteger height = texture.height;
+    
+    id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice.commandQueue commandBuffer];
+    
+    id<MTLTexture> outTexture = [self _createOutputTexture:width height:height];
+    const float *outputVertices = [YZMetalOrientation defaultVertices];
+    id<MTLBuffer> outputVertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:outputVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
+    outputVertexBuffer.label = @"YZPixelBuffer OutputVertexBuffer";
+    
+    MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
+    desc.colorAttachments[0].texture = outTexture;
+    desc.colorAttachments[0].clearColor = MTLClearColorMake(1, 0, 0, 1);
+    desc.colorAttachments[0].storeAction = MTLStoreActionStore;
+    desc.colorAttachments[0].loadAction = MTLLoadActionClear;
+    id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:desc];
+    if (!encoder) {
+        NSLog(@"YZPixelBuffer render endcoder Fail");
+    }
+    [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
+    [encoder setRenderPipelineState:_pipelineState];
+    [encoder setVertexBuffer:outputVertexBuffer offset:0 atIndex:YZMTKViewVertexIndexPosition];
+    
+    const float *vertices = [YZMetalOrientation defaultCoordinates];
+    id<MTLBuffer> vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:vertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
+    vertexBuffer.label = @"YZPixelBuffer VertexBuffer";
+    [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:YZMTKViewVertexIndexTextureCoordinate];
+    [encoder setFragmentTexture:texture atIndex:YZMTKViewFragmentIndexTexture];
+    [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
+    [encoder endEncoding];
+    
+    //[commandBuffer presentDrawable:view.currentDrawable];
+    
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+    
+    [self _createRenderPixelBuffer:outTexture];
+    
+}
+
+- (id<MTLTexture>)_createOutputTexture:(NSUInteger)width height:(NSUInteger)height {
+    MTLTextureDescriptor *desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:width height:height mipmapped:NO];
+    desc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
+    id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:desc];
+    return outputTexture;
+}
+
+#pragma mark - private render
+- (void)_createRenderPixelBuffer:(id<MTLTexture>)texture {
     NSUInteger width = texture.width;
     NSUInteger height = texture.height;
     if (!_pixelBuffer) {
@@ -66,9 +117,9 @@
     }
     [self _setPixelBuffer:_pixelBuffer texture:texture];
     
-//    if ([_delegate respondsToSelector:@selector(outputPixelBuffer:)]) {
-//        [_delegate outputPixelBuffer:buffer];
-//    }
+    if ([_delegate respondsToSelector:@selector(outputPixelBuffer:)]) {
+        [_delegate outputPixelBuffer:_pixelBuffer];
+    }
 }
 
 - (void)_setPixelBuffer:(CVPixelBufferRef)buffer texture:(id<MTLTexture>)texture  {

@@ -9,7 +9,7 @@
 #import "YZVideoCamera.h"
 #import "YZPixelBuffer.h"
 
-@interface SecondViewController ()<YZVideoCameraOutputDelegate>
+@interface SecondViewController ()<YZVideoCameraOutputDelegate, YZPixelBufferDelegate>
 @property (nonatomic, strong) YZVideoCamera *camera;
 @property (weak, nonatomic) IBOutlet UIImageView *player;
 @property (nonatomic, strong) CIContext *context;
@@ -24,7 +24,7 @@
     _context = [CIContext contextWithOptions:nil];
     
     YZPixelBuffer *buffer = [[YZPixelBuffer alloc] initWithRender:NO];
-    //buffer.delegate = self;
+    buffer.delegate = self;
 //    [self test002];
     
     _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
@@ -40,6 +40,11 @@
 
 - (void)outputBuffer:(CVPixelBufferRef)buffer {
     
+}
+
+#pragma mark - YZPixelBufferDelegate
+-(void)outputPixelBuffer:(CVPixelBufferRef)buffer {
+    [self showPixelBuffer:buffer];
 }
 
 #pragma mark - private

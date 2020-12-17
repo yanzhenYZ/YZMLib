@@ -76,55 +76,21 @@
     
     [commandBuffer presentDrawable:view.currentDrawable];
     [commandBuffer commit];
+    //if not got texture bytes,not use this,***yz
+    [commandBuffer waitUntilCompleted];
 #if 0
     [self testPixelBuffer:outTexture];
 #else
     [self.pixelBuffer cretePixelBuffer:outTexture];
-//    if ([_mtkDelegate respondsToSelector:@selector(outputBuffer:)]) {
-//        [_mtkDelegate outputBuffer:[self.pixelBuffer outputPixelBuffer]];
-//    }
+    if ([_mtkDelegate respondsToSelector:@selector(outputBuffer:)]) {
+        [_mtkDelegate outputBuffer:[self.pixelBuffer outputPixelBuffer]];
+    }
 #endif
     _texture = nil;
 }
 
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {
     
-}
-
-- (void)testPixelBuffer:(id<MTLTexture>)texture {
-    
-    NSUInteger width = texture.width;
-    NSUInteger height = texture.height;
-    
-    NSDictionary *pixelAttributes = @{(NSString *)kCVPixelBufferIOSurfacePropertiesKey:@{}};
-    
-    CVPixelBufferRef pixelBuffer = NULL;
-    CVReturn result = CVPixelBufferCreate(kCFAllocatorDefault,
-                                            width,
-                                            height,
-                                            kCVPixelFormatType_32BGRA,
-                                            (__bridge CFDictionaryRef)(pixelAttributes),
-                                            &pixelBuffer);
-    if (result != kCVReturnSuccess) {
-        NSLog(@"Unable to create cvpixelbuffer %d", result);
-        return;
-    }
-    CVPixelBufferLockBaseAddress(pixelBuffer, 0);
-    void *address = CVPixelBufferGetBaseAddress(pixelBuffer);
-    if (address) {
-        size_t bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
-        
-        MTLRegion region = MTLRegionMake2D(0, 0, width, height);
-        [texture getBytes:address bytesPerRow:bytesPerRow fromRegion:region mipmapLevel:0];
-//        NSLog(@"%@", pixelBuffer);
-    }
-    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
-    
-    if ([_mtkDelegate respondsToSelector:@selector(outputBuffer:)]) {
-        [_mtkDelegate outputBuffer:pixelBuffer];
-    }
-    
-    CVPixelBufferRelease(pixelBuffer);
 }
 
 #pragma mark - private config

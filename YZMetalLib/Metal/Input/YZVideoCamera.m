@@ -199,8 +199,11 @@
     [self _convertYUVToRGB:textureY textureUV:textureUV outputTexture:outputTexture];
     
 //    [self testPixelBuffer:outputTexture];
-    
-    [self.view newTextureAvailable:outputTexture index:0];
+    if (self.view) {
+        [self.view newTextureAvailable:outputTexture index:0];
+    } else {
+        [self.buffer cretePixelBuffer:outputTexture];
+    }
 }
 
 - (void)testPixelBuffer:(id<MTLTexture>)texture {

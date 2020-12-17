@@ -32,9 +32,6 @@
         if (!_render) {
             _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZMTKViewInputVertex" fragment:@"YZMTKViewFragment"];
         }
-        
-        
-        
     }
     return self;
 }
@@ -43,7 +40,7 @@
     if (_render) {
         [self _createPixelBuffer:texture];
     } else {
-        
+        NSLog(@"123");
     }
 }
 

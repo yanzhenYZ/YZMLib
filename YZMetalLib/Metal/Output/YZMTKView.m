@@ -81,10 +81,10 @@
 #if 0
     [self testPixelBuffer:outTexture];
 #else
-    [self.pixelBuffer cretePixelBuffer:outTexture];
-    if ([_mtkDelegate respondsToSelector:@selector(outputBuffer:)]) {
-        [_mtkDelegate outputBuffer:[self.pixelBuffer outputPixelBuffer]];
-    }
+//    [self.pixelBuffer cretePixelBuffer:outTexture];
+//    if ([_mtkDelegate respondsToSelector:@selector(outputBuffer:)]) {
+//        [_mtkDelegate outputBuffer:[self.pixelBuffer outputPixelBuffer]];
+//    }
 #endif
     _texture = nil;
 }

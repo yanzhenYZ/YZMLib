@@ -44,7 +44,7 @@
         _cameraQueue = dispatch_queue_create("com.yanzhen.video.camera.queue", 0);
         _cameraRenderQueue = dispatch_queue_create("com.yanzhen.video.camera.render.queue", 0);
         _videoSemaphore = dispatch_semaphore_create(1);
-        //_userBGRA = YES;
+        _userBGRA = YES;
         _preset = preset;
         [self _configVideoSession];
         [self _configMetal];
@@ -111,7 +111,13 @@
     
     [self _converWH:texture outputTexture:outputTexture];
     
-    [self.view newTextureAvailable:outputTexture index:0];
+    if (self.view) {
+        [self.view newTextureAvailable:outputTexture index:0];
+    } else {
+        [self.buffer cretePixelBuffer:outputTexture];
+    }
+    
+    //[self.view newTextureAvailable:outputTexture index:0];
 }
 
 - (void)_converWH:(id<MTLTexture>)bgraTexture outputTexture:(id<MTLTexture>)texture {

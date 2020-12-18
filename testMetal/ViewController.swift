@@ -7,12 +7,12 @@
 
 import UIKit
 
-let YZBRIGHT = false
+let YZBRIGHT = true
 
 class ViewController: UIViewController {
 
     var camera:Camera!
-    
+    private var bright: Brightness?
     private var renderView: RenderView!
     
     @IBOutlet private weak var brightSlider: UISlider!
@@ -28,8 +28,8 @@ class ViewController: UIViewController {
             renderView = RenderView(frame: UIScreen.main.bounds, device: sharedMetalRenderingDevice.device)
             self.view.insertSubview(renderView, at: 0)
             if YZBRIGHT {
-                let bright = Brightness()
-                bright.renderViwe = renderView
+                bright = Brightness()
+                bright?.renderViwe = renderView
                 camera.bright = bright
             } else {
                 camera.renderView = renderView
@@ -42,7 +42,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func sliderAction(_ sender: UISlider) {
-        print(sender.value)
+        bright?.brightness = sender.value
     }
     
 }

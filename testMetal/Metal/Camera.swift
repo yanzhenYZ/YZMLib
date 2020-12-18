@@ -102,7 +102,7 @@ public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     static func device() -> AVCaptureDevice? {
         let devices = AVCaptureDevice.devices(for:AVMediaType.video)
         for case let device in devices {
-            if (device.position == .back) {
+            if (device.position == .front) {
                 return device
             }
         }

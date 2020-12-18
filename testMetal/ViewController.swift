@@ -13,6 +13,7 @@ class ViewController: UIViewController {
     
     private var renderView: RenderView!
     
+    @IBOutlet private weak var brightSlider: UISlider!
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -23,7 +24,7 @@ class ViewController: UIViewController {
 //            camera.renderView = xibRenderView
             
             renderView = RenderView(frame: UIScreen.main.bounds, device: sharedMetalRenderingDevice.device)
-            self.view.addSubview(renderView)
+            self.view.insertSubview(renderView, at: 0)
             camera.renderView = renderView
             
             camera.startCapture()
@@ -32,6 +33,9 @@ class ViewController: UIViewController {
         }
     }
 
-
+    @IBAction func sliderAction(_ sender: UISlider) {
+        print(sender.value)
+    }
+    
 }
 

@@ -7,6 +7,8 @@
 
 import UIKit
 
+let YZBRIGHT = false
+
 class ViewController: UIViewController {
 
     var camera:Camera!
@@ -25,7 +27,13 @@ class ViewController: UIViewController {
             
             renderView = RenderView(frame: UIScreen.main.bounds, device: sharedMetalRenderingDevice.device)
             self.view.insertSubview(renderView, at: 0)
-            camera.renderView = renderView
+            if YZBRIGHT {
+                let bright = Brightness()
+                bright.renderViwe = renderView
+                camera.bright = bright
+            } else {
+                camera.renderView = renderView
+            }
             
             camera.startCapture()
         } catch {

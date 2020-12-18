@@ -5,6 +5,7 @@ import Metal
 //public class Camera: NSObject, ImageSource, AVCaptureVideoDataOutputSampleBufferDelegate {
 public class Camera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
 
+    var bright: Brightness?
     public var renderView: RenderView?
     public let captureSession:AVCaptureSession
     public let inputCamera:AVCaptureDevice!
@@ -153,8 +154,13 @@ private extension Camera {
             let newTexture = sharedMetalRenderingDevice.device.makeTexture(descriptor: textureDescriptor)
             convertYUVToRGB(luminanceTexture:luminanceTexture, chrominanceTexture:chrominanceTexture,
                             resultTexture:newTexture!)
+            if YZBRIGHT {
+                bright?.newTextureAvailable(newTexture!, fromSourceIndex: 0)
+            } else {
+                self.renderView?.newTextureAvailable(newTexture!, fromSourceIndex: 0)
+            }
+            //
             
-            self.renderView?.newTextureAvailable(newTexture!, fromSourceIndex: 0)
             
             self.frameRenderingSemaphore.signal()
         }

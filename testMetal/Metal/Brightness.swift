@@ -34,7 +34,7 @@ class Brightness: NSObject {
         commandBuffer.commit()
         
         if YZBRIGHT {
-            renderViwe?.newTextureAvailable(texture, fromSourceIndex: 0)
+            renderViwe?.newTextureAvailable(newTexture, fromSourceIndex: 0)
         }
     }
 }
@@ -74,7 +74,6 @@ private extension Brightness {
         renderEncoder.setRenderPipelineState(renderPipelineState)
         renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
         
-        //let input:[Float] = [0, 0, 1, 0, 0, 1, 1, 1]
         let input:[Float] = [0, 1, 0, 0, 1, 1, 1, 0]
         let textureBuffer = sharedMetalRenderingDevice.device.makeBuffer(bytes: input,
                                                                          length: input.count * MemoryLayout<Float>.size,

@@ -198,7 +198,8 @@
     
     [self _convertYUVToRGB:textureY textureUV:textureUV outputTexture:outputTexture];
     
-    [self.view newTextureAvailable:outputTexture index:0];
+//    [self.view newTextureAvailable:outputTexture index:0];
+    [self.brightness newTextureAvailable:outputTexture index:0];
 }
 
 - (void)_convertYUVToRGB:(id<MTLTexture>)textureY textureUV:(id<MTLTexture>)textureUV outputTexture:(id<MTLTexture>)texture {

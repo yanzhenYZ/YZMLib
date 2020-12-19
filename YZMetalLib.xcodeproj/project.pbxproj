@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9BA2CAD2258DF89B0048F5E6 /* YZBrightness.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BA2CAD1258DF89B0048F5E6 /* YZBrightness.m */; };
+		9BA2CAD6258DF8A60048F5E6 /* YZBrightness.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BA2CAD5258DF8A60048F5E6 /* YZBrightness.metal */; };
 		9BB00042257FB7F400207AF3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB00041257FB7F400207AF3 /* AppDelegate.m */; };
 		9BB0004B257FB7F400207AF3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9BB00049257FB7F400207AF3 /* Main.storyboard */; };
 		9BB0004D257FB7F600207AF3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9BB0004C257FB7F600207AF3 /* Assets.xcassets */; };
@@ -24,6 +26,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9BA2CAD0258DF89B0048F5E6 /* YZBrightness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZBrightness.h; sourceTree = "<group>"; };
+		9BA2CAD1258DF89B0048F5E6 /* YZBrightness.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZBrightness.m; sourceTree = "<group>"; };
+		9BA2CAD5258DF8A60048F5E6 /* YZBrightness.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = YZBrightness.metal; sourceTree = "<group>"; };
 		9BB0003D257FB7F400207AF3 /* YZMetalLib.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YZMetalLib.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9BB00040257FB7F400207AF3 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9BB00041257FB7F400207AF3 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -61,6 +66,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9BA2CACA258DF8430048F5E6 /* Filter */ = {
+			isa = PBXGroup;
+			children = (
+				9BA2CAD0258DF89B0048F5E6 /* YZBrightness.h */,
+				9BA2CAD1258DF89B0048F5E6 /* YZBrightness.m */,
+			);
+			path = Filter;
+			sourceTree = "<group>";
+		};
 		9BB00034257FB7F400207AF3 = {
 			isa = PBXGroup;
 			children = (
@@ -100,6 +114,7 @@
 				9BB000942581FF5200207AF3 /* Output */,
 				9BB000702580B26300207AF3 /* Base */,
 				9BB0006725806D2500207AF3 /* Input */,
+				9BA2CACA258DF8430048F5E6 /* Filter */,
 				9BB0009D2582015A00207AF3 /* Metal */,
 			);
 			path = Metal;
@@ -143,6 +158,7 @@
 				9BB000A02582019400207AF3 /* YZMTKView.metal */,
 				9BB0009F2582019400207AF3 /* YZYUVToRGBConversion.metal */,
 				9BC784A52587A43000F2A437 /* YZRGBRotation.metal */,
+				9BA2CAD5258DF8A60048F5E6 /* YZBrightness.metal */,
 			);
 			path = Metal;
 			sourceTree = "<group>";
@@ -217,6 +233,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				9BB000972581FF7600207AF3 /* YZMTKView.m in Sources */,
+				9BA2CAD6258DF8A60048F5E6 /* YZBrightness.metal in Sources */,
+				9BA2CAD2258DF89B0048F5E6 /* YZBrightness.m in Sources */,
 				9BB00042257FB7F400207AF3 /* AppDelegate.m in Sources */,
 				9BB000A22582019400207AF3 /* YZMTKView.metal in Sources */,
 				9BC784A62587A43000F2A437 /* YZRGBRotation.metal in Sources */,

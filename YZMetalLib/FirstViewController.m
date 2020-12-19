@@ -8,6 +8,7 @@
 #import "FirstViewController.h"
 #import "YZVideoCamera.h"
 #import "YZMTKView.h"
+#import "YZBrightness.h"
 
 @interface FirstViewController ()<YZVideoCameraOutputDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *player;
@@ -16,6 +17,7 @@
 @property (nonatomic, strong) YZMTKView *mtkView2;
 @property (nonatomic, strong) CIContext *context;
 
+@property (nonatomic, strong) YZBrightness *brightness;
 @end
 
 @implementation FirstViewController
@@ -26,7 +28,22 @@
 
 //    [self test_001];
     
-    [self test002];
+    [self test003];
+}
+
+- (void)test003 {
+    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
+    
+    _mtkView2 = [[YZMTKView alloc] initWithFrame:UIScreen.mainScreen.bounds];
+    [self.view addSubview:_mtkView2];
+    
+    _brightness = [[YZBrightness alloc] init];
+    
+    _camera.brightness = _brightness;
+    _brightness.view = _mtkView2;
+    
+    _camera.delegate = self;
+    [_camera startRunning];
 }
 
 - (void)test002 {

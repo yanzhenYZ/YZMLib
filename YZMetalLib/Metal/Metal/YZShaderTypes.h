@@ -8,6 +8,23 @@
 #ifndef YZShaderTypes_h
 #define YZShaderTypes_h
 
+
+#pragma mark - YZBrightness
+typedef enum YZBrightnessVertexIndex
+{
+    YZBrightnessVertexIndexPosition = 0,
+    YZBrightnessVertexIndexTextureCoordinate = 1,
+} YZBrightnessVertexIndex;
+
+typedef enum YZBrightnessFragmentIndex
+{
+    YZBrightnessFragmentIndexTexture = 0,
+} YZBrightnessFragmentIndex;
+
+typedef enum YZBrightnessUniformIndex
+{
+    YZBrightnessUniformIdx = 0,
+} YZBrightnessUniformIndex;
 #pragma mark - YZVideoCamera
 typedef enum YZRGBVertexIndex
 {

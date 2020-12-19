@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 #import "YZMTKView.h"
+#import "YZBrightness.h"
 
 @class YZVideoCamera;
 @protocol YZVideoCameraOutputDelegate <NSObject>
@@ -19,6 +20,7 @@
 @interface YZVideoCamera : NSObject
 @property (nonatomic, weak) id<YZVideoCameraOutputDelegate> delegate;
 @property (nonatomic, strong) YZMTKView *view;
+@property (nonatomic, strong) YZBrightness *brightness;
 
 - (instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset;
 

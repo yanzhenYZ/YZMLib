@@ -24,6 +24,24 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <color key="backgroundColor" systemColor="linkColor"/>
                             </mtkView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="De8-tO-IuL">
+                                <rect key="frame" x="0.0" y="807" width="414" height="40"/>
+                                <subviews>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="m36-Eq-IoJ">
+                                        <rect key="frame" x="13" y="5" width="388" height="31"/>
+                                        <connections>
+                                            <action selector="brightValueChange:" destination="BYZ-38-t0r" eventType="valueChanged" id="MI8-VG-BdP"/>
+                                        </connections>
+                                    </slider>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="m36-Eq-IoJ" firstAttribute="leading" secondItem="De8-tO-IuL" secondAttribute="leading" constant="15" id="cL7-6a-pVZ"/>
+                                    <constraint firstAttribute="height" constant="40" id="rT0-lv-pW8"/>
+                                    <constraint firstItem="m36-Eq-IoJ" firstAttribute="centerY" secondItem="De8-tO-IuL" secondAttribute="centerY" id="rZL-mg-tXU"/>
+                                    <constraint firstAttribute="trailing" secondItem="m36-Eq-IoJ" secondAttribute="trailing" constant="15" id="s65-E4-Avx"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemOrangeColor"/>
@@ -31,10 +49,13 @@
                             <constraint firstItem="Wbr-72-ibF" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="06Z-4X-WOl"/>
                             <constraint firstAttribute="bottom" secondItem="Wbr-72-ibF" secondAttribute="bottom" id="6Ur-rw-wJt"/>
                             <constraint firstAttribute="bottom" secondItem="vo2-n7-lIW" secondAttribute="bottom" id="7pL-Cq-6p9"/>
+                            <constraint firstItem="De8-tO-IuL" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="JLx-uw-3yF"/>
                             <constraint firstItem="vo2-n7-lIW" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="L4C-Z3-Hbt"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="De8-tO-IuL" secondAttribute="bottom" constant="15" id="ZFm-SB-3Ti"/>
                             <constraint firstItem="Wbr-72-ibF" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="dMf-mT-Eg9"/>
                             <constraint firstItem="Wbr-72-ibF" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="kFp-Sf-TRF"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="vo2-n7-lIW" secondAttribute="trailing" id="w6w-KC-7iK"/>
+                            <constraint firstItem="De8-tO-IuL" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="wHn-rw-kfS"/>
                             <constraint firstItem="vo2-n7-lIW" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="yIV-xz-v8r"/>
                         </constraints>
                     </view>

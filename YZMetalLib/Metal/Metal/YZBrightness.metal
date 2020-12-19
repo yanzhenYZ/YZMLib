@@ -40,4 +40,5 @@ fragment half4 YZBrightnessFragment(YZBrightnessVertexIO fragmentInput [[stage_i
     half4 color = inputTexture.sample(quadSampler, fragmentInput.textureCoordinate);
     
     return half4(color.rgb + uniform.brightness, color.a);
+//    return half4(color.rgb + 0.5, color.a);
 }

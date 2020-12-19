@@ -31,16 +31,15 @@
     [self test003];
 }
 
+
+
 - (void)test003 {
     _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
-    
-    _mtkView2 = [[YZMTKView alloc] initWithFrame:UIScreen.mainScreen.bounds];
-    [self.view addSubview:_mtkView2];
     
     _brightness = [[YZBrightness alloc] init];
     
     _camera.brightness = _brightness;
-    _brightness.view = _mtkView2;
+    _brightness.view = _mtkView;
     
     _camera.delegate = self;
     [_camera startRunning];
@@ -55,6 +54,10 @@
     
     _camera.delegate = self;
     [_camera startRunning];
+}
+
+- (IBAction)brightValueChange:(UISlider *)sender {
+    _brightness.brightness = sender.value;
 }
 
 - (void)test_001 {

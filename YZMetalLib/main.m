@@ -9,15 +9,13 @@
 #import "AppDelegate.h"
 
 /**
- 2.0.3 使用matal数据格式
- 2.0.4 前置后置摄像头
- 2.0.5 旋转方向
- 2.0.6 输出bgra buffer
+ 2.0.5 前置后置摄像头
+ 2.0.6 旋转方向
  2.0.7 YZMTKView 显示模式问题
- 2.0.8 Brightness
- 2.0.9 美颜
+ 2.0.8 后台
  
- 2.0.8 性能对比 GPU
+ 2.0.8 美颜
+ 2.0.9 性能对比 GPU
  */
 
 int main(int argc, char * argv[]) {

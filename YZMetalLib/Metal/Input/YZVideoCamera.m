@@ -44,7 +44,7 @@
         _cameraQueue = dispatch_queue_create("com.yanzhen.video.camera.queue", 0);
         _cameraRenderQueue = dispatch_queue_create("com.yanzhen.video.camera.render.queue", 0);
         _videoSemaphore = dispatch_semaphore_create(1);
-//        _userBGRA = YES;
+        _userBGRA = YES;
         _preset = preset;
         [self _configVideoSession];
         [self _configMetal];
@@ -111,7 +111,8 @@
     
     [self _converWH:texture outputTexture:outputTexture];
     
-    [self.view newTextureAvailable:outputTexture index:0];
+    //[self.view newTextureAvailable:outputTexture index:0];
+    [self.brightness newTextureAvailable:outputTexture index:0];
 }
 
 - (void)_converWH:(id<MTLTexture>)bgraTexture outputTexture:(id<MTLTexture>)texture {
@@ -310,7 +311,7 @@
 
 + (AVCaptureDevice *)defaultFrontDevice {
     if (@available(iOS 10.0, *)) {
-        return [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionBack];
+        return [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionFront];
     } else {
         NSArray<AVCaptureDevice *> *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
         __block AVCaptureDevice *device = nil;

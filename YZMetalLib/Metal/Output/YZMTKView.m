@@ -13,6 +13,8 @@
 @interface YZMTKView ()<MTKViewDelegate>
 @property (nonatomic, strong) id<MTLRenderPipelineState> pipelineState;
 @property (nonatomic, strong) id<MTLTexture> texture;
+@property (nonatomic, strong) id<MTLBuffer> positionBuffer;
+@property (nonatomic, strong) id<MTLBuffer> textureCoordinateBuffer;
 @end
 
 @implementation YZMTKView
@@ -44,13 +46,7 @@
 #pragma mark - MTKViewDelegate
 - (void)drawInMTKView:(MTKView *)view {
     if (!view.currentDrawable || !_texture) { return; }
-    
-    id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice.commandQueue commandBuffer];
     id<MTLTexture> outTexture = view.currentDrawable.texture;
-    
-    const float *outputVertices = [YZMetalOrientation defaultVertices];
-    id<MTLBuffer> outputVertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:outputVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
-    outputVertexBuffer.label = @"YZMTKView OutputVertexBuffer";
     
     MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
     desc.colorAttachments[0].texture = outTexture;
@@ -58,18 +54,16 @@
     desc.colorAttachments[0].storeAction = MTLStoreActionStore;
     desc.colorAttachments[0].loadAction = MTLLoadActionClear;
     
+    id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice.commandQueue commandBuffer];
     id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:desc];
     if (!encoder) {
         NSLog(@"YZMTKView render endcoder Fail");
     }
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
     [encoder setRenderPipelineState:_pipelineState];
-    [encoder setVertexBuffer:outputVertexBuffer offset:0 atIndex:YZMTKViewVertexIndexPosition];
+    [encoder setVertexBuffer:_positionBuffer offset:0 atIndex:YZMTKViewVertexIndexPosition];
     
-    const float *vertices = [YZMetalOrientation defaultCoordinates];
-    id<MTLBuffer> vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:vertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
-    vertexBuffer.label = @"YZMTKView VertexBuffer";
-    [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:YZMTKViewVertexIndexTextureCoordinate];
+    [encoder setVertexBuffer:_textureCoordinateBuffer offset:0 atIndex:YZMTKViewVertexIndexTextureCoordinate];
     [encoder setFragmentTexture:_texture atIndex:YZMTKViewFragmentIndexTexture];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];
@@ -92,5 +86,13 @@
     self.device = YZMetalDevice.defaultDevice.device;
     self.contentMode = UIViewContentModeScaleAspectFit;
     _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZMTKViewInputVertex" fragment:@"YZMTKViewFragment"];
+    
+    const float *vertices = [YZMetalOrientation defaultVertices];
+    _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:vertices length:sizeof(float) * 8 options:MTLResourceStorageModeShared];
+    _positionBuffer.label = @"YZMTKView PositionBuffer";
+    
+    const float *coordinates = [YZMetalOrientation defaultCoordinates];
+    _textureCoordinateBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:coordinates length:sizeof(float) * 8 options:MTLResourceStorageModeShared];
+    _textureCoordinateBuffer.label = @"YZMTKView TextureCoordinateBuffer";
 }
 @end

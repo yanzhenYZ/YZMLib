@@ -13,6 +13,8 @@
 
 @interface YZBrightness ()
 @property (nonatomic, strong) id<MTLRenderPipelineState> pipelineState;
+@property (nonatomic, strong) id<MTLBuffer> positionBuffer;
+@property (nonatomic, strong) id<MTLBuffer> textureCoordinateBuffer;
 @end
 
 @implementation YZBrightness
@@ -21,6 +23,12 @@
     self = [super init];
     if (self) {
         _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZBrightnessInputVertex" fragment:@"YZBrightnessFragment"];
+        
+        const float *vertices = [YZMetalOrientation defaultVertices];
+        _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:vertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
+        
+        const float *coordinates = [YZMetalOrientation defaultCoordinates];
+        _textureCoordinateBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:coordinates length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
     }
     return self;
 }
@@ -40,33 +48,24 @@
 }
 
 - (void)renderTexture:(id<MTLTexture>)texture outputTexture:(id<MTLTexture>)outputTexture {
-    id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice.commandQueue commandBuffer];
-    const float *squareVertices = [YZMetalOrientation defaultVertices];
-    id<MTLBuffer> vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:squareVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
-    vertexBuffer.label = @"YZBrightness VertexBuffer";
-    
     MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
     desc.colorAttachments[0].texture = outputTexture;
     desc.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 1, 1);
     desc.colorAttachments[0].storeAction = MTLStoreActionStore;
     desc.colorAttachments[0].loadAction = MTLLoadActionClear;
     
+    id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice.commandQueue commandBuffer];
     id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:desc];
     if (!encoder) {
         NSLog(@"YZBrightness render endcoder Fail");
     }
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
     [encoder setRenderPipelineState:self.pipelineState];
-    [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:YZBrightnessVertexIndexPosition];
+    [encoder setVertexBuffer:_positionBuffer offset:0 atIndex:YZBrightnessVertexIndexPosition];
     
-    
-    const float *coordinates = [YZMetalOrientation defaultCoordinates];
-    id<MTLBuffer> coordinatesBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:coordinates length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
-    coordinatesBuffer.label = @"YZBrightness coordinatesBuffer";
-    [encoder setVertexBuffer:coordinatesBuffer offset:0 atIndex:YZBrightnessVertexIndexTextureCoordinate];
+    [encoder setVertexBuffer:_textureCoordinateBuffer offset:0 atIndex:YZBrightnessVertexIndexTextureCoordinate];
     [encoder setFragmentTexture:texture atIndex:YZBrightnessFragmentIndexTexture];
 
-    //coversion
     id<MTLBuffer> uniformBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&_brightness length:sizeof(float) options:MTLResourceCPUCacheModeDefaultCache];
     [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:YZBrightnessUniformIdx];
     

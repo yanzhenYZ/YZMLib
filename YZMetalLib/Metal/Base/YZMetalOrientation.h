@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <MetalKit/MetalKit.h>
 
 typedef NS_ENUM(NSInteger, YZOrientation) {
     YZOrientationUnknown    = 0,
@@ -17,7 +18,7 @@ typedef NS_ENUM(NSInteger, YZOrientation) {
 
 @interface YZMetalOrientation : NSObject
 
-+ (const float *)defaultVertices;
++ (simd_float8)defaultVertices;
 
 + (const float *)defaultCoordinates;
 + (const float *)getCoordinates:(YZOrientation)orientation;

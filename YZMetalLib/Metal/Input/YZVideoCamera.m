@@ -116,8 +116,8 @@
 
 - (void)_converWH:(id<MTLTexture>)bgraTexture outputTexture:(id<MTLTexture>)texture {
     id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice.commandQueue commandBuffer];
-    const float *squareVertices = [YZMetalOrientation defaultVertices];
-    id<MTLBuffer> vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:squareVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
+    simd_float8 vertices = [YZMetalOrientation defaultVertices];
+    id<MTLBuffer> vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     vertexBuffer.label = @"YZVideoCamera VertexBuffer";
     
     MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
@@ -204,8 +204,8 @@
 
 - (void)_convertYUVToRGB:(id<MTLTexture>)textureY textureUV:(id<MTLTexture>)textureUV outputTexture:(id<MTLTexture>)texture {
     id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice.commandQueue commandBuffer];
-    const float *squareVertices = [YZMetalOrientation defaultVertices];
-    id<MTLBuffer> vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:squareVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
+    simd_float8 vertices = [YZMetalOrientation defaultVertices];
+    id<MTLBuffer> vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     vertexBuffer.label = @"YZVideoCamera VertexBuffer";
     
     MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];

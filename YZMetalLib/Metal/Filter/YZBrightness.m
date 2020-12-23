@@ -24,11 +24,11 @@
     if (self) {
         _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZBrightnessInputVertex" fragment:@"YZBrightnessFragment"];
         
-        const float *vertices = [YZMetalOrientation defaultVertices];
-        _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:vertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
+        simd_float8 vertices = [YZMetalOrientation defaultVertices];
+        _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
         
         const float *coordinates = [YZMetalOrientation defaultCoordinates];
-        _textureCoordinateBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:coordinates length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
+        _textureCoordinateBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:coordinates length:sizeof(float) * 8 options:MTLResourceStorageModeShared];
     }
     return self;
 }

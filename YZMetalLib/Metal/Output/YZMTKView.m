@@ -87,8 +87,8 @@
     self.contentMode = UIViewContentModeScaleAspectFit;
     _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZMTKViewInputVertex" fragment:@"YZMTKViewFragment"];
     
-    const float *vertices = [YZMetalOrientation defaultVertices];
-    _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:vertices length:sizeof(float) * 8 options:MTLResourceStorageModeShared];
+    simd_float8 vertices = [YZMetalOrientation defaultVertices];
+    _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
     _positionBuffer.label = @"YZMTKView PositionBuffer";
     
     const float *coordinates = [YZMetalOrientation defaultCoordinates];

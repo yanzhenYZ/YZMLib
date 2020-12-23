@@ -7,12 +7,7 @@
 
 #import "YZMetalOrientation.h"
 
-static const float defaultVertices[] = {
-    -1.0, 1.0,
-    1.0,  1.0,
-    -1.0, -1.0,
-    1.0,  -1.0,
-};
+static const simd_float8 defaultVertices = {-1, 1, 1, 1, -1, -1, 1, -1};
 
 static const float defaultCoordinates[] = {
     0.0, 0.0,
@@ -38,7 +33,7 @@ static const float rightCoordinates[] = {
 
 @implementation YZMetalOrientation
 
-+ (const float *)defaultVertices {
++ (simd_float8)defaultVertices {
     return defaultVertices;
 }
 

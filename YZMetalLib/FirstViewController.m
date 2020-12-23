@@ -9,6 +9,7 @@
 #import "YZVideoCamera.h"
 #import "YZMTKView.h"
 #import "YZBrightness.h"
+#import "YZMetalOrientation.h"
 
 @interface FirstViewController ()<YZVideoCameraOutputDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *player;
@@ -34,7 +35,9 @@
 
 
 - (void)test003 {
-    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
+    YZMetalOrientation *orientation = [[YZMetalOrientation alloc] init];
+    orientation.orientation = (YZOrientation)UIApplication.sharedApplication.statusBarOrientation;
+    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480 orientation:orientation];
     
     _brightness = [[YZBrightness alloc] init];
     
@@ -46,7 +49,9 @@
 }
 
 - (void)test002 {
-    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
+    YZMetalOrientation *orientation = [[YZMetalOrientation alloc] init];
+    orientation.orientation = (YZOrientation)UIApplication.sharedApplication.statusBarOrientation;
+    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480 orientation:orientation];
     
     _mtkView2 = [[YZMTKView alloc] initWithFrame:UIScreen.mainScreen.bounds];
     [self.view addSubview:_mtkView2];
@@ -61,8 +66,8 @@
 }
 
 - (void)test_001 {
-
-    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
+    YZMetalOrientation *orientation = [[YZMetalOrientation alloc] init];
+    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480 orientation:orientation];
     _camera.view = _mtkView;
     _camera.delegate = self;
     [_camera startRunning];

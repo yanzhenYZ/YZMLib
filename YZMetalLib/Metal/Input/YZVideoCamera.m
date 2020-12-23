@@ -23,7 +23,7 @@
 
 @property (nonatomic, strong) id<MTLRenderPipelineState> renderPipelineState;
 @property (nonatomic, assign) CVMetalTextureCacheRef textureCache;
-@property (nonatomic, assign) YZOrientation orientation;
+@property (nonatomic, assign) YZMetalOrientation *orientation;
 @property (nonatomic, assign) BOOL userBGRA;
 @property (nonatomic, assign) BOOL fullYUVRange;
 @property (nonatomic, assign) int dropFrames;
@@ -36,11 +36,11 @@
     const float *_colorConversion; //4x3
 }
 
-- (instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset
+- (instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset orientation:(YZMetalOrientation *)orientation
 {
     self = [super init];
     if (self) {
-        _orientation = YZOrientationPortrait;
+        _orientation = orientation;
         _cameraQueue = dispatch_queue_create("com.yanzhen.video.camera.queue", 0);
         _cameraRenderQueue = dispatch_queue_create("com.yanzhen.video.camera.render.queue", 0);
         _videoSemaphore = dispatch_semaphore_create(1);

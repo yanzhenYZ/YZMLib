@@ -18,6 +18,8 @@ typedef NS_ENUM(NSInteger, YZOrientation) {
 
 @interface YZMetalOrientation : NSObject
 
+@property (nonatomic) YZOrientation orientation;
+
 + (simd_float8)defaultVertices;
 + (simd_float8)defaultCoordinates;
 

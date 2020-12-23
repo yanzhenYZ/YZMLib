@@ -11,6 +11,7 @@
 #import "YZBrightness.h"
 
 @class YZVideoCamera;
+@class YZMetalOrientation;
 @protocol YZVideoCameraOutputDelegate <NSObject>
 
 - (void)videoCamera:(YZVideoCamera *)camera output:(CMSampleBufferRef)sampleBuffer;
@@ -22,7 +23,7 @@
 @property (nonatomic, strong) YZMTKView *view;
 @property (nonatomic, strong) YZBrightness *brightness;
 
-- (instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset;
+- (instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset orientation:(YZMetalOrientation *)orientation;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)new NS_UNAVAILABLE;

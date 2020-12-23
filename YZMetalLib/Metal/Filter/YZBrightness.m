@@ -27,8 +27,8 @@
         simd_float8 vertices = [YZMetalOrientation defaultVertices];
         _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
         
-        const float *coordinates = [YZMetalOrientation defaultCoordinates];
-        _textureCoordinateBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:coordinates length:sizeof(float) * 8 options:MTLResourceStorageModeShared];
+        simd_float8 coordinates = [YZMetalOrientation defaultCoordinates];
+        _textureCoordinateBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&coordinates length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
     }
     return self;
 }

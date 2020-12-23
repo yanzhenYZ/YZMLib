@@ -135,8 +135,8 @@
     [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:YZRGBVertexIndexPosition];
     
     //bgra
-    const float *bgraSquareVertices = [YZMetalOrientation getCoordinates:YZOrientationLeft];
-    id<MTLBuffer> rgbBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:bgraSquareVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
+    simd_float8 bgraSquareVertices = [YZMetalOrientation getCoordinates:YZOrientationLeft];
+    id<MTLBuffer> rgbBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&bgraSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     rgbBuffer.label = @"YZVideoCamera RGBBuffer";
     [encoder setVertexBuffer:rgbBuffer offset:0 atIndex:YZRGBVertexIndexRGB];
     [encoder setFragmentTexture:bgraTexture atIndex:YZRGBFragmentIndexTexture];
@@ -223,13 +223,13 @@
     [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:YZFullRangeVertexIndexPosition];
     
     //yuv
-    const float *yuvSquareVertices = [YZMetalOrientation getCoordinates:YZOrientationLeft];
-    id<MTLBuffer> yBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:yuvSquareVertices length:sizeof(float) * 8 options:MTLResourceCPUCacheModeDefaultCache];
+    simd_float8 yuvSquareVertices = [YZMetalOrientation getCoordinates:YZOrientationLeft];
+    id<MTLBuffer> yBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&yuvSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     yBuffer.label = @"YZVideoCamera YBuffer";
     [encoder setVertexBuffer:yBuffer offset:0 atIndex:YZFullRangeVertexIndexY];
     [encoder setFragmentTexture:textureY atIndex:YZFullRangeFragmentIndexTextureY];
     
-    id<MTLBuffer> uvBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:yuvSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
+    id<MTLBuffer> uvBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&yuvSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     uvBuffer.label = @"YZVideoCamera UVBuffer";
     [encoder setVertexBuffer:uvBuffer offset:0 atIndex:YZFullRangeVertexIndexUV];
     [encoder setFragmentTexture:textureUV atIndex:YZFullRangeFragmentIndexTextureUV];

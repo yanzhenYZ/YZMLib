@@ -91,8 +91,8 @@
     _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
     _positionBuffer.label = @"YZMTKView PositionBuffer";
     
-    const float *coordinates = [YZMetalOrientation defaultCoordinates];
-    _textureCoordinateBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:coordinates length:sizeof(float) * 8 options:MTLResourceStorageModeShared];
+    simd_float8 coordinates = [YZMetalOrientation defaultCoordinates];
+    _textureCoordinateBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&coordinates length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
     _textureCoordinateBuffer.label = @"YZMTKView TextureCoordinateBuffer";
 }
 @end

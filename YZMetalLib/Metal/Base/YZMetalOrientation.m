@@ -9,26 +9,10 @@
 
 static const simd_float8 defaultVertices = {-1, 1, 1, 1, -1, -1, 1, -1};
 
-static const float defaultCoordinates[] = {
-    0.0, 0.0,
-    1.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-};
 
-static const float leftCoordinates[] = {
-    0.0f, 1.0f,
-    0.0f, 0.0f,
-    1.0f, 1.0f,
-    1.0f, 0.0f,
-};
-
-static const float rightCoordinates[] = {
-    0.0f, 1.0f,
-    0.0f, 0.0f,
-    1.0f, 1.0f,
-    1.0f, 0.0f,
-};
+static const simd_float8 defaultCoordinates = {0, 0, 1, 0, 0, 1, 1, 1};
+static const simd_float8 leftCoordinates = {0, 1, 0, 0, 1, 1, 1, 0};
+static const simd_float8 rightCoordinates = {0, 1, 0, 0, 1, 1, 1, 0};
 
 
 @implementation YZMetalOrientation
@@ -37,11 +21,12 @@ static const float rightCoordinates[] = {
     return defaultVertices;
 }
 
-+ (const float *)defaultCoordinates {
+
++ (simd_float8)defaultCoordinates {
     return defaultCoordinates;
 }
 
-+ (const float *)getCoordinates:(YZOrientation)orientation {
++ (simd_float8)getCoordinates:(YZOrientation)orientation {
     switch (orientation) {
         case YZOrientationLeft:
             return leftCoordinates;

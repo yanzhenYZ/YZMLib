@@ -19,8 +19,8 @@ typedef NS_ENUM(NSInteger, YZOrientation) {
 @interface YZMetalOrientation : NSObject
 
 + (simd_float8)defaultVertices;
++ (simd_float8)defaultCoordinates;
 
-+ (const float *)defaultCoordinates;
-+ (const float *)getCoordinates:(YZOrientation)orientation;
++ (simd_float8)getCoordinates:(YZOrientation)orientation;
 @end
 

@@ -35,13 +35,23 @@ typedef NS_ENUM(NSInteger, YZRotation) {
 
 @implementation YZMetalOrientation
 
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _inputOrientation = YZOrientationRight;
+        _outputOrientation = YZOrientationPortrait;
+    }
+    return self;
+}
+
 + (simd_float8)defaultVertices {
     return StandardVertices;
 }
 
 
 + (simd_float8)defaultCoordinates {
-    return defaultCoordinates;
+    return YZNoRotation;
 }
 
 + (simd_float8)getCoordinates:(YZOrientation)orientation {
@@ -56,9 +66,30 @@ typedef NS_ENUM(NSInteger, YZRotation) {
     return defaultCoordinates;
 }
 
+- (simd_float8)getTextureCoordinates {
+    YZRotation rotation = YZRotationNoRotation;
+    switch (_inputOrientation) {
+        case YZOrientationPortrait:
+            rotation = [self getPortraitRotation];
+            break;
+        case YZOrientationUpsideDown:
+            rotation = [self getUpsideDownRotation];
+            break;
+        case YZOrientationLeft:
+            rotation = [self getLeftRotation];
+            break;
+        case YZOrientationRight:
+            rotation = [self getRightRotation];
+            break;
+        default:
+            break;
+    }
+    return [self getTextureCoordinatesWithRotation:rotation];
+}
+
 #pragma mark - orientation
 
-- (simd_float8)getRCoordinates:(YZRotation)rotation {
+- (simd_float8)getTextureCoordinatesWithRotation:(YZRotation)rotation {
     switch (rotation) {
         case YZRotationNoRotation:
             return YZNoRotation;
@@ -90,38 +121,19 @@ typedef NS_ENUM(NSInteger, YZRotation) {
     return YZRotationNoRotation;
 }
 
-- (void)cal {
-    switch (_inputOrientation) {
-        case YZOrientationPortrait:
-            [self getPortrait];
-            break;
-        case YZOrientationUpsideDown:
-            [self getUpsideDown];
-            break;
-        case YZOrientationLeft:
-            [self getLeft];
-            break;
-        case YZOrientationRight:
-            [self getRight];
-            break;
-        default:
-            break;
-    }
-}
-
-- (YZRotation)getPortrait {
+- (YZRotation)getPortraitRotation {
     switch (_outputOrientation) {
         case YZOrientationPortrait:
             return YZRotationNoRotation;
             break;
         case YZOrientationUpsideDown:
-            NSLog(@"IN_YZOrientationUpsideDown");
+            return YZRotationRotate180;
             break;
         case YZOrientationLeft:
-            NSLog(@"IN_YZOrientationLeft");
+            return YZRotationRotateCounterclockwise;
             break;
         case YZOrientationRight:
-            NSLog(@"IN_YZOrientationRight");
+            return YZRotationRotateClockwise;
             break;
         default:
             return YZRotationNoRotation;
@@ -130,60 +142,63 @@ typedef NS_ENUM(NSInteger, YZRotation) {
     return YZRotationNoRotation;
 }
 
-- (void)getUpsideDown {
+- (YZRotation)getUpsideDownRotation {
     switch (_outputOrientation) {
         case YZOrientationPortrait:
-            NSLog(@"IN_YZOrientationPortrait");
+            return YZRotationRotate180;
             break;
         case YZOrientationUpsideDown:
-            NSLog(@"IN_YZOrientationUpsideDown");
+            return YZRotationNoRotation;
             break;
         case YZOrientationLeft:
-            NSLog(@"IN_YZOrientationLeft");
+            return YZRotationRotateClockwise;
             break;
         case YZOrientationRight:
-            NSLog(@"IN_YZOrientationRight");
+            return YZRotationRotateCounterclockwise;
             break;
         default:
             break;
     }
+    return YZRotationNoRotation;
 }
 
-- (void)getLeft {
+- (YZRotation)getLeftRotation {
     switch (_outputOrientation) {
         case YZOrientationPortrait:
-            NSLog(@"IN_YZOrientationPortrait");
+            return YZRotationRotateClockwise;
             break;
         case YZOrientationUpsideDown:
-            NSLog(@"IN_YZOrientationUpsideDown");
+            return YZRotationRotateCounterclockwise;
             break;
         case YZOrientationLeft:
-            NSLog(@"IN_YZOrientationLeft");
+            return YZRotationNoRotation;
             break;
         case YZOrientationRight:
-            NSLog(@"IN_YZOrientationRight");
+            return YZRotationRotate180;
             break;
         default:
             break;
     }
+    return YZRotationNoRotation;
 }
 
-- (void)getRight {
+- (YZRotation)getRightRotation {
     switch (_outputOrientation) {
         case YZOrientationPortrait:
-            NSLog(@"IN_YZOrientationPortrait");
+            return YZRotationRotateCounterclockwise;
             break;
         case YZOrientationUpsideDown:
-            NSLog(@"IN_YZOrientationUpsideDown");
+            return YZRotationRotateClockwise;
             break;
         case YZOrientationLeft:
-            NSLog(@"IN_YZOrientationLeft");
+            return YZRotationRotate180;
             break;
         case YZOrientationRight:
-            NSLog(@"IN_YZOrientationRight");
+            return YZRotationNoRotation;
             break;
         default:
             break;
     }
+    return YZRotationNoRotation;
 }
 @end

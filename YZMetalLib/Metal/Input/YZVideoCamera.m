@@ -19,11 +19,12 @@
 @property (nonatomic, strong) AVCaptureDevice *camera;
 @property (nonatomic, strong) AVCaptureDeviceInput *input;
 @property (nonatomic, strong) AVCaptureVideoDataOutput *output;
+@property (nonatomic, strong) YZMetalOrientation *orientation;
+
 @property (nonatomic, copy) AVCaptureSessionPreset preset;
 
 @property (nonatomic, strong) id<MTLRenderPipelineState> renderPipelineState;
 @property (nonatomic, assign) CVMetalTextureCacheRef textureCache;
-@property (nonatomic, assign) YZMetalOrientation *orientation;
 @property (nonatomic, assign) BOOL userBGRA;
 @property (nonatomic, assign) BOOL fullYUVRange;
 @property (nonatomic, assign) int dropFrames;
@@ -136,7 +137,8 @@
     [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:YZRGBVertexIndexPosition];
     
     //bgra
-    simd_float8 bgraSquareVertices = [YZMetalOrientation getCoordinates:YZOrientationLeft];
+    
+    simd_float8 bgraSquareVertices = [_orientation getTextureCoordinates];
     id<MTLBuffer> rgbBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&bgraSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     rgbBuffer.label = @"YZVideoCamera RGBBuffer";
     [encoder setVertexBuffer:rgbBuffer offset:0 atIndex:YZRGBVertexIndexRGB];
@@ -224,7 +226,7 @@
     [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:YZFullRangeVertexIndexPosition];
     
     //yuv
-    simd_float8 yuvSquareVertices = [YZMetalOrientation getCoordinates:YZOrientationLeft];
+    simd_float8 yuvSquareVertices = [_orientation getTextureCoordinates];
     id<MTLBuffer> yBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&yuvSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     yBuffer.label = @"YZVideoCamera YBuffer";
     [encoder setVertexBuffer:yBuffer offset:0 atIndex:YZFullRangeVertexIndexY];

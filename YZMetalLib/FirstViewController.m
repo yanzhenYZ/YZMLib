@@ -36,7 +36,7 @@
 
 - (void)test003 {
     YZMetalOrientation *orientation = [[YZMetalOrientation alloc] init];
-    orientation.inputOrientation = (YZOrientation)UIApplication.sharedApplication.statusBarOrientation;
+    orientation.outputOrientation = (YZOrientation)UIApplication.sharedApplication.statusBarOrientation;
     _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480 orientation:orientation];
     
     _brightness = [[YZBrightness alloc] init];
@@ -50,7 +50,7 @@
 
 - (void)test002 {
     YZMetalOrientation *orientation = [[YZMetalOrientation alloc] init];
-    orientation.inputOrientation = (YZOrientation)UIApplication.sharedApplication.statusBarOrientation;
+    orientation.outputOrientation = (YZOrientation)UIApplication.sharedApplication.statusBarOrientation;
     _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480 orientation:orientation];
     
     _mtkView2 = [[YZMTKView alloc] initWithFrame:UIScreen.mainScreen.bounds];

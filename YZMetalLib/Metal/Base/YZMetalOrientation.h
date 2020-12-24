@@ -23,6 +23,9 @@ typedef NS_ENUM(NSInteger, YZOrientation) {
 + (simd_float8)defaultVertices;
 + (simd_float8)defaultCoordinates;
 
-+ (simd_float8)getCoordinates:(YZOrientation)orientation;
+
+- (simd_float8)getTextureCoordinates;
+
+//+ (simd_float8)getCoordinates:(YZOrientation)orientation;
 @end
 

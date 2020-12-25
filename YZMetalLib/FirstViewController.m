@@ -35,6 +35,8 @@
 
 
 - (void)test003 {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarDidChanged:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+    
     YZMetalOrientation *orientation = [[YZMetalOrientation alloc] init];
     orientation.outputOrientation = (YZOrientation)UIApplication.sharedApplication.statusBarOrientation;
     _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480 orientation:orientation];
@@ -93,4 +95,28 @@
     [self showPixelBuffer:CMSampleBufferGetImageBuffer(sampleBuffer)];
 }
 
+
+
+
+
+- (void)statusBarDidChanged:(NSNotification *)note {
+    NSLog(@"UIApplicationDidChangeStatusBarOrientationNotification UserInfo: %@", note.userInfo);
+    //one way
+    UIInterfaceOrientation statusBar = [[UIApplication sharedApplication] statusBarOrientation];
+    //two way
+//    NSInteger statusBar = [note.userInfo[@"UIApplicationStatusBarOrientationUserInfoKey"] intValue];
+    _camera.outputOrientation = (YZOrientation)statusBar;
+//    _configuration.outputImageOrientation = statusBar;
+//    CGFloat theWidth  = _configuration.videoSize.width;
+//    CGFloat theHeight = _configuration.videoSize.height;
+//    if ((UIInterfaceOrientationIsPortrait(statusBar) && theWidth > theHeight)
+//        || (UIInterfaceOrientationIsLandscape(statusBar) && theWidth < theHeight))
+//    {
+//        _configuration.videoSize = CGSizeMake(theHeight, theWidth);
+//    }
+//
+//    _configuration.outputImageOrientation = statusBar;
+//    self.videoCamera.outputImageOrientation = statusBar;
+//    [self reloadFilter];
+}
 @end

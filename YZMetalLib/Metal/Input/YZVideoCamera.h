@@ -9,9 +9,9 @@
 #import <AVFoundation/AVFoundation.h>
 #import "YZMTKView.h"
 #import "YZBrightness.h"
+#import "YZMetalOrientation.h"
 
 @class YZVideoCamera;
-@class YZMetalOrientation;
 @protocol YZVideoCameraOutputDelegate <NSObject>
 
 - (void)videoCamera:(YZVideoCamera *)camera output:(CMSampleBufferRef)sampleBuffer;
@@ -20,8 +20,9 @@
 
 @interface YZVideoCamera : NSObject
 @property (nonatomic, weak) id<YZVideoCameraOutputDelegate> delegate;
-@property (nonatomic, strong) YZMTKView *view;
 @property (nonatomic, strong) YZBrightness *brightness;
+@property (nonatomic) YZOrientation outputOrientation;
+@property (nonatomic, strong) YZMTKView *view;
 
 - (instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset orientation:(YZMetalOrientation *)orientation;
 

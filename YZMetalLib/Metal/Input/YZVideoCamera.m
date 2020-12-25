@@ -9,7 +9,6 @@
 #import <Metal/Metal.h>
 #import "YZMetalDevice.h"
 #import "YZVideoCamera.h"
-#import "YZMetalOrientation.h"
 #import "YZShaderTypes.h"
 #import "YZYUVToRGBConversion.h"
 
@@ -51,6 +50,14 @@
         [self _configMetal];
     }
     return self;
+}
+
+- (void)setOutputOrientation:(YZOrientation)outputOrientation {
+    _orientation.outputOrientation = outputOrientation;
+}
+
+- (YZOrientation)outputOrientation {
+    return _orientation.outputOrientation;
 }
 
 - (void)startRunning {

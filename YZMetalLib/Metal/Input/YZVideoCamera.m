@@ -18,14 +18,13 @@
 @property (nonatomic, strong) AVCaptureDevice *camera;
 @property (nonatomic, strong) AVCaptureDeviceInput *input;
 @property (nonatomic, strong) AVCaptureVideoDataOutput *output;
-@property (nonatomic, strong) YZMetalOrientation *orientation;
-
 @property (nonatomic, copy) AVCaptureSessionPreset preset;
-
 @property (nonatomic, strong) id<MTLRenderPipelineState> renderPipelineState;
 @property (nonatomic, assign) CVMetalTextureCacheRef textureCache;
+@property (nonatomic, strong) YZMetalOrientation *orientation;
 @property (nonatomic, assign) BOOL userBGRA;
 @property (nonatomic, assign) BOOL fullYUVRange;
+@property (nonatomic, assign) BOOL pause;
 @property (nonatomic, assign) int dropFrames;
 @end
 
@@ -36,6 +35,15 @@
     const float *_colorConversion; //4x3
 }
 
+- (void)dealloc {
+    [self stopRunning];
+    [NSNotificationCenter.defaultCenter removeObserver:self];
+    if (_textureCache) {
+        CVMetalTextureCacheFlush(_textureCache, 0);
+        CFRelease(_textureCache);
+    }
+}
+
 - (instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset orientation:(YZMetalOrientation *)orientation
 {
     self = [super init];
@@ -44,10 +52,13 @@
         _cameraQueue = dispatch_queue_create("com.yanzhen.video.camera.queue", 0);
         _cameraRenderQueue = dispatch_queue_create("com.yanzhen.video.camera.render.queue", 0);
         _videoSemaphore = dispatch_semaphore_create(1);
-        _userBGRA = NO;
+        _userBGRA = YES;
         _preset = preset;
         [self _configVideoSession];
         [self _configMetal];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willResignActive:) name:UIApplicationWillResignActiveNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
     }
     return self;
 }
@@ -79,7 +90,7 @@
 
 #pragma mark - AVCaptureVideoDataOutputSampleBufferDelegate and metal frame
 - (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
-    if (!_session.isRunning) { return; }
+    if (!_session.isRunning || _pause) { return; }
     if (_output != output) { return; }
     if (dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_NOW) != 0) {
         _dropFrames++;
@@ -134,7 +145,6 @@
     id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice.commandQueue commandBuffer];
     simd_float8 vertices = [YZMetalOrientation defaultVertices];
     id<MTLBuffer> vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
-    vertexBuffer.label = @"YZVideoCamera VertexBuffer";
     
     MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
     desc.colorAttachments[0].texture = texture;
@@ -150,11 +160,8 @@
     [encoder setRenderPipelineState:self.renderPipelineState];
     [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:YZRGBVertexIndexPosition];
     
-    //bgra
-    
     simd_float8 bgraSquareVertices = [_orientation getTextureCoordinates];
     id<MTLBuffer> rgbBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&bgraSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
-    rgbBuffer.label = @"YZVideoCamera RGBBuffer";
     [encoder setVertexBuffer:rgbBuffer offset:0 atIndex:YZRGBVertexIndexRGB];
     [encoder setFragmentTexture:bgraTexture atIndex:YZRGBFragmentIndexTexture];
     
@@ -230,7 +237,6 @@
     id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice.commandQueue commandBuffer];
     simd_float8 vertices = [YZMetalOrientation defaultVertices];
     id<MTLBuffer> vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
-    vertexBuffer.label = @"YZVideoCamera VertexBuffer";
     
     MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
     desc.colorAttachments[0].texture = texture;
@@ -249,12 +255,10 @@
     //yuv
     simd_float8 yuvSquareVertices = [_orientation getTextureCoordinates];
     id<MTLBuffer> yBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&yuvSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
-    yBuffer.label = @"YZVideoCamera YBuffer";
     [encoder setVertexBuffer:yBuffer offset:0 atIndex:YZFullRangeVertexIndexY];
     [encoder setFragmentTexture:textureY atIndex:YZFullRangeFragmentIndexTextureY];
     
     id<MTLBuffer> uvBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&yuvSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
-    uvBuffer.label = @"YZVideoCamera UVBuffer";
     [encoder setVertexBuffer:uvBuffer offset:0 atIndex:YZFullRangeVertexIndexUV];
     [encoder setFragmentTexture:textureUV atIndex:YZFullRangeFragmentIndexTextureUV];
 
@@ -332,6 +336,17 @@
     [_session commitConfiguration];
 }
 
+#pragma mark - observer
+
+- (void)willResignActive:(NSNotification *)notification {
+    _pause = YES;
+}
+
+- (void)didBecomeActive:(NSNotification *)notification {
+    _pause = NO;
+}
+
+#pragma mark - class
 + (AVCaptureDevice *)defaultFrontDevice {
     if (@available(iOS 10.0, *)) {
         return [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionFront];

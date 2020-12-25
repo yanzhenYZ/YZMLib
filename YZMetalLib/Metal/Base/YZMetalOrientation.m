@@ -67,6 +67,46 @@ typedef NS_ENUM(NSInteger, YZRotation) {
 }
 
 - (simd_float8)getTextureCoordinates {
+    YZRotation rotation = [self getRotation];
+    return [self getTextureCoordinatesWithRotation:rotation];
+}
+
+- (BOOL)switchWithHeight {
+    YZRotation rotation = [self getRotation];
+    switch (rotation) {
+        case YZRotationNoRotation:
+            return NO;
+            break;
+        case YZRotationRotateCounterclockwise:
+            return YES;
+            break;
+        case YZRotationRotateClockwise:
+            return YES;
+            break;
+        case YZRotationRotate180:
+            return NO;
+            break;
+        case YZRotationFlipHorizontally:
+            return NO;
+            break;
+        case YZRotationFlipVertically:
+            return NO;
+            break;
+        case YZRotationRotateClockwiseAndFlipVertically:
+            return YES;
+            break;
+        case YZRotationRotateClockwiseAndFlipHorizontally:
+            return YES;
+            break;
+        default:
+            break;
+    }
+    return NO;
+}
+
+#pragma mark - orientation
+
+- (YZRotation)getRotation {
     YZRotation rotation = YZRotationNoRotation;
     switch (_inputOrientation) {
         case YZOrientationPortrait:
@@ -84,10 +124,8 @@ typedef NS_ENUM(NSInteger, YZRotation) {
         default:
             break;
     }
-    return [self getTextureCoordinatesWithRotation:rotation];
+    return rotation;
 }
-
-#pragma mark - orientation
 
 - (simd_float8)getTextureCoordinatesWithRotation:(YZRotation)rotation {
     switch (rotation) {

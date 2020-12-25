@@ -44,7 +44,7 @@
         _cameraQueue = dispatch_queue_create("com.yanzhen.video.camera.queue", 0);
         _cameraRenderQueue = dispatch_queue_create("com.yanzhen.video.camera.render.queue", 0);
         _videoSemaphore = dispatch_semaphore_create(1);
-        _userBGRA = YES;
+        _userBGRA = NO;
         _preset = preset;
         [self _configVideoSession];
         [self _configMetal];
@@ -113,7 +113,14 @@
         textureRef = NULL;
     }
     
-    MTLTextureDescriptor *desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:height height:width mipmapped:NO];
+    NSUInteger outputW = width;
+    NSUInteger outputH = height;
+    if ([_orientation switchWithHeight]) {
+        outputW = height;
+        outputH = width;
+    }
+    
+    MTLTextureDescriptor *desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:outputW height:outputH mipmapped:NO];
     desc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
     id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:desc];
     
@@ -182,8 +189,15 @@
         textureRef = NULL;
     }
     
-    size_t outputW = CVPixelBufferGetHeight(pixelBuffer);
-    size_t outputH = CVPixelBufferGetWidth(pixelBuffer);
+    height = CVPixelBufferGetHeight(pixelBuffer);
+    width = CVPixelBufferGetWidth(pixelBuffer);
+    
+    NSUInteger outputW = width;
+    NSUInteger outputH = height;
+    if ([_orientation switchWithHeight]) {
+        outputW = height;
+        outputH = width;
+    }
     MTLTextureDescriptor *desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:outputW height:outputH mipmapped:NO];
     desc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
     id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:desc];

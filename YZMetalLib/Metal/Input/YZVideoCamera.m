@@ -88,6 +88,10 @@
     dispatch_semaphore_signal(_videoSemaphore);
 }
 
+- (void)switchCamera {
+    
+}
+
 #pragma mark - AVCaptureVideoDataOutputSampleBufferDelegate and metal frame
 - (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
     if (!_session.isRunning || _pause) { return; }

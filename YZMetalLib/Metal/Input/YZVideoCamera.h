@@ -32,5 +32,7 @@
 
 - (void)startRunning;
 - (void)stopRunning;
+
+- (void)switchCamera;
 @end
 

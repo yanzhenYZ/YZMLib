@@ -18,6 +18,7 @@
 @property (nonatomic, strong) AVCaptureDevice *camera;
 @property (nonatomic, strong) AVCaptureDeviceInput *input;
 @property (nonatomic, strong) AVCaptureVideoDataOutput *output;
+@property (nonatomic, assign) AVCaptureDevicePosition position;
 @property (nonatomic, copy) AVCaptureSessionPreset preset;
 @property (nonatomic, strong) id<MTLRenderPipelineState> renderPipelineState;
 @property (nonatomic, assign) CVMetalTextureCacheRef textureCache;
@@ -44,10 +45,15 @@
     }
 }
 
-- (instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset orientation:(YZMetalOrientation *)orientation
+-(instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset orientation:(YZMetalOrientation *)orientation {
+    return [self initWithSessionPreset:preset orientation:orientation position:AVCaptureDevicePositionBack];
+}
+
+- (instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset orientation:(YZMetalOrientation *)orientation position:(AVCaptureDevicePosition)position
 {
     self = [super init];
     if (self) {
+        _position = position;
         _orientation = orientation;
         _cameraQueue = dispatch_queue_create("com.yanzhen.video.camera.queue", 0);
         _cameraRenderQueue = dispatch_queue_create("com.yanzhen.video.camera.render.queue", 0);
@@ -89,7 +95,26 @@
 }
 
 - (void)switchCamera {
+    dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
+    if (_position == AVCaptureDevicePositionBack) {
+        _position = AVCaptureDevicePositionFront;
+    } else {
+        _position = AVCaptureDevicePositionBack;
+    }
     
+    
+    AVCaptureDevice *device = [YZVideoCamera getDevice:_position];
+    AVCaptureDeviceInput *input = [[AVCaptureDeviceInput alloc] initWithDevice:device error:nil];
+    if (input) {
+        [_session beginConfiguration];
+        [_session removeInput:_input];
+        if ([_session canAddInput:input]) {
+            [_session addInput:input];
+        }
+        [_session commitConfiguration];
+        _input = input;
+    }
+    dispatch_semaphore_signal(_videoSemaphore);
 }
 
 #pragma mark - AVCaptureVideoDataOutputSampleBufferDelegate and metal frame
@@ -283,7 +308,7 @@
 
 - (void)_configVideoSession {
     _session = [[AVCaptureSession alloc] init];
-    _camera = [YZVideoCamera defaultFrontDevice];
+    _camera = [YZVideoCamera getDevice:_position];
     NSError *error = nil;
     _input = [[AVCaptureDeviceInput alloc] initWithDevice:_camera error:&error];
     if (error) {
@@ -351,14 +376,14 @@
 }
 
 #pragma mark - class
-+ (AVCaptureDevice *)defaultFrontDevice {
++ (AVCaptureDevice *)getDevice:(AVCaptureDevicePosition)position {
     if (@available(iOS 10.0, *)) {
-        return [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionFront];
+        return [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:AVMediaTypeVideo position:position];
     } else {
         NSArray<AVCaptureDevice *> *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
         __block AVCaptureDevice *device = nil;
         [devices enumerateObjectsUsingBlock:^(AVCaptureDevice * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (obj.position == AVCaptureDevicePositionFront) {
+            if (obj.position == position) {
                 device = obj;
                 *stop = YES;
             }

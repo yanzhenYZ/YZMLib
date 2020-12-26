@@ -27,5 +27,6 @@ typedef NS_ENUM(NSInteger, YZOrientation) {
 - (simd_float8)getTextureCoordinates;
 
 - (BOOL)switchWithHeight;
+- (void)switchCamera;
 @end
 

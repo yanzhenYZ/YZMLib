@@ -54,18 +54,6 @@ typedef NS_ENUM(NSInteger, YZRotation) {
     return YZNoRotation;
 }
 
-+ (simd_float8)getCoordinates:(YZOrientation)orientation {
-    switch (orientation) {
-        case YZOrientationLeft:
-            return leftCoordinates;
-            break;
-            
-        default:
-            break;
-    }
-    return defaultCoordinates;
-}
-
 - (simd_float8)getTextureCoordinates {
     YZRotation rotation = [self getRotation];
     return [self getTextureCoordinatesWithRotation:rotation];
@@ -104,6 +92,14 @@ typedef NS_ENUM(NSInteger, YZRotation) {
     return NO;
 }
 
+
+- (void)switchCamera {
+    if (_outputOrientation == YZOrientationLeft) {
+        _outputOrientation = YZOrientationRight;
+    } else if (_outputOrientation == YZOrientationRight) {
+        _outputOrientation = YZOrientationLeft;
+    }
+}
 #pragma mark - orientation
 
 - (YZRotation)getRotation {

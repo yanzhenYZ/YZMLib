@@ -46,7 +46,7 @@
 }
 
 -(instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset orientation:(YZMetalOrientation *)orientation {
-    return [self initWithSessionPreset:preset orientation:orientation position:AVCaptureDevicePositionBack];
+    return [self initWithSessionPreset:preset orientation:orientation position:AVCaptureDevicePositionFront];
 }
 
 - (instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset orientation:(YZMetalOrientation *)orientation position:(AVCaptureDevicePosition)position
@@ -70,7 +70,19 @@
 }
 
 - (void)setOutputOrientation:(YZOrientation)outputOrientation {
-    _orientation.outputOrientation = outputOrientation;
+    dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
+    if (_position == AVCaptureDevicePositionBack) {//why
+        if (outputOrientation == YZOrientationRight) {
+            _orientation.outputOrientation = YZOrientationLeft;
+        } else if (outputOrientation == YZOrientationLeft) {
+            _orientation.outputOrientation = YZOrientationRight;
+        } else {
+            _orientation.outputOrientation = outputOrientation;
+        }
+    } else {
+        _orientation.outputOrientation = outputOrientation;
+    }
+    dispatch_semaphore_signal(_videoSemaphore);
 }
 
 - (YZOrientation)outputOrientation {
@@ -114,6 +126,7 @@
         [_session commitConfiguration];
         _input = input;
     }
+    [_orientation switchCamera];
     dispatch_semaphore_signal(_videoSemaphore);
 }
 

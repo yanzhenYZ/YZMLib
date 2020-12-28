@@ -10,6 +10,7 @@
 #import "YZMetalDevice.h"
 #import "YZVideoCamera.h"
 #import "YZShaderTypes.h"
+#import "YZMetalOrientation.h"
 #import "YZYUVToRGBConversion.h"
 
 @interface YZVideoCamera ()<AVCaptureVideoDataOutputSampleBufferDelegate>
@@ -45,16 +46,16 @@
     }
 }
 
--(instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset orientation:(YZMetalOrientation *)orientation {
-    return [self initWithSessionPreset:preset orientation:orientation position:AVCaptureDevicePositionFront];
+-(instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset {
+    return [self initWithSessionPreset:preset position:AVCaptureDevicePositionFront];
 }
 
-- (instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset orientation:(YZMetalOrientation *)orientation position:(AVCaptureDevicePosition)position
+- (instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset position:(AVCaptureDevicePosition)position
 {
     self = [super init];
     if (self) {
         _position = position;
-        _orientation = orientation;
+        _orientation = [[YZMetalOrientation alloc] init];
         _cameraQueue = dispatch_queue_create("com.yanzhen.video.camera.queue", 0);
         _cameraRenderQueue = dispatch_queue_create("com.yanzhen.video.camera.render.queue", 0);
         _videoSemaphore = dispatch_semaphore_create(1);
@@ -69,7 +70,18 @@
     return self;
 }
 
-- (void)setOutputOrientation:(YZOrientation)outputOrientation {
+#pragma mark - property
+-(void)setVideoMirrored:(BOOL)videoMirrored {
+    dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
+    _orientation.mirror = videoMirrored;
+    dispatch_semaphore_signal(_videoSemaphore);
+}
+
+-(BOOL)videoMirrored {
+    return _orientation.mirror;
+}
+
+- (void)setOutputOrientation:(UIInterfaceOrientation)outputOrientation {
     dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
     if (_position == AVCaptureDevicePositionBack) {//why
         if (outputOrientation == YZOrientationRight) {
@@ -77,16 +89,16 @@
         } else if (outputOrientation == YZOrientationLeft) {
             _orientation.outputOrientation = YZOrientationRight;
         } else {
-            _orientation.outputOrientation = outputOrientation;
+            _orientation.outputOrientation = (YZOrientation)outputOrientation;
         }
     } else {
-        _orientation.outputOrientation = outputOrientation;
+        _orientation.outputOrientation = (YZOrientation)outputOrientation;
     }
     dispatch_semaphore_signal(_videoSemaphore);
 }
 
-- (YZOrientation)outputOrientation {
-    return _orientation.outputOrientation;
+- (UIInterfaceOrientation)outputOrientation {
+    return (UIInterfaceOrientation)_orientation.outputOrientation;
 }
 
 - (void)startRunning {

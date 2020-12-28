@@ -9,7 +9,6 @@
 #import "YZVideoCamera.h"
 #import "YZMTKView.h"
 #import "YZBrightness.h"
-#import "YZMetalOrientation.h"
 
 @interface FirstViewController ()<YZVideoCameraOutputDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *player;
@@ -26,24 +25,23 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-
-//    [self test_001];
-    
     [self test003];
 }
 
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     [_camera switchCamera];
+//    if (_camera.videoMirrored) {
+//        _camera.videoMirrored = NO;
+//    } else {
+//        _camera.videoMirrored = YES;
+//    }
 }
 
 - (void)test003 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarDidChanged:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
     
-    YZMetalOrientation *orientation = [[YZMetalOrientation alloc] init];
-    orientation.outputOrientation = (YZOrientation)UIApplication.sharedApplication.statusBarOrientation;
-    
-    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480 orientation:orientation];
-    
+    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
+    _camera.outputOrientation = UIApplication.sharedApplication.statusBarOrientation;
     _brightness = [[YZBrightness alloc] init];
     
     _camera.brightness = _brightness;
@@ -53,31 +51,19 @@
     [_camera startRunning];
 }
 
-- (void)test002 {
-    YZMetalOrientation *orientation = [[YZMetalOrientation alloc] init];
-    orientation.outputOrientation = (YZOrientation)UIApplication.sharedApplication.statusBarOrientation;
-    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480 orientation:orientation];
-    
-    _mtkView2 = [[YZMTKView alloc] initWithFrame:UIScreen.mainScreen.bounds];
-    [self.view addSubview:_mtkView2];
-    _camera.view = _mtkView2;
-    
-    _camera.delegate = self;
-    [_camera startRunning];
-}
 
 - (IBAction)brightValueChange:(UISlider *)sender {
     _brightness.brightness = sender.value;
 }
-
-- (void)test_001 {
-    YZMetalOrientation *orientation = [[YZMetalOrientation alloc] init];
-    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480 orientation:orientation];
-    _camera.view = _mtkView;
-    _camera.delegate = self;
-    [_camera startRunning];
-    
-}
+//
+//- (void)test_001 {
+//    YZMetalOrientation *orientation = [[YZMetalOrientation alloc] init];
+//    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480 orientation:orientation];
+//    _camera.view = _mtkView;
+//    _camera.delegate = self;
+//    [_camera startRunning];
+//
+//}
 
 - (void)showPixelBuffer:(CVPixelBufferRef)pixel {
     CVPixelBufferRetain(pixel);
@@ -99,27 +85,9 @@
 }
 
 
-
-
-
 - (void)statusBarDidChanged:(NSNotification *)note {
-    NSLog(@"UIApplicationDidChangeStatusBarOrientationNotification UserInfo: %@", note.userInfo);
-    //one way
+//    NSLog(@"UIApplicationDidChangeStatusBarOrientationNotification UserInfo: %@", note.userInfo);
     UIInterfaceOrientation statusBar = [[UIApplication sharedApplication] statusBarOrientation];
-    //two way
-//    NSInteger statusBar = [note.userInfo[@"UIApplicationStatusBarOrientationUserInfoKey"] intValue];
-    _camera.outputOrientation = (YZOrientation)statusBar;
-//    _configuration.outputImageOrientation = statusBar;
-//    CGFloat theWidth  = _configuration.videoSize.width;
-//    CGFloat theHeight = _configuration.videoSize.height;
-//    if ((UIInterfaceOrientationIsPortrait(statusBar) && theWidth > theHeight)
-//        || (UIInterfaceOrientationIsLandscape(statusBar) && theWidth < theHeight))
-//    {
-//        _configuration.videoSize = CGSizeMake(theHeight, theWidth);
-//    }
-//
-//    _configuration.outputImageOrientation = statusBar;
-//    self.videoCamera.outputImageOrientation = statusBar;
-//    [self reloadFilter];
+    _camera.outputOrientation = statusBar;
 }
 @end

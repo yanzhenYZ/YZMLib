@@ -9,7 +9,6 @@
 #import <AVFoundation/AVFoundation.h>
 #import "YZMTKView.h"
 #import "YZBrightness.h"
-#import "YZMetalOrientation.h"
 
 @class YZVideoCamera;
 @protocol YZVideoCameraOutputDelegate <NSObject>
@@ -21,11 +20,19 @@
 @interface YZVideoCamera : NSObject
 @property (nonatomic, weak) id<YZVideoCameraOutputDelegate> delegate;
 @property (nonatomic, strong) YZBrightness *brightness;
-@property (nonatomic) YZOrientation outputOrientation;
 @property (nonatomic, strong) YZMTKView *view;
 
-- (instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset orientation:(YZMetalOrientation *)orientation;
-- (instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset orientation:(YZMetalOrientation *)orientation position:(AVCaptureDevicePosition)position;
+/** default is UIInterfaceOrientationPortrait */
+@property (nonatomic) UIInterfaceOrientation outputOrientation;
+
+/**
+ default is YES.
+ Only use for AVCaptureDevicePositionFront
+ */
+@property (nonatomic) BOOL videoMirrored;
+
+- (instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset;
+- (instancetype)initWithSessionPreset:(AVCaptureSessionPreset)preset position:(AVCaptureDevicePosition)position;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)new NS_UNAVAILABLE;

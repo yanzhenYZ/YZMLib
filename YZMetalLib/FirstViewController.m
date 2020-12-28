@@ -41,6 +41,7 @@
     
     YZMetalOrientation *orientation = [[YZMetalOrientation alloc] init];
     orientation.outputOrientation = (YZOrientation)UIApplication.sharedApplication.statusBarOrientation;
+    
     _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480 orientation:orientation];
     
     _brightness = [[YZBrightness alloc] init];

@@ -18,20 +18,20 @@ static const simd_float8 YZFlipVertically = {0, 1, 1, 1, 0, 0, 1, 0};
 static const simd_float8 YZRotateClockwiseAndFlipVertically = {0, 0, 0, 1, 1, 0, 1, 1};
 static const simd_float8 YZRotateClockwiseAndFlipHorizontally = {1, 1, 1, 0, 0, 1, 0, 0};
 
-
-static const simd_float8 defaultCoordinates = {0, 0, 1, 0, 0, 1, 1, 1};
-static const simd_float8 leftCoordinates = {0, 1, 0, 0, 1, 1, 1, 0};
-
 typedef NS_ENUM(NSInteger, YZRotation) {
     YZRotationNoRotation                         = 0,
-    YZRotationRotateCounterclockwise             = 1,
-    YZRotationRotateClockwise                    = 2,
-    YZRotationRotate180                          = 3,
+    YZRotationRotate180                          = 1,
+    YZRotationRotateCounterclockwise             = 2,
+    YZRotationRotateClockwise                    = 3,
     YZRotationFlipHorizontally                   = 4,
     YZRotationFlipVertically                     = 5,
     YZRotationRotateClockwiseAndFlipVertically   = 6,
     YZRotationRotateClockwiseAndFlipHorizontally = 7
 };
+
+@interface YZMetalOrientation ()
+@property (nonatomic) YZOrientation inputOrientation;
+@end
 
 @implementation YZMetalOrientation
 
@@ -41,6 +41,7 @@ typedef NS_ENUM(NSInteger, YZRotation) {
     if (self) {
         _inputOrientation = YZOrientationRight;
         _outputOrientation = YZOrientationPortrait;
+        _mirror = YES;
     }
     return self;
 }
@@ -55,7 +56,15 @@ typedef NS_ENUM(NSInteger, YZRotation) {
 }
 
 - (simd_float8)getTextureCoordinates {
+    return [self getTextureCoordinates:AVCaptureDevicePositionFront];
+}
+
+- (simd_float8)getTextureCoordinates:(AVCaptureDevicePosition)position {
     YZRotation rotation = [self getRotation];
+    if (position == AVCaptureDevicePositionBack || !_mirror) {
+        return [self getTextureCoordinatesWithRotation:rotation];
+    }
+    rotation = [self getMirrorRotation:rotation];
     return [self getTextureCoordinatesWithRotation:rotation];
 }
 
@@ -65,14 +74,14 @@ typedef NS_ENUM(NSInteger, YZRotation) {
         case YZRotationNoRotation:
             return NO;
             break;
+        case YZRotationRotate180:
+            return NO;
+            break;
         case YZRotationRotateCounterclockwise:
             return YES;
             break;
         case YZRotationRotateClockwise:
             return YES;
-            break;
-        case YZRotationRotate180:
-            return NO;
             break;
         case YZRotationFlipHorizontally:
             return NO;
@@ -153,6 +162,25 @@ typedef NS_ENUM(NSInteger, YZRotation) {
             break;
     }
     return YZRotationNoRotation;
+}
+
+- (YZRotation)getMirrorRotation:(YZRotation)rotation {
+    switch (rotation) {
+        case YZRotationNoRotation:
+            return YZRotationFlipHorizontally;
+            break;
+        case YZRotationRotate180:
+            return YZRotationFlipVertically;
+            break;
+        case YZRotationRotateCounterclockwise:
+            return YZRotationRotateClockwiseAndFlipVertically;
+            break;
+        case YZRotationRotateClockwise:
+            return YZRotationRotateClockwiseAndFlipHorizontally;
+        default:
+            break;
+    }
+    return rotation;
 }
 
 - (YZRotation)getPortraitRotation {

@@ -202,7 +202,7 @@
     [encoder setRenderPipelineState:self.renderPipelineState];
     [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:YZRGBVertexIndexPosition];
     
-    simd_float8 bgraSquareVertices = [_orientation getTextureCoordinates];
+    simd_float8 bgraSquareVertices = [_orientation getTextureCoordinates:_position];
     id<MTLBuffer> rgbBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&bgraSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     [encoder setVertexBuffer:rgbBuffer offset:0 atIndex:YZRGBVertexIndexRGB];
     [encoder setFragmentTexture:bgraTexture atIndex:YZRGBFragmentIndexTexture];
@@ -295,7 +295,7 @@
     [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:YZFullRangeVertexIndexPosition];
     
     //yuv
-    simd_float8 yuvSquareVertices = [_orientation getTextureCoordinates];
+    simd_float8 yuvSquareVertices = [_orientation getTextureCoordinates:_position];
     id<MTLBuffer> yBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&yuvSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     [encoder setVertexBuffer:yBuffer offset:0 atIndex:YZFullRangeVertexIndexY];
     [encoder setFragmentTexture:textureY atIndex:YZFullRangeFragmentIndexTextureY];

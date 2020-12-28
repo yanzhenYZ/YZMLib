@@ -9,7 +9,6 @@
 #import "AppDelegate.h"
 
 /**
- 2.0.2 镜像问题
  2.0.3 YZMTKView 显示模式问题
  
  2.0.7 美颜

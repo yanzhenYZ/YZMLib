@@ -9,11 +9,11 @@
 #import "AppDelegate.h"
 
 /**
- 2.0.3 YZMTKView 显示模式问题
+ 2.0.5 美颜
  
- 2.0.7 美颜
- 2.0.8 性能对比 GPU
- 2.0.9 dealloc
+ 2.0.7 性能对比 GPU
+ 2.0.8 dealloc
+ 2.0.9 全部代码 - 属性设置 - metal语言
  */
 
 int main(int argc, char * argv[]) {

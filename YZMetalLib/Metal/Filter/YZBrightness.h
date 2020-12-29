@@ -14,6 +14,7 @@
 @property (nonatomic, assign) float beautyLevel;
 @property (nonatomic, assign) float brightLevel;
 @property (nonatomic, strong) YZMTKView *view;
+
 - (void)newTextureAvailable:(id<MTLTexture>)texture index:(NSInteger)index;
 
 @end

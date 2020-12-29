@@ -45,9 +45,9 @@ fragment half4 YZBrightnessFragment(YZBrightnessVertexIO fragmentInput [[stage_i
     constexpr sampler quadSampler (mag_filter::linear, min_filter::linear);
     half3 centralColor = inputTexture.sample(quadSampler, fragmentInput.textureCoordinate).rgb;
     half2 blur[24];
-    //half2 singleStepOffset = half2(0.0018518518, 0.0012722646);
-//    half2 singleStepOffset = half2(2.0 / 640.0, 2.0 / 480.0);
-    half2 singleStepOffset = half2(2.0 / 480.0, 2.0 / 640.0);
+    half2 singleStepOffset = half2(0.0018518518, 0.0012722646);
+    //GPUImage use
+    //half2 singleStepOffset = half2(2.0 / 480.0, 2.0 / 640.0);
     half2 xy = half2(fragmentInput.textureCoordinate.xy);
     
     blur[0] = xy + singleStepOffset * half2(0.0, -10.0);
@@ -76,7 +76,6 @@ fragment half4 YZBrightnessFragment(YZBrightnessVertexIO fragmentInput [[stage_i
     blur[23] = xy + singleStepOffset * half2(2.0, 2.0);
     
     half g = centralColor.g * 22.0;
-    
     g += inputTexture.sample(quadSampler, float2(blur[0])).g;
     g += inputTexture.sample(quadSampler, float2(blur[1])).g;
     g += inputTexture.sample(quadSampler, float2(blur[2])).g;
@@ -118,7 +117,6 @@ fragment half4 YZBrightnessFragment(YZBrightnessVertexIO fragmentInput [[stage_i
     
     half beauty = 0.5;
     half tone = 0.5;
-    //half4 params = half4(0.7, 0.85, 0.25, 0.25);
     half4 params;
     params.r = 1.0 - 0.6 * beauty;
     params.g = 1.0 - 0.3 * beauty;

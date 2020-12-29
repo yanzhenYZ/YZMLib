@@ -15,7 +15,7 @@
 @property (nonatomic, strong) id<MTLTexture> texture;
 @property (nonatomic, strong) id<MTLBuffer> positionBuffer;
 @property (nonatomic, strong) id<MTLBuffer> textureCoordinateBuffer;
-
+@property (nonatomic) CGRect currentBounds;
 @property (nonatomic) double red;
 @property (nonatomic) double green;
 @property (nonatomic) double blue;
@@ -29,6 +29,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         [self _configSelf];
+        self.currentBounds = self.bounds;
     }
     return self;
 }
@@ -43,8 +44,8 @@
 }
 
 - (void)setFillMode:(YZMTKViewFillMode)fillMode {
-    _fillMode = fillMode;
-    self.contentMode = (UIViewContentMode)fillMode;
+//    _fillMode = fillMode;
+//    self.contentMode = (UIViewContentMode)fillMode;
 }
 
 - (void)setBackgroundColorRed:(double)red green:(double)green blue:(double)blue alpha:(double)alpha {
@@ -75,16 +76,16 @@
     }
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
     [encoder setRenderPipelineState:_pipelineState];
+#if 1
+    simd_float8 vertices = {-1, 1, 1, 1, -1, -1, 1, -1};
+    
+    //simd_float8 vertices = [YZMetalOrientation defaultVertices];
+    _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
+    _positionBuffer.label = @"YZMTKView PositionBuffer";
+#endif
     [encoder setVertexBuffer:_positionBuffer offset:0 atIndex:YZMTKViewVertexIndexPosition];
     
-#if 1
-    simd_float8 coordinates = {0, 0, 1, 0, 0, 1, 1, 1};
-#else
-    simd_float8 coordinates = [YZMetalOrientation defaultCoordinates];
-#endif
-    id<MTLBuffer> textureCoordinateBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&coordinates length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
-    textureCoordinateBuffer.label = @"YZMTKView TextureCoordinateBuffer";
-    [encoder setVertexBuffer:textureCoordinateBuffer offset:0 atIndex:YZMTKViewVertexIndexTextureCoordinate];
+    [encoder setVertexBuffer:_textureCoordinateBuffer offset:0 atIndex:YZMTKViewVertexIndexTextureCoordinate];
     [encoder setFragmentTexture:_texture atIndex:YZMTKViewFragmentIndexTexture];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];
@@ -109,14 +110,19 @@
     self.device = YZMetalDevice.defaultDevice.device;
     self.contentMode = UIViewContentModeScaleToFill;
     _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZMTKViewInputVertex" fragment:@"YZMTKViewFragment"];
-    
+    /*
     simd_float8 vertices = [YZMetalOrientation defaultVertices];
     _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
     _positionBuffer.label = @"YZMTKView PositionBuffer";
-    
-    /*
+    */
+ 
     simd_float8 coordinates = [YZMetalOrientation defaultCoordinates];
     _textureCoordinateBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&coordinates length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
-    _textureCoordinateBuffer.label = @"YZMTKView TextureCoordinateBuffer";*/
+    _textureCoordinateBuffer.label = @"YZMTKView TextureCoordinateBuffer";
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    _currentBounds = self.bounds;
 }
 @end

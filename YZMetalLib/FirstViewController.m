@@ -40,7 +40,7 @@
 }
 
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    [_camera switchCamera];
+//    [_camera switchCamera];
 //    if (_camera.videoMirrored) {
 //        _camera.videoMirrored = NO;
 //    } else {

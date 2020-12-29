@@ -145,7 +145,8 @@ fragment half4 YZBrightnessFragment(YZBrightnessVertexIO fragmentInput [[stage_i
 //    color.rgb = mix(color.rgb, satcolor, params.a);
 //    return half4(color.rgb, color.a);
     
-    return half4(color.rgb + uniform.brightness, color.a);
+    float brightness = uniform.brightness * 0.3;//limit 0-0.3
+    return half4(color.rgb + brightness, color.a);
 }
 
 

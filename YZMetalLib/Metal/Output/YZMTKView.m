@@ -15,6 +15,11 @@
 @property (nonatomic, strong) id<MTLTexture> texture;
 @property (nonatomic, strong) id<MTLBuffer> positionBuffer;
 @property (nonatomic, strong) id<MTLBuffer> textureCoordinateBuffer;
+
+@property (nonatomic) double red;
+@property (nonatomic) double green;
+@property (nonatomic) double blue;
+@property (nonatomic) double alpha;
 @end
 
 @implementation YZMTKView
@@ -37,6 +42,15 @@
     return self;
 }
 
+- (void)setFillMode:(YZMTKViewFillMode)fillMode {
+    _fillMode = fillMode;
+    self.contentMode = (UIViewContentMode)fillMode;
+}
+
+- (void)setBackgroundColorRed:(double)red green:(double)green blue:(double)blue alpha:(double)alpha {
+    
+}
+
 - (void)newTextureAvailable:(id<MTLTexture>)texture index:(NSInteger)index {
     _texture = texture;
     self.drawableSize = CGSizeMake(texture.width, texture.height);
@@ -50,7 +64,7 @@
     
     MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
     desc.colorAttachments[0].texture = outTexture;
-    desc.colorAttachments[0].clearColor = MTLClearColorMake(1, 0, 0, 1);
+    desc.colorAttachments[0].clearColor = MTLClearColorMake(_red, _green, _blue, _alpha);
     desc.colorAttachments[0].storeAction = MTLStoreActionStore;
     desc.colorAttachments[0].loadAction = MTLLoadActionClear;
     
@@ -79,12 +93,14 @@
 
 #pragma mark - private config
 - (void)_configSelf {
+    _alpha = 1.0;
+    
     self.paused = YES;
     self.delegate = self;
     self.framebufferOnly = NO;
     self.enableSetNeedsDisplay = NO;
     self.device = YZMetalDevice.defaultDevice.device;
-    self.contentMode = UIViewContentModeScaleAspectFit;
+    self.contentMode = UIViewContentModeScaleToFill;
     _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZMTKViewInputVertex" fragment:@"YZMTKViewFragment"];
     
     simd_float8 vertices = [YZMetalOrientation defaultVertices];

@@ -28,6 +28,14 @@
     [self test003];
 }
 
+- (IBAction)fillModel:(UISegmentedControl *)sender {
+    _mtkView.fillMode = (YZMTKViewFillMode)sender.selectedSegmentIndex;
+}
+
+- (IBAction)switchCamera:(id)sender {
+    [_camera switchCamera];
+}
+
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     [_camera switchCamera];
 //    if (_camera.videoMirrored) {

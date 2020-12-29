@@ -9,7 +9,10 @@
 #import "YZMTKView.h"
 
 @interface YZBrightness : NSObject
-@property (nonatomic, assign) float brightness;
+/** default is YES */
+@property (nonatomic, assign) BOOL enable;
+@property (nonatomic, assign) float beautyLevel;
+@property (nonatomic, assign) float brightLevel;
 @property (nonatomic, strong) YZMTKView *view;
 - (void)newTextureAvailable:(id<MTLTexture>)texture index:(NSInteger)index;
 

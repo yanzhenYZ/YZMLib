@@ -22,6 +22,8 @@
 {
     self = [super init];
     if (self) {
+        _enable = YES;
+        
         _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZBrightnessInputVertex" fragment:@"YZBrightnessFragment"];
         
         simd_float8 vertices = [YZMetalOrientation defaultVertices];
@@ -35,7 +37,7 @@
 
 
 - (void)newTextureAvailable:(id<MTLTexture>)texture index:(NSInteger)index {
-    if (_brightness > 0) {
+    if (_enable && (_beautyLevel > 0 || _brightLevel > 0)) {
         MTLTextureDescriptor *desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:texture.width height:texture.height mipmapped:NO];
         desc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
         id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:desc];
@@ -66,7 +68,7 @@
     [encoder setVertexBuffer:_textureCoordinateBuffer offset:0 atIndex:YZBrightnessVertexIndexTextureCoordinate];
     [encoder setFragmentTexture:texture atIndex:YZBrightnessFragmentIndexTexture];
 
-    id<MTLBuffer> uniformBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&_brightness length:sizeof(float) options:MTLResourceCPUCacheModeDefaultCache];
+    id<MTLBuffer> uniformBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&_brightLevel length:sizeof(float) options:MTLResourceCPUCacheModeDefaultCache];
     [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:YZBrightnessUniformIdx];
     
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];

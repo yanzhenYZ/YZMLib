@@ -38,7 +38,9 @@ fragment half4 YZBrightnessFragment(YZBrightnessVertexIO fragmentInput [[stage_i
     constexpr sampler quadSampler;
     half3 centralColor = inputTexture.sample(quadSampler, fragmentInput.textureCoordinate).rgb;
     half2 blur[24];
-    half2 singleStepOffset = half2(0.0018518518, 0.0012722646);
+    //half2 singleStepOffset = half2(0.0018518518, 0.0012722646);
+    half2 singleStepOffset = half2(2.0 / 640.0, 2.0 / 480.0);
+    //half2 singleStepOffset = half2(2.0 / 480.0, 2.0 / 640.0);
     half2 xy = half2(fragmentInput.textureCoordinate.xy);
     
     blur[0] = xy + singleStepOffset * half2(0.0, -10.0);
@@ -96,7 +98,7 @@ fragment half4 YZBrightnessFragment(YZBrightnessVertexIO fragmentInput [[stage_i
     half highPass = centralColor.g - g + 0.5;
     for (int i = 0; i < 5; i++) {
         //highPass = hardLight(highPass);
-        if (highPass < 0.5) {
+        if (highPass <= 0.5) {
             highPass = highPass * highPass * 2.0;
         } else {
             highPass = 1.0 - ((1.0 - highPass) * (1.0 - highPass) * 2.0);
@@ -116,12 +118,12 @@ fragment half4 YZBrightnessFragment(YZBrightnessVertexIO fragmentInput [[stage_i
     
     half alpha = pow(lumance, params.r);
     
-    half3 smoothColor = centralColor + (centralColor-half3(highPass))*alpha*0.1;
+    half3 smoothColor = centralColor + (centralColor - highPass) * alpha * 0.1;
     smoothColor.r = clamp(pow(smoothColor.r, params.g), half(0.0), half(1.0));
     smoothColor.g = clamp(pow(smoothColor.g, params.g), half(0.0), half(1.0));
     smoothColor.b = clamp(pow(smoothColor.b, params.g), half(0.0), half(1.0));
     
-    half3 lvse = half3(1.0) - (half3(1.0) - smoothColor) * (half3(1.0) - centralColor);
+    half3 lvse = 1.0 - (1.0 - smoothColor) * (1.0 - centralColor);
     half3 bianliang = max(smoothColor, centralColor);
     half3 rouguang = 2.0 * centralColor * smoothColor + centralColor * centralColor - 2.0 * centralColor * centralColor * smoothColor;
     

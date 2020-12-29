@@ -25,7 +25,8 @@ struct YZBrightnessVertexIO
 
 typedef struct
 {
-    float brightness;
+    float brightLevel;
+    float beautyLevel;
 } YZBrightnessUniform;
 
 vertex YZBrightnessVertexIO YZBrightnessInputVertex(const device packed_float2 *position [[buffer(YZBrightnessVertexIndexPosition)]], const device packed_float2 *texturecoord [[buffer(YZBrightnessVertexIndexTextureCoordinate)]], uint vertexID [[vertex_id]])
@@ -115,7 +116,7 @@ fragment half4 YZBrightnessFragment(YZBrightnessVertexIO fragmentInput [[stage_i
     
     half lumance = dot(centralColor, W);
     
-    half beauty = 0.5;
+    half beauty = uniform.beautyLevel;
     half tone = 0.5;
     half4 params;
     params.r = 1.0 - 0.6 * beauty;
@@ -143,7 +144,7 @@ fragment half4 YZBrightnessFragment(YZBrightnessVertexIO fragmentInput [[stage_i
 //    color.rgb = mix(color.rgb, satcolor, params.a);
 //    return half4(color.rgb, color.a);
     
-    float brightness = uniform.brightness * 0.3;//limit 0-0.3
+    float brightness = uniform.brightLevel * 0.3;//limit 0-0.3
     return half4(color.rgb + brightness, color.a);
 }
 
@@ -156,7 +157,7 @@ fragment half4 YZBrightnessFragment1(YZBrightnessVertexIO fragmentInput [[stage_
     
     half4 color = inputTexture.sample(quadSampler, fragmentInput.textureCoordinate);
     
-    return half4(color.rgb + uniform.brightness, color.a);
+    return half4(color.rgb + uniform.brightLevel, color.a);
 }
 
 

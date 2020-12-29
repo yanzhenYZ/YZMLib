@@ -68,7 +68,8 @@
     [encoder setVertexBuffer:_textureCoordinateBuffer offset:0 atIndex:YZBrightnessVertexIndexTextureCoordinate];
     [encoder setFragmentTexture:texture atIndex:YZBrightnessFragmentIndexTexture];
 
-    id<MTLBuffer> uniformBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&_brightLevel length:sizeof(float) options:MTLResourceCPUCacheModeDefaultCache];
+    simd_float2 uniform = {_brightLevel, _beautyLevel};
+    id<MTLBuffer> uniformBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&uniform length:sizeof(simd_float2) options:MTLResourceCPUCacheModeDefaultCache];
     [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:YZBrightnessUniformIdx];
     
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];

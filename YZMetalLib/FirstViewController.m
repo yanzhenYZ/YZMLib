@@ -70,7 +70,7 @@
 
 
 - (IBAction)brightValueChange:(UISlider *)sender {
-    _brightness.brightLevel = sender.value;
+    _brightness.beautyLevel = sender.value;
 }
 //
 //- (void)test_001 {

@@ -10,6 +10,7 @@
 #import "YZMTKView.h"
 #import "YZBrightness.h"
 
+
 @interface FirstViewController ()<YZVideoCameraOutputDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *player;
 @property (weak, nonatomic) IBOutlet YZMTKView *mtkView;
@@ -26,6 +27,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+//    simd_float3 aa = {1, 2, 3};
+    
+    
+    
     _fillSegmentControll.selectedSegmentIndex = 1;
     _mtkView.fillMode = YZMTKViewFillModeScaleAspectFit;
     [self test003];

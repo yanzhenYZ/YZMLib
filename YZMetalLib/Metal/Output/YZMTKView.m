@@ -44,8 +44,12 @@
 }
 
 - (void)setFillMode:(YZMTKViewFillMode)fillMode {
-//    _fillMode = fillMode;
-//    self.contentMode = (UIViewContentMode)fillMode;
+    _fillMode = fillMode;
+    if (fillMode == YZMTKViewFillModeScaleAspectFill) {
+        self.contentMode = (UIViewContentMode)fillMode;
+    } else {
+        self.contentMode = UIViewContentModeScaleToFill;
+    }
 }
 
 - (void)setBackgroundColorRed:(double)red green:(double)green blue:(double)blue alpha:(double)alpha {
@@ -76,13 +80,17 @@
     }
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
     [encoder setRenderPipelineState:_pipelineState];
-#if 1
-    simd_float8 vertices = {-1, 1, 1, 1, -1, -1, 1, -1};
-    
-    //simd_float8 vertices = [YZMetalOrientation defaultVertices];
-    _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
-    _positionBuffer.label = @"YZMTKView PositionBuffer";
-#endif
+
+    CGFloat w = 1;
+    CGFloat h = 1;
+    if (_fillMode == YZMTKViewFillModeScaleAspectFit) {//for background color
+        CGRect bounds = self.currentBounds;
+        CGRect insetRect = AVMakeRectWithAspectRatioInsideRect(self.drawableSize, bounds);
+        w = insetRect.size.width / bounds.size.width;
+        h = insetRect.size.height / bounds.size.height;
+    }
+    simd_float8 vertices = {-w, h, w, h, -w, -h, w, -h};
+    _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     [encoder setVertexBuffer:_positionBuffer offset:0 atIndex:YZMTKViewVertexIndexPosition];
     
     [encoder setVertexBuffer:_textureCoordinateBuffer offset:0 atIndex:YZMTKViewVertexIndexTextureCoordinate];
@@ -110,12 +118,7 @@
     self.device = YZMetalDevice.defaultDevice.device;
     self.contentMode = UIViewContentModeScaleToFill;
     _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZMTKViewInputVertex" fragment:@"YZMTKViewFragment"];
-    /*
-    simd_float8 vertices = [YZMetalOrientation defaultVertices];
-    _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
-    _positionBuffer.label = @"YZMTKView PositionBuffer";
-    */
- 
+  
     simd_float8 coordinates = [YZMetalOrientation defaultCoordinates];
     _textureCoordinateBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&coordinates length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
     _textureCoordinateBuffer.label = @"YZMTKView TextureCoordinateBuffer";

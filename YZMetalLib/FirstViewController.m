@@ -16,6 +16,7 @@
 @property (nonatomic, strong) YZVideoCamera *camera;
 @property (nonatomic, strong) YZMTKView *mtkView2;
 @property (nonatomic, strong) CIContext *context;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *fillSegmentControll;
 
 @property (nonatomic, strong) YZBrightness *brightness;
 @end
@@ -25,6 +26,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    _fillSegmentControll.selectedSegmentIndex = 1;
+    _mtkView.fillMode = YZMTKViewFillModeScaleAspectFit;
     [self test003];
 }
 

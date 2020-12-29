@@ -99,6 +99,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="fillSegmentControll" destination="E0k-qU-Y6u" id="k3F-yz-t1q"/>
                         <outlet property="mtkView" destination="Wbr-72-ibF" id="RAp-qb-HDN"/>
                         <outlet property="player" destination="vo2-n7-lIW" id="Jyh-N5-L83"/>
                     </connections>

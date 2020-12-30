@@ -27,7 +27,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="De8-tO-IuL">
                                 <rect key="frame" x="0.0" y="807" width="414" height="40"/>
                                 <subviews>
-                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="m36-Eq-IoJ">
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="m36-Eq-IoJ">
                                         <rect key="frame" x="13" y="5" width="388" height="31"/>
                                         <connections>
                                             <action selector="brightValueChange:" destination="BYZ-38-t0r" eventType="valueChanged" id="MI8-VG-BdP"/>
@@ -78,6 +78,24 @@
                                     <constraint firstItem="E0k-qU-Y6u" firstAttribute="centerY" secondItem="oKw-MO-gLV" secondAttribute="centerY" id="xeT-mh-zjf"/>
                                 </constraints>
                             </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="N7t-xq-Law">
+                                <rect key="frame" x="0.0" y="767" width="414" height="40"/>
+                                <subviews>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="AFv-dW-zHX">
+                                        <rect key="frame" x="13" y="5" width="388" height="31"/>
+                                        <connections>
+                                            <action selector="beautyValueChange:" destination="BYZ-38-t0r" eventType="valueChanged" id="xr6-Ii-cIo"/>
+                                        </connections>
+                                    </slider>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="AFv-dW-zHX" firstAttribute="centerY" secondItem="N7t-xq-Law" secondAttribute="centerY" id="6FE-ZH-8vC"/>
+                                    <constraint firstAttribute="trailing" secondItem="AFv-dW-zHX" secondAttribute="trailing" constant="15" id="Vnm-V5-vS4"/>
+                                    <constraint firstItem="AFv-dW-zHX" firstAttribute="leading" secondItem="N7t-xq-Law" secondAttribute="leading" constant="15" id="ojo-ey-9uH"/>
+                                    <constraint firstAttribute="height" constant="40" id="ygW-j9-DEA"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemOrangeColor"/>
@@ -85,14 +103,17 @@
                             <constraint firstItem="Wbr-72-ibF" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="06Z-4X-WOl"/>
                             <constraint firstItem="oKw-MO-gLV" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="4Rh-rR-24V"/>
                             <constraint firstAttribute="bottom" secondItem="Wbr-72-ibF" secondAttribute="bottom" id="6Ur-rw-wJt"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="N7t-xq-Law" secondAttribute="trailing" id="6yy-Yu-aW8"/>
                             <constraint firstAttribute="bottom" secondItem="vo2-n7-lIW" secondAttribute="bottom" id="7pL-Cq-6p9"/>
                             <constraint firstItem="oKw-MO-gLV" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="EQd-ZU-nvb"/>
                             <constraint firstItem="De8-tO-IuL" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="JLx-uw-3yF"/>
                             <constraint firstItem="vo2-n7-lIW" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="L4C-Z3-Hbt"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="De8-tO-IuL" secondAttribute="bottom" constant="15" id="ZFm-SB-3Ti"/>
                             <constraint firstItem="Wbr-72-ibF" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="dMf-mT-Eg9"/>
+                            <constraint firstItem="N7t-xq-Law" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="ftk-Nf-VHd"/>
                             <constraint firstItem="oKw-MO-gLV" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="iog-a0-Ccr"/>
                             <constraint firstItem="Wbr-72-ibF" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="kFp-Sf-TRF"/>
+                            <constraint firstItem="De8-tO-IuL" firstAttribute="top" secondItem="N7t-xq-Law" secondAttribute="bottom" id="ptl-vW-eWH"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="vo2-n7-lIW" secondAttribute="trailing" id="w6w-KC-7iK"/>
                             <constraint firstItem="De8-tO-IuL" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="wHn-rw-kfS"/>
                             <constraint firstItem="vo2-n7-lIW" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="yIV-xz-v8r"/>

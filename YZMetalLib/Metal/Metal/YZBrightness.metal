@@ -48,7 +48,7 @@ fragment half4 YZBrightnessFragment(YZBrightnessVertexIO fragmentInput [[stage_i
     half2 blur[24];
     half2 singleStepOffset = half2(0.0018518518, 0.0012722646);
     //GPUImage use
-    //half2 singleStepOffset = half2(2.0 / 480.0, 2.0 / 640.0);
+    //half2 singleStepOffset = half2(2.0 / width, 2.0 / height);
     half2 xy = half2(fragmentInput.textureCoordinate.xy);
     
     blur[0] = xy + singleStepOffset * half2(0.0, -10.0);
@@ -149,7 +149,7 @@ fragment half4 YZBrightnessFragment(YZBrightnessVertexIO fragmentInput [[stage_i
 }
 
 
-fragment half4 YZBrightnessFragment1(YZBrightnessVertexIO fragmentInput [[stage_in]],
+fragment half4 YZBrightnessFragmentBrightLevel(YZBrightnessVertexIO fragmentInput [[stage_in]],
                                   texture2d<half> inputTexture [[texture(YZBrightnessFragmentIndexTexture)]],
                                   constant YZBrightnessUniform& uniform [[ buffer(YZBrightnessUniformIdx) ]])
 {

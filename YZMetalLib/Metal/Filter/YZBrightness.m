@@ -23,6 +23,8 @@
     self = [super init];
     if (self) {
         _enable = YES;
+        _beautyLevel = 0.5;
+        _brightLevel = 0.5;
         
         _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZBrightnessInputVertex" fragment:@"YZBrightnessFragment"];
         

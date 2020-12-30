@@ -68,9 +68,12 @@
     [_camera startRunning];
 }
 
+- (IBAction)beautyValueChange:(UISlider *)sender {
+    _brightness.beautyLevel = sender.value;
+}
 
 - (IBAction)brightValueChange:(UISlider *)sender {
-    _brightness.beautyLevel = sender.value;
+    _brightness.brightLevel = sender.value;
 }
 //
 //- (void)test_001 {

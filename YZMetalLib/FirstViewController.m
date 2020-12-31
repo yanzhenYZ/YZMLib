@@ -119,4 +119,8 @@
     UIInterfaceOrientation statusBar = [[UIApplication sharedApplication] statusBarOrientation];
     _camera.outputOrientation = statusBar;
 }
+    
+- (void)dealloc {
+    NSLog(@"--- FirstViewController Dealloc");
+}
 @end

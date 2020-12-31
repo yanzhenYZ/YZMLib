@@ -44,7 +44,7 @@
         desc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
         id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:desc];
         [self renderTexture:texture outputTexture:outputTexture];
-        
+
         [self.view newTextureAvailable:outputTexture index:index];
     } else {
         [self.view newTextureAvailable:texture index:index];

@@ -9,14 +9,16 @@
 #import "AppDelegate.h"
 
 /**
- 2.0.5 美颜
- 2.0.6 MTLResourceCPUCacheModeDefaultCache
- 
- 2.0.7 性能对比 GPU
+ 2.0.6 输出PixelBuffer
+ 2.0.7 打包SDK
  2.0.8 dealloc
  2.0.9 全部代码 - 属性设置 - metal语言
  */
 
+/**iPhone6s
+ BGRA：渲染没有美颜 55.3s ~~ 9.2%
+ BGRA：渲染美颜    1.43m ~~ 14.3%
+ */
 int main(int argc, char * argv[]) {
     NSString * appDelegateClassName;
     @autoreleasepool {

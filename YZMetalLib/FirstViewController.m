@@ -101,7 +101,7 @@
 
 #pragma mark - YZVideoCameraOutputDelegate
 - (void)videoCamera:(YZVideoCamera *)camera output:(CMSampleBufferRef)sampleBuffer {
-    [self showPixelBuffer:CMSampleBufferGetImageBuffer(sampleBuffer)];
+    //[self showPixelBuffer:CMSampleBufferGetImageBuffer(sampleBuffer)];
 }
 
 

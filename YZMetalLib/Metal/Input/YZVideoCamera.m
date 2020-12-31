@@ -20,7 +20,6 @@
 @property (nonatomic, strong) AVCaptureDeviceInput *input;
 @property (nonatomic, strong) AVCaptureVideoDataOutput *output;
 @property (nonatomic, assign) AVCaptureDevicePosition position;
-@property (nonatomic, copy) AVCaptureSessionPreset preset;
 @property (nonatomic, strong) id<MTLRenderPipelineState> renderPipelineState;
 @property (nonatomic, assign) CVMetalTextureCacheRef textureCache;
 @property (nonatomic, strong) YZMetalOrientation *orientation;
@@ -151,6 +150,22 @@
     [_session beginConfiguration];
     _camera.activeVideoMinFrameDuration = CMTimeMake(1, frameRate);
     _camera.activeVideoMaxFrameDuration = CMTimeMake(1, frameRate);
+    [_session commitConfiguration];
+    dispatch_semaphore_signal(_videoSemaphore);
+}
+
+- (void)setPreset:(AVCaptureSessionPreset)preset {
+    if ([_preset isEqualToString:preset]) {
+        return;
+    }
+    _preset = preset;
+    dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
+    [_session beginConfiguration];
+    if ([_session canSetSessionPreset:preset]) {
+        _session.sessionPreset = preset;
+    }
+    _camera.activeVideoMinFrameDuration = CMTimeMake(1, self.frameRate);
+    _camera.activeVideoMaxFrameDuration = CMTimeMake(1, self.frameRate);
     [_session commitConfiguration];
     dispatch_semaphore_signal(_videoSemaphore);
 }

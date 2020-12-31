@@ -23,6 +23,7 @@
 @property (nonatomic, strong) YZMTKView *view;
 /**default is 15*/
 @property (nonatomic, assign) int32_t frameRate;
+@property (nonatomic, copy) AVCaptureSessionPreset preset;
 
 /** default is UIInterfaceOrientationPortrait */
 @property (nonatomic) UIInterfaceOrientation outputOrientation;

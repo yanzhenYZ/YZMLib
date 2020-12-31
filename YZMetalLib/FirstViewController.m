@@ -50,6 +50,14 @@
     [_camera switchCamera];
 }
 
+- (IBAction)seset:(UISegmentedControl *)sender {
+    if (sender.selectedSegmentIndex == 0) {
+        _camera.preset = AVCaptureSessionPreset640x480;
+    } else if (sender.selectedSegmentIndex == 1) {
+        _camera.preset = AVCaptureSessionPreset1280x720;
+    } 
+}
+
 -(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
 //    [_camera switchCamera];
 //    if (_camera.videoMirrored) {

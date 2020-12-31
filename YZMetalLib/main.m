@@ -10,6 +10,7 @@
 
 /**
  2.0.5 美颜
+ 2.0.6 MTLResourceCPUCacheModeDefaultCache
  
  2.0.7 性能对比 GPU
  2.0.8 dealloc

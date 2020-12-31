@@ -80,15 +80,6 @@
 - (IBAction)brightValueChange:(UISlider *)sender {
     _brightness.brightLevel = sender.value;
 }
-//
-//- (void)test_001 {
-//    YZMetalOrientation *orientation = [[YZMetalOrientation alloc] init];
-//    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480 orientation:orientation];
-//    _camera.view = _mtkView;
-//    _camera.delegate = self;
-//    [_camera startRunning];
-//
-//}
 
 - (void)showPixelBuffer:(CVPixelBufferRef)pixel {
     CVPixelBufferRetain(pixel);
@@ -106,7 +97,7 @@
 
 #pragma mark - YZPixelBufferDelegate
 -(void)outputPixelBuffer:(CVPixelBufferRef)buffer {
-    [self showPixelBuffer:buffer];
+//    [self showPixelBuffer:buffer];
 }
 
 #pragma mark - YZVideoCameraOutputDelegate

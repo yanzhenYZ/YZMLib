@@ -21,6 +21,8 @@
 @property (nonatomic, weak) id<YZVideoCameraOutputDelegate> delegate;
 @property (nonatomic, strong) YZBrightness *brightness;
 @property (nonatomic, strong) YZMTKView *view;
+/**default is 15*/
+@property (nonatomic, assign) int32_t frameRate;
 
 /** default is UIInterfaceOrientationPortrait */
 @property (nonatomic) UIInterfaceOrientation outputOrientation;

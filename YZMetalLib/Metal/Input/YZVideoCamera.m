@@ -127,14 +127,17 @@
     }
     
     
-    AVCaptureDevice *device = [YZVideoCamera getDevice:_position];
-    AVCaptureDeviceInput *input = [[AVCaptureDeviceInput alloc] initWithDevice:device error:nil];
+    _camera = [YZVideoCamera getDevice:_position];
+    AVCaptureDeviceInput *input = [[AVCaptureDeviceInput alloc] initWithDevice:_camera error:nil];
     if (input) {
         [_session beginConfiguration];
         [_session removeInput:_input];
         if ([_session canAddInput:input]) {
             [_session addInput:input];
         }
+        
+        _camera.activeVideoMinFrameDuration = CMTimeMake(1, self.frameRate);
+        _camera.activeVideoMaxFrameDuration = CMTimeMake(1, self.frameRate);
         [_session commitConfiguration];
         _input = input;
     }
@@ -142,6 +145,15 @@
     dispatch_semaphore_signal(_videoSemaphore);
 }
 
+- (void)setFrameRate:(int32_t)frameRate {
+    _frameRate = frameRate;
+    dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
+    [_session beginConfiguration];
+    _camera.activeVideoMinFrameDuration = CMTimeMake(1, frameRate);
+    _camera.activeVideoMaxFrameDuration = CMTimeMake(1, frameRate);
+    [_session commitConfiguration];
+    dispatch_semaphore_signal(_videoSemaphore);
+}
 #pragma mark - AVCaptureVideoDataOutputSampleBufferDelegate and metal frame
 - (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
     if (!_session.isRunning || _pause) { return; }
@@ -334,6 +346,7 @@
 - (void)_configVideoSession {
     _session = [[AVCaptureSession alloc] init];
     _camera = [YZVideoCamera getDevice:_position];
+    
     NSError *error = nil;
     _input = [[AVCaptureDeviceInput alloc] initWithDevice:_camera error:&error];
     if (error) {
@@ -386,8 +399,9 @@
     if ([_session canSetSessionPreset:_preset]) {
         _session.sessionPreset = _preset;
     }
-    
     [_session commitConfiguration];
+    
+    self.frameRate = 15;
 }
 
 #pragma mark - observer

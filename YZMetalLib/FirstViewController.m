@@ -9,9 +9,10 @@
 #import "YZVideoCamera.h"
 #import "YZMTKView.h"
 #import "YZBrightness.h"
+#import "YZPixelBuffer.h"
 
 
-@interface FirstViewController ()<YZVideoCameraOutputDelegate>
+@interface FirstViewController ()<YZVideoCameraOutputDelegate, YZPixelBufferDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *player;
 @property (weak, nonatomic) IBOutlet YZMTKView *mtkView;
 @property (nonatomic, strong) YZVideoCamera *camera;
@@ -30,10 +31,14 @@
     
 //    simd_float3 aa = {1, 2, 3};
     
+    _context = [CIContext contextWithOptions:nil];
     
     
     _fillSegmentControll.selectedSegmentIndex = 1;
     _mtkView.fillMode = YZMTKViewFillModeScaleAspectFit;
+    YZPixelBuffer *pixelBuffer = [[YZPixelBuffer alloc] initWithRender:YES];
+    pixelBuffer.delegate = self;
+    _mtkView.pixelBuffer = pixelBuffer;
     [self test003];
 }
 
@@ -97,6 +102,11 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         self.player.image = image;
     });
+}
+
+#pragma mark - YZPixelBufferDelegate
+-(void)outputPixelBuffer:(CVPixelBufferRef)buffer {
+    [self showPixelBuffer:buffer];
 }
 
 #pragma mark - YZVideoCameraOutputDelegate

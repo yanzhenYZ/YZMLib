@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9B181506259DD573003CD13D /* YZPixelBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B181504259DD573003CD13D /* YZPixelBuffer.m */; };
 		9BA2CAD2258DF89B0048F5E6 /* YZBrightness.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BA2CAD1258DF89B0048F5E6 /* YZBrightness.m */; };
 		9BA2CAD6258DF8A60048F5E6 /* YZBrightness.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BA2CAD5258DF8A60048F5E6 /* YZBrightness.metal */; };
 		9BB00042257FB7F400207AF3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB00041257FB7F400207AF3 /* AppDelegate.m */; };
@@ -26,6 +27,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9B181504259DD573003CD13D /* YZPixelBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZPixelBuffer.m; sourceTree = "<group>"; };
+		9B181505259DD573003CD13D /* YZPixelBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZPixelBuffer.h; sourceTree = "<group>"; };
 		9BA2CAD0258DF89B0048F5E6 /* YZBrightness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZBrightness.h; sourceTree = "<group>"; };
 		9BA2CAD1258DF89B0048F5E6 /* YZBrightness.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZBrightness.m; sourceTree = "<group>"; };
 		9BA2CAD5258DF8A60048F5E6 /* YZBrightness.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = YZBrightness.metal; sourceTree = "<group>"; };
@@ -147,6 +150,8 @@
 			children = (
 				9BB000952581FF7600207AF3 /* YZMTKView.h */,
 				9BB000962581FF7600207AF3 /* YZMTKView.m */,
+				9B181505259DD573003CD13D /* YZPixelBuffer.h */,
+				9B181504259DD573003CD13D /* YZPixelBuffer.m */,
 			);
 			path = Output;
 			sourceTree = "<group>";
@@ -245,6 +250,7 @@
 				9BB00123258365C900207AF3 /* YZMetalDevice.m in Sources */,
 				9BB00053257FB7F600207AF3 /* main.m in Sources */,
 				9BB001432583852000207AF3 /* YZMetalOrientation.m in Sources */,
+				9B181506259DD573003CD13D /* YZPixelBuffer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

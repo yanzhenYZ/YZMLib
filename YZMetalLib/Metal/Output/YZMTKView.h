@@ -6,6 +6,7 @@
 //
 
 #import <MetalKit/MetalKit.h>
+#import "YZPixelBuffer.h"
 
 typedef NS_ENUM(NSInteger, YZMTKViewFillMode) {
     YZMTKViewFillModeScaleToFill,       // Same as UIViewContentModeScaleToFill
@@ -16,6 +17,7 @@ typedef NS_ENUM(NSInteger, YZMTKViewFillMode) {
 @class YZTexture;
 @interface YZMTKView : MTKView
 @property (nonatomic) YZMTKViewFillMode fillMode;
+@property (nonatomic, strong) YZPixelBuffer *pixelBuffer;
 
 - (void)newTextureAvailable:(id<MTLTexture>)texture index:(NSInteger)index;
 

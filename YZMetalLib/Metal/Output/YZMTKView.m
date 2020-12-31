@@ -100,6 +100,10 @@
     
     [commandBuffer presentDrawable:view.currentDrawable];
     [commandBuffer commit];
+    if (_pixelBuffer) {//YZMTKViewFillModeScaleAspectFit outTexture will contain backColor
+        [commandBuffer waitUntilCompleted];
+        [_pixelBuffer cretePixelBuffer:_texture];
+    }
     _texture = nil;
 }
 

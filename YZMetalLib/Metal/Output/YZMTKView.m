@@ -13,7 +13,6 @@
 @interface YZMTKView ()<MTKViewDelegate>
 @property (nonatomic, strong) id<MTLRenderPipelineState> pipelineState;
 @property (nonatomic, strong) id<MTLTexture> texture;
-@property (nonatomic, strong) id<MTLBuffer> positionBuffer;
 @property (nonatomic, strong) id<MTLBuffer> textureCoordinateBuffer;
 @property (nonatomic) CGRect currentBounds;
 @property (nonatomic) double red;
@@ -91,8 +90,8 @@
         h = insetRect.size.height / bounds.size.height;
     }
     simd_float8 vertices = {-w, h, w, h, -w, -h, w, -h};
-    _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
-    [encoder setVertexBuffer:_positionBuffer offset:0 atIndex:YZVertexIndexPosition];
+    id<MTLBuffer> positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
+    [encoder setVertexBuffer:positionBuffer offset:0 atIndex:YZVertexIndexPosition];
     
     [encoder setVertexBuffer:_textureCoordinateBuffer offset:0 atIndex:YZVertexIndexTextureCoordinate];
     [encoder setFragmentTexture:_texture atIndex:YZFragmentTextureIndexNormal];
@@ -103,7 +102,7 @@
     [commandBuffer commit];
     if (_pixelBuffer) {//YZMTKViewFillModeScaleAspectFit outTexture will contain backColor
         [commandBuffer waitUntilCompleted];
-        [_pixelBuffer cretePixelBuffer:_texture];
+        [_pixelBuffer generatePixelBuffer:_texture];
     }
     _texture = nil;
 }
@@ -124,8 +123,8 @@
     self.contentMode = UIViewContentModeScaleToFill;
     _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZInputVertex" fragment:@"YZFragment"];
   
-    simd_float8 coordinates = [YZMetalOrientation defaultCoordinates];
-    _textureCoordinateBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&coordinates length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
+    simd_float8 texture = [YZMetalOrientation defaultTexture];
+    _textureCoordinateBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&texture length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
     _textureCoordinateBuffer.label = @"YZMTKView TextureCoordinateBuffer";
 }
 

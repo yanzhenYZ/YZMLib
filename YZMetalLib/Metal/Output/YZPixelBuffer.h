@@ -23,7 +23,7 @@
 
 - (instancetype)initWithSize:(CGSize)size render:(BOOL)render;
 
-- (void)cretePixelBuffer:(id<MTLTexture>)texture;
+- (void)generatePixelBuffer:(id<MTLTexture>)texture;
 - (CVPixelBufferRef)outputPixelBuffer;
 
 @end

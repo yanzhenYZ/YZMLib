@@ -14,7 +14,7 @@
 @interface YZBrightness ()
 @property (nonatomic, strong) id<MTLRenderPipelineState> pipelineState;
 @property (nonatomic, strong) id<MTLBuffer> positionBuffer;
-@property (nonatomic, strong) id<MTLBuffer> textureCoordinateBuffer;
+@property (nonatomic, strong) id<MTLBuffer> textureBuffer;
 @end
 
 @implementation YZBrightness
@@ -31,8 +31,8 @@
         simd_float8 vertices = [YZMetalOrientation defaultVertices];
         _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
         
-        simd_float8 coordinates = [YZMetalOrientation defaultCoordinates];
-        _textureCoordinateBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&coordinates length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
+        simd_float8 texture = [YZMetalOrientation defaultTexture];
+        _textureBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&texture length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
     }
     return self;
 }
@@ -67,7 +67,7 @@
     [encoder setRenderPipelineState:self.pipelineState];
     [encoder setVertexBuffer:_positionBuffer offset:0 atIndex:YZVertexIndexPosition];
     
-    [encoder setVertexBuffer:_textureCoordinateBuffer offset:0 atIndex:YZVertexIndexTextureCoordinate];
+    [encoder setVertexBuffer:_textureBuffer offset:0 atIndex:YZVertexIndexTextureCoordinate];
     [encoder setFragmentTexture:texture atIndex:YZFragmentTextureIndexNormal];
 
     simd_float2 uniform = {_brightLevel, _beautyLevel};

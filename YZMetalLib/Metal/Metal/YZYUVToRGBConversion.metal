@@ -10,7 +10,6 @@
 
 using namespace metal;
 
-
 struct YZYUVToRGBVertexIO
 {
     float4 position [[position]];

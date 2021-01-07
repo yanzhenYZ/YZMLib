@@ -122,7 +122,7 @@
     self.enableSetNeedsDisplay = NO;
     self.device = YZMetalDevice.defaultDevice.device;
     self.contentMode = UIViewContentModeScaleToFill;
-    _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZMTKViewInputVertex" fragment:@"YZMTKViewFragment"];
+    _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZInputVertex" fragment:@"YZFragment"];
   
     simd_float8 coordinates = [YZMetalOrientation defaultCoordinates];
     _textureCoordinateBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&coordinates length:sizeof(simd_float8) options:MTLResourceStorageModeShared];

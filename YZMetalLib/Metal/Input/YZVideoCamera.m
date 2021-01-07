@@ -378,7 +378,7 @@
     [_output setSampleBufferDelegate:self queue:_cameraQueue];
         
     if (_userBGRA) {
-        _renderPipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZYRGBVertex" fragment:@"YZRGBRotationFragment"];
+        _renderPipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZInputVertex" fragment:@"YZFragment"];
         NSDictionary *dict = @{
             (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA)
         };

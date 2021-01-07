@@ -33,7 +33,7 @@
         _pixelBuffer = nil;
         _render = render;
         if (!_render) {
-            _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZMTKViewInputVertex" fragment:@"YZMTKViewFragment"];
+            _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZInputVertex" fragment:@"YZFragment"];
         }
     }
     return self;

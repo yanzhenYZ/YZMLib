@@ -8,26 +8,12 @@
 #ifndef YZShaderTypes_h
 #define YZShaderTypes_h
 
-
-#pragma mark - YZBrightness
-typedef enum YZBrightnessVertexIndex
-{
-    YZBrightnessVertexIndexPosition = 0,
-    YZBrightnessVertexIndexTextureCoordinate = 1,
-} YZBrightnessVertexIndex;
-
 typedef enum YZBrightnessUniformIndex
 {
     YZBrightnessUniformIdx = 0,
 } YZBrightnessUniformIndex;
+
 #pragma mark - YZVideoCamera
-typedef enum YZRGBVertexIndex
-{
-    YZRGBVertexIndexPosition  = 0,
-    YZRGBVertexIndexRGB       = 1,
-} YZRGBVertexIndex;
-
-
 typedef enum YZFullRangeVertexIndex
 {
     YZFullRangeVertexIndexPosition  = 0,
@@ -47,14 +33,12 @@ typedef enum YZFullRangeUniformIndex
     YZFullRangeUniform = 0,
 } YZFullRangeUniformIndex;
 
-#pragma mark - YZMTKView
-typedef enum YZMTKViewVertexIndex
-{
-    YZMTKViewVertexIndexPosition = 0,
-    YZMTKViewVertexIndexTextureCoordinate = 1,
-} YZMTKViewVertexIndex;
-
 #pragma mark - normal
+typedef enum YZVertexIndex
+{
+    YZVertexIndexPosition = 0,
+    YZVertexIndexTextureCoordinate = 1,
+} YZVertexIndex;
 
 typedef enum YZFragmentTexture
 {

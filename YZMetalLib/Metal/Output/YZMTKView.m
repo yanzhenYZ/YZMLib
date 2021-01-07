@@ -92,9 +92,9 @@
     }
     simd_float8 vertices = {-w, h, w, h, -w, -h, w, -h};
     _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
-    [encoder setVertexBuffer:_positionBuffer offset:0 atIndex:YZMTKViewVertexIndexPosition];
+    [encoder setVertexBuffer:_positionBuffer offset:0 atIndex:YZVertexIndexPosition];
     
-    [encoder setVertexBuffer:_textureCoordinateBuffer offset:0 atIndex:YZMTKViewVertexIndexTextureCoordinate];
+    [encoder setVertexBuffer:_textureCoordinateBuffer offset:0 atIndex:YZVertexIndexTextureCoordinate];
     [encoder setFragmentTexture:_texture atIndex:YZFragmentTextureIndex];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];

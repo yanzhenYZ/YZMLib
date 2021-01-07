@@ -65,9 +65,9 @@
     }
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
     [encoder setRenderPipelineState:self.pipelineState];
-    [encoder setVertexBuffer:_positionBuffer offset:0 atIndex:YZBrightnessVertexIndexPosition];
+    [encoder setVertexBuffer:_positionBuffer offset:0 atIndex:YZVertexIndexPosition];
     
-    [encoder setVertexBuffer:_textureCoordinateBuffer offset:0 atIndex:YZBrightnessVertexIndexTextureCoordinate];
+    [encoder setVertexBuffer:_textureCoordinateBuffer offset:0 atIndex:YZVertexIndexTextureCoordinate];
     [encoder setFragmentTexture:texture atIndex:YZFragmentTextureIndex];
 
     simd_float2 uniform = {_brightLevel, _beautyLevel};

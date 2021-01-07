@@ -16,7 +16,7 @@ struct YZMTKViewVertexIO
     float2 textureCoordinate;
 };
 
-vertex YZMTKViewVertexIO YZMTKViewInputVertex(const device packed_float2 *position [[buffer(YZMTKViewVertexIndexPosition)]], const device packed_float2 *texturecoord [[buffer(YZMTKViewVertexIndexTextureCoordinate)]], uint vertexID [[vertex_id]])
+vertex YZMTKViewVertexIO YZMTKViewInputVertex(const device packed_float2 *position [[buffer(YZVertexIndexPosition)]], const device packed_float2 *texturecoord [[buffer(YZVertexIndexTextureCoordinate)]], uint vertexID [[vertex_id]])
 {
     YZMTKViewVertexIO outputVertices;
     

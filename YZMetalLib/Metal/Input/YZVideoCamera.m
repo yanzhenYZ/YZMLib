@@ -239,11 +239,11 @@
     //表示对顺时针顺序的三角形进行剔除。
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
     [encoder setRenderPipelineState:self.renderPipelineState];
-    [encoder setVertexBuffer:_vertexBuffer offset:0 atIndex:YZRGBVertexIndexPosition];
+    [encoder setVertexBuffer:_vertexBuffer offset:0 atIndex:YZVertexIndexPosition];
     
     simd_float8 coordinates = [_orientation getTextureCoordinates:_position];
     id<MTLBuffer> rgbBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&coordinates length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
-    [encoder setVertexBuffer:rgbBuffer offset:0 atIndex:YZRGBVertexIndexRGB];
+    [encoder setVertexBuffer:rgbBuffer offset:0 atIndex:YZVertexIndexTextureCoordinate];
     [encoder setFragmentTexture:bgraTexture atIndex:YZFragmentTextureIndex];
     
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];

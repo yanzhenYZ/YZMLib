@@ -38,7 +38,7 @@ half hardLight(half pass) {
     return highPass;
 }
 
-vertex YZBrightnessVertexIO YZBrightnessInputVertex(const device packed_float2 *position [[buffer(YZBrightnessVertexIndexPosition)]], const device packed_float2 *texturecoord [[buffer(YZBrightnessVertexIndexTextureCoordinate)]], uint vertexID [[vertex_id]])
+vertex YZBrightnessVertexIO YZBrightnessInputVertex(const device packed_float2 *position [[buffer(YZVertexIndexPosition)]], const device packed_float2 *texturecoord [[buffer(YZVertexIndexTextureCoordinate)]], uint vertexID [[vertex_id]])
 {
     YZBrightnessVertexIO outputVertices;
     

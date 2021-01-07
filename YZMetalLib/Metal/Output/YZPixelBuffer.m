@@ -10,10 +10,15 @@
 #import "YZMetalDevice.h"
 #import "YZMetalOrientation.h"
 #import "YZShaderTypes.h"
-
+/**
+ 1. 设置输出的size
+ 2. 按比例输出size
+ 3. 旋转方向后的size
+ */
 @interface YZPixelBuffer ()
 @property (nonatomic, assign) BOOL render;
 @property (nonatomic, strong) id<MTLRenderPipelineState> pipelineState;
+@property (nonatomic, assign) CGSize size;
 @end
 
 @implementation YZPixelBuffer {
@@ -32,6 +37,7 @@
     if (self) {
         _pixelBuffer = nil;
         _render = render;
+        _size = CGSizeMake(360, 640);
         if (!_render) {
             _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZInputVertex" fragment:@"YZFragment"];
         }
@@ -109,6 +115,10 @@
     size_t bufferWidth = CVPixelBufferGetWidth(_pixelBuffer);
     size_t bufferHeight = CVPixelBufferGetHeight(_pixelBuffer);
     if (bufferWidth != width || bufferHeight != height) {
+        if (_pixelBuffer) {
+            CVPixelBufferRelease(_pixelBuffer);
+            _pixelBuffer = nil;
+        }
         if (![self _createPixelBuffer:width height:height buffer:&_pixelBuffer]) {
             return;
         }
@@ -126,7 +136,7 @@
     void *address = CVPixelBufferGetBaseAddress(buffer);
     if (address) {
         size_t bytesPerRow = CVPixelBufferGetBytesPerRow(buffer);
-        MTLRegion region = MTLRegionMake2D(0, 0, texture.width, texture.height);
+        MTLRegion region = MTLRegionMake2D(0, 0, _size.width, _size.height);
         [texture getBytes:address bytesPerRow:bytesPerRow fromRegion:region mipmapLevel:0];
     }
     CVPixelBufferUnlockBaseAddress(buffer, 0);
@@ -135,8 +145,8 @@
 - (BOOL)_createPixelBuffer:(NSUInteger)width height:(NSUInteger)height buffer:(CVPixelBufferRef *)buffer {
     NSDictionary *pixelAttributes = @{(NSString *)kCVPixelBufferIOSurfacePropertiesKey:@{}};
     CVReturn result = CVPixelBufferCreate(kCFAllocatorDefault,
-                                            width,
-                                            height,
+                                            _size.width,
+                                            _size.height,
                                             kCVPixelFormatType_32BGRA,
                                             (__bridge CFDictionaryRef)(pixelAttributes),
                                             buffer);

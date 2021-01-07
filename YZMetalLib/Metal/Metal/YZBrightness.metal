@@ -50,7 +50,7 @@ vertex YZBrightnessVertexIO YZBrightnessInputVertex(const device packed_float2 *
 
 fragment half4 YZBrightnessFragment(YZBrightnessVertexIO fragmentInput [[stage_in]],
                                   texture2d<half> inputTexture [[texture(YZFragmentTextureIndexNormal)]],
-                                  constant YZBrightnessUniform& uniform [[ buffer(YZBrightnessUniformIdx) ]])
+                                  constant YZBrightnessUniform& uniform [[ buffer(YZUniformIndexNormal) ]])
 {
     constexpr sampler quadSampler (mag_filter::linear, min_filter::linear);
     half3 centralColor = inputTexture.sample(quadSampler, fragmentInput.textureCoordinate).rgb;

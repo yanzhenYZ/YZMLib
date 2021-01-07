@@ -341,7 +341,7 @@
 
     //coversion
     id<MTLBuffer> uniformBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:_colorConversion length:sizeof(float) * 12 options:MTLResourceCPUCacheModeDefaultCache];
-    [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:YZFullRangeUniformIndex];
+    [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:YZUniformIndexNormal];
     
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];
@@ -387,7 +387,7 @@
         NSArray<NSNumber *> *availableVideoCVPixelFormatTypes = _output.availableVideoCVPixelFormatTypes;
         [availableVideoCVPixelFormatTypes enumerateObjectsUsingBlock:^(NSNumber * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if (obj.longLongValue == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
-                self.fullYUVRange = YES;
+//                self.fullYUVRange = YES;
             }
         }];
         

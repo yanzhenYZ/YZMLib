@@ -40,7 +40,7 @@ vertex YZYUVToRGBVertexIO YZYUVToRGBVertex(const device packed_float2 *position 
 fragment half4 YZYUVConversionFullRangeFragment(YZYUVToRGBVertexIO fragmentInput [[stage_in]],
                                      texture2d<half> inputTexture [[texture(YZFullRangeFragmentIndexY)]],
                                      texture2d<half> inputTexture2 [[texture(YZFullRangeFragmentIndexUV)]],
-                                     constant YZYUVConversionUniform& uniform [[ buffer(YZFullRangeUniformIndex) ]])
+                                     constant YZYUVConversionUniform& uniform [[ buffer(YZUniformIndexNormal) ]])
 {
     constexpr sampler quadSampler;
     half3 yuv;
@@ -55,7 +55,7 @@ fragment half4 YZYUVConversionFullRangeFragment(YZYUVToRGBVertexIO fragmentInput
 fragment half4 YZYUVConversionVideoRangeFragment(YZYUVToRGBVertexIO fragmentInput [[stage_in]],
                                               texture2d<half> inputTexture [[texture(0)]],
                                               texture2d<half> inputTexture2 [[texture(1)]],
-                                              constant YZYUVConversionUniform& uniform [[ buffer(YZFullRangeUniformIndex) ]])
+                                              constant YZYUVConversionUniform& uniform [[ buffer(YZUniformIndexNormal) ]])
 {
     constexpr sampler quadSampler;
     half3 yuv;

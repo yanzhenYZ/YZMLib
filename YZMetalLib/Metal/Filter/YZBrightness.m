@@ -72,7 +72,7 @@
 
     simd_float2 uniform = {_brightLevel, _beautyLevel};
     id<MTLBuffer> uniformBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&uniform length:sizeof(simd_float2) options:MTLResourceCPUCacheModeDefaultCache];
-    [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:YZBrightnessUniformIdx];
+    [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:YZUniformIndexNormal];
     
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];

@@ -49,7 +49,7 @@ vertex YZBrightnessVertexIO YZBrightnessInputVertex(const device packed_float2 *
 }
 
 fragment half4 YZBrightnessFragment(YZBrightnessVertexIO fragmentInput [[stage_in]],
-                                  texture2d<half> inputTexture [[texture(YZBrightnessFragmentIndexTexture)]],
+                                  texture2d<half> inputTexture [[texture(YZFragmentTextureIndex)]],
                                   constant YZBrightnessUniform& uniform [[ buffer(YZBrightnessUniformIdx) ]])
 {
     constexpr sampler quadSampler (mag_filter::linear, min_filter::linear);

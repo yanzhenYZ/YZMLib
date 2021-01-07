@@ -244,7 +244,7 @@
     simd_float8 coordinates = [_orientation getTextureCoordinates:_position];
     id<MTLBuffer> rgbBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&coordinates length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     [encoder setVertexBuffer:rgbBuffer offset:0 atIndex:YZRGBVertexIndexRGB];
-    [encoder setFragmentTexture:bgraTexture atIndex:YZRGBFragmentIndexTexture];
+    [encoder setFragmentTexture:bgraTexture atIndex:YZFragmentTextureIndex];
     
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];

@@ -161,9 +161,9 @@
 			children = (
 				9BB0009E2582019400207AF3 /* YZShaderTypes.h */,
 				9BB000A02582019400207AF3 /* YZMTKView.metal */,
-				9BB0009F2582019400207AF3 /* YZYUVToRGBConversion.metal */,
 				9BC784A52587A43000F2A437 /* YZRGBRotation.metal */,
 				9BA2CAD5258DF8A60048F5E6 /* YZBrightness.metal */,
+				9BB0009F2582019400207AF3 /* YZYUVToRGBConversion.metal */,
 			);
 			path = Metal;
 			sourceTree = "<group>";

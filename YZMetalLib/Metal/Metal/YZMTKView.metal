@@ -26,7 +26,7 @@ vertex YZMTKViewVertexIO YZMTKViewInputVertex(const device packed_float2 *positi
     return outputVertices;
 }
 
-fragment half4 YZMTKViewFragment(YZMTKViewVertexIO fragmentInput [[stage_in]], texture2d<half> inputTexture [[texture(YZMTKViewFragmentIndexTexture)]])
+fragment half4 YZMTKViewFragment(YZMTKViewVertexIO fragmentInput [[stage_in]], texture2d<half> inputTexture [[texture(YZFragmentTextureIndex)]])
 {
     constexpr sampler quadSampler;
     half4 color = inputTexture.sample(quadSampler, fragmentInput.textureCoordinate);

@@ -77,6 +77,7 @@
     id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:desc];
     if (!encoder) {
         NSLog(@"YZMTKView render endcoder Fail");
+        return;
     }
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
     [encoder setRenderPipelineState:_pipelineState];
@@ -94,7 +95,7 @@
     [encoder setVertexBuffer:_positionBuffer offset:0 atIndex:YZMTKViewVertexIndexPosition];
     
     [encoder setVertexBuffer:_textureCoordinateBuffer offset:0 atIndex:YZMTKViewVertexIndexTextureCoordinate];
-    [encoder setFragmentTexture:_texture atIndex:YZMTKViewFragmentIndexTexture];
+    [encoder setFragmentTexture:_texture atIndex:YZFragmentTextureIndex];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];
     

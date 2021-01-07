@@ -29,7 +29,7 @@ vertex YZRGBVertexIO YZYRGBVertex(const device packed_float2 *position [[buffer(
 }
 
 fragment half4 YZRGBRotationFragment(YZRGBVertexIO fragmentInput [[stage_in]],
-                                     texture2d<half> inputTexture [[texture(YZRGBFragmentIndexTexture)]])
+                                     texture2d<half> inputTexture [[texture(YZFragmentTextureIndex)]])
 {
     constexpr sampler textureSampler (mag_filter::linear, min_filter::linear);
     return inputTexture.sample(textureSampler, fragmentInput.textureCoordinate);

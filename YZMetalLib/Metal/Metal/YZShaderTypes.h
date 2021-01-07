@@ -16,11 +16,6 @@ typedef enum YZBrightnessVertexIndex
     YZBrightnessVertexIndexTextureCoordinate = 1,
 } YZBrightnessVertexIndex;
 
-typedef enum YZBrightnessFragmentIndex
-{
-    YZBrightnessFragmentIndexTexture = 0,
-} YZBrightnessFragmentIndex;
-
 typedef enum YZBrightnessUniformIndex
 {
     YZBrightnessUniformIdx = 0,
@@ -32,11 +27,6 @@ typedef enum YZRGBVertexIndex
     YZRGBVertexIndexRGB       = 1,
 } YZRGBVertexIndex;
 
-
-typedef enum YZRGBFragmentIndex
-{
-    YZRGBFragmentIndexTexture = 0,
-} YZRGBFragmentIndex;
 
 typedef enum YZFullRangeVertexIndex
 {
@@ -64,9 +54,11 @@ typedef enum YZMTKViewVertexIndex
     YZMTKViewVertexIndexTextureCoordinate = 1,
 } YZMTKViewVertexIndex;
 
-typedef enum YZMTKViewFragmentIndex
+#pragma mark - normal
+
+typedef enum YZFragmentTexture
 {
-    YZMTKViewFragmentIndexTexture = 0,
-} YZMTKViewFragmentTextureIndex;
+    YZFragmentTextureIndex
+} YZFragmentTexture;
 
 #endif /* YZShaderTypes_h */

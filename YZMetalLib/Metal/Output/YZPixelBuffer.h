@@ -18,8 +18,10 @@
 
 @interface YZPixelBuffer : NSObject
 @property (nonatomic, weak) id<YZPixelBufferDelegate> delegate;
+/** output CVPixelBufferRef size */
+@property (nonatomic, assign) CGSize size;
 
-- (instancetype)initWithRender:(BOOL)render;
+- (instancetype)initWithSize:(CGSize)size render:(BOOL)render;
 
 - (void)cretePixelBuffer:(id<MTLTexture>)texture;
 - (CVPixelBufferRef)outputPixelBuffer;

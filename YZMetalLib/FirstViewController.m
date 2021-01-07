@@ -36,7 +36,7 @@
     
     _fillSegmentControll.selectedSegmentIndex = 1;
     _mtkView.fillMode = YZMTKViewFillModeScaleAspectFit;
-    YZPixelBuffer *pixelBuffer = [[YZPixelBuffer alloc] initWithRender:YES];
+    YZPixelBuffer *pixelBuffer = [[YZPixelBuffer alloc] initWithSize:CGSizeMake(360, 640) render:YES];
     pixelBuffer.delegate = self;
     _mtkView.pixelBuffer = pixelBuffer;
     [self test003];

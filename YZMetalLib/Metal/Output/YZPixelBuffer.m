@@ -11,14 +11,13 @@
 #import "YZMetalOrientation.h"
 #import "YZShaderTypes.h"
 /**
- 1. 设置输出的size
+ 1. 不渲染输出size
  2. 按比例输出size
  3. 旋转方向后的size
  */
 @interface YZPixelBuffer ()
 @property (nonatomic, assign) BOOL render;
 @property (nonatomic, strong) id<MTLRenderPipelineState> pipelineState;
-@property (nonatomic, assign) CGSize size;
 @end
 
 @implementation YZPixelBuffer {
@@ -32,12 +31,12 @@
     }
 }
 
-- (instancetype)initWithRender:(BOOL)render {
+-(instancetype)initWithSize:(CGSize)size render:(BOOL)render {
     self = [super init];
     if (self) {
         _pixelBuffer = nil;
         _render = render;
-        _size = CGSizeMake(360, 640);
+        _size = size;
         if (!_render) {
             _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZInputVertex" fragment:@"YZFragment"];
         }
@@ -47,7 +46,7 @@
 
 - (void)cretePixelBuffer:(id<MTLTexture>)texture {
     if (_render) {
-        [self _createRenderPixelBuffer:texture];
+        [self createRenderPixelBuffer:texture];
     } else {
         [self _createPixelBuffer:texture];
     }
@@ -56,6 +55,58 @@
 - (CVPixelBufferRef)outputPixelBuffer {
     return _pixelBuffer;
 }
+#pragma mark  - private render
+- (void)createRenderPixelBuffer:(id<MTLTexture>)texture {
+    [self dealWithSize:texture];
+    if (!_pixelBuffer) { return; }
+    
+    CVPixelBufferLockBaseAddress(_pixelBuffer, 0);
+    void *address = CVPixelBufferGetBaseAddress(_pixelBuffer);
+    if (address) {
+        size_t bytesPerRow = CVPixelBufferGetBytesPerRow(_pixelBuffer);
+        MTLRegion region = MTLRegionMake2D(0, 0, _size.width, _size.height);
+        [texture getBytes:address bytesPerRow:bytesPerRow fromRegion:region mipmapLevel:0];
+    }
+    CVPixelBufferUnlockBaseAddress(_pixelBuffer, 0);
+    
+    if ([_delegate respondsToSelector:@selector(outputPixelBuffer:)]) {
+        [_delegate outputPixelBuffer:_pixelBuffer];
+    }
+}
+
+- (void)dealWithSize:(id<MTLTexture>)texture {
+    CGFloat width = texture.width;
+    CGFloat height = texture.height;
+    if (CGSizeEqualToSize(_size, CGSizeMake(width, height))) {
+        if (!_pixelBuffer) {
+            [self createPixelBuffer];
+        }
+        return;
+    }
+    CGFloat bufferRatio = width / height;
+    CGFloat outoutRatio = _size.width / _size.height;
+    if (bufferRatio > outoutRatio * 1.1 || bufferRatio < outoutRatio * 0.9) {
+        CGSize outputSize = _size;
+        if (bufferRatio > outoutRatio) {
+            CGFloat outputW = width * outoutRatio / bufferRatio;
+            outputSize = CGSizeMake(outputW, height);
+        } else {
+            CGFloat outoutH = height * bufferRatio / outoutRatio;
+            outputSize = CGSizeMake(width, outoutH);
+        }
+        if (CGSizeEqualToSize(_size, outputSize) && _pixelBuffer) {
+            return;
+        }
+    } else {
+        _size = CGSizeMake(width, height);
+    }
+    if (_pixelBuffer) {
+        CVPixelBufferRelease(_pixelBuffer);
+        _pixelBuffer = nil;
+    }
+    [self createPixelBuffer];
+}
+
 #pragma mark - private not render
 - (void)_createPixelBuffer:(id<MTLTexture>)texture {
     NSUInteger width = texture.width;
@@ -92,8 +143,7 @@
     [commandBuffer commit];
     [commandBuffer waitUntilCompleted];
     
-    [self _createRenderPixelBuffer:outTexture];
-    
+    [self createRenderPixelBuffer:outTexture];
 }
 
 - (id<MTLTexture>)_createOutputTexture:(NSUInteger)width height:(NSUInteger)height {
@@ -103,53 +153,15 @@
     return outputTexture;
 }
 
-#pragma mark - private render
-- (void)_createRenderPixelBuffer:(id<MTLTexture>)texture {
-    NSUInteger width = texture.width;
-    NSUInteger height = texture.height;
-    if (!_pixelBuffer) {
-        if (![self _createPixelBuffer:width height:height buffer:&_pixelBuffer]) {
-            return;
-        }
-    }
-    size_t bufferWidth = CVPixelBufferGetWidth(_pixelBuffer);
-    size_t bufferHeight = CVPixelBufferGetHeight(_pixelBuffer);
-    if (bufferWidth != width || bufferHeight != height) {
-        if (_pixelBuffer) {
-            CVPixelBufferRelease(_pixelBuffer);
-            _pixelBuffer = nil;
-        }
-        if (![self _createPixelBuffer:width height:height buffer:&_pixelBuffer]) {
-            return;
-        }
-    }
-    
-    [self _setPixelBuffer:_pixelBuffer texture:texture];
-    
-    if ([_delegate respondsToSelector:@selector(outputPixelBuffer:)]) {
-        [_delegate outputPixelBuffer:_pixelBuffer];
-    }
-}
 
-- (void)_setPixelBuffer:(CVPixelBufferRef)buffer texture:(id<MTLTexture>)texture  {
-    CVPixelBufferLockBaseAddress(buffer, 0);
-    void *address = CVPixelBufferGetBaseAddress(buffer);
-    if (address) {
-        size_t bytesPerRow = CVPixelBufferGetBytesPerRow(buffer);
-        MTLRegion region = MTLRegionMake2D(0, 0, _size.width, _size.height);
-        [texture getBytes:address bytesPerRow:bytesPerRow fromRegion:region mipmapLevel:0];
-    }
-    CVPixelBufferUnlockBaseAddress(buffer, 0);
-}
-
-- (BOOL)_createPixelBuffer:(NSUInteger)width height:(NSUInteger)height buffer:(CVPixelBufferRef *)buffer {
+- (BOOL)createPixelBuffer {
     NSDictionary *pixelAttributes = @{(NSString *)kCVPixelBufferIOSurfacePropertiesKey:@{}};
     CVReturn result = CVPixelBufferCreate(kCFAllocatorDefault,
                                             _size.width,
                                             _size.height,
                                             kCVPixelFormatType_32BGRA,
                                             (__bridge CFDictionaryRef)(pixelAttributes),
-                                            buffer);
+                                            &_pixelBuffer);
     if (result != kCVReturnSuccess) {
         NSLog(@"YZPixelBuffer to create cvpixelbuffer %d", result);
         return NO;

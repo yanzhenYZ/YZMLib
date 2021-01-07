@@ -24,14 +24,14 @@ typedef enum YZFullRangeVertexIndex
 
 typedef enum YZFullRangeFragmentIndex
 {
-    YZFullRangeFragmentIndexTextureY  = 0,
-    YZFullRangeFragmentIndexTextureUV = 1,
+    YZFullRangeFragmentIndexY  = 0,
+    YZFullRangeFragmentIndexUV = 1,
 } YZFullRangeFragmentIndex;
 
-typedef enum YZFullRangeUniformIndex
+typedef enum YZFullRangeUniform
 {
-    YZFullRangeUniform = 0,
-} YZFullRangeUniformIndex;
+    YZFullRangeUniformIndex
+} YZFullRangeUniform;
 
 #pragma mark - normal
 typedef enum YZVertexIndex
@@ -40,9 +40,9 @@ typedef enum YZVertexIndex
     YZVertexIndexTextureCoordinate = 1,
 } YZVertexIndex;
 
-typedef enum YZFragmentTexture
+typedef enum YZFragmentTextureIndex
 {
-    YZFragmentTextureIndex
-} YZFragmentTexture;
+    YZFragmentTextureIndexNormal
+} YZFragmentTextureIndex;
 
 #endif /* YZShaderTypes_h */

@@ -95,7 +95,7 @@
     [encoder setVertexBuffer:_positionBuffer offset:0 atIndex:YZVertexIndexPosition];
     
     [encoder setVertexBuffer:_textureCoordinateBuffer offset:0 atIndex:YZVertexIndexTextureCoordinate];
-    [encoder setFragmentTexture:_texture atIndex:YZFragmentTextureIndex];
+    [encoder setFragmentTexture:_texture atIndex:YZFragmentTextureIndexNormal];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];
     

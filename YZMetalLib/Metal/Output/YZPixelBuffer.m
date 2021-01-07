@@ -77,7 +77,7 @@
     simd_float8 vertices = [YZMetalOrientation defaultCoordinates];
     id<MTLBuffer> vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     [encoder setVertexBuffer:vertexBuffer offset:0 atIndex:YZVertexIndexTextureCoordinate];
-    [encoder setFragmentTexture:texture atIndex:YZFragmentTextureIndex];
+    [encoder setFragmentTexture:texture atIndex:YZFragmentTextureIndexNormal];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];
     

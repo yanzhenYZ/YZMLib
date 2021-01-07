@@ -17,8 +17,8 @@ struct YZRGBVertexIO
     float2 textureCoordinate [[user(texturecoord)]];
 };
 
-vertex YZRGBVertexIO YZYRGBVertex(const device packed_float2 *position [[buffer(YZRGBVertexIndexPosition)]],
-                                  const device packed_float2 *texturecoord [[buffer(YZRGBVertexIndexRGB)]],
+vertex YZRGBVertexIO YZYRGBVertex(const device packed_float2 *position [[buffer(YZVertexIndexPosition)]],
+                                  const device packed_float2 *texturecoord [[buffer(YZVertexIndexTextureCoordinate)]],
                                   uint vertexID [[vertex_id]])
 {
     YZRGBVertexIO outputVertices;
@@ -29,7 +29,7 @@ vertex YZRGBVertexIO YZYRGBVertex(const device packed_float2 *position [[buffer(
 }
 
 fragment half4 YZRGBRotationFragment(YZRGBVertexIO fragmentInput [[stage_in]],
-                                     texture2d<half> inputTexture [[texture(YZFragmentTextureIndex)]])
+                                     texture2d<half> inputTexture [[texture(YZFragmentTextureIndexNormal)]])
 {
     constexpr sampler textureSampler (mag_filter::linear, min_filter::linear);
     return inputTexture.sample(textureSampler, fragmentInput.textureCoordinate);

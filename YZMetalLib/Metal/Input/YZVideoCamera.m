@@ -244,7 +244,7 @@
     simd_float8 coordinates = [_orientation getTextureCoordinates:_position];
     id<MTLBuffer> rgbBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&coordinates length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     [encoder setVertexBuffer:rgbBuffer offset:0 atIndex:YZVertexIndexTextureCoordinate];
-    [encoder setFragmentTexture:bgraTexture atIndex:YZFragmentTextureIndex];
+    [encoder setFragmentTexture:bgraTexture atIndex:YZFragmentTextureIndexNormal];
     
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];
@@ -333,15 +333,15 @@
     simd_float8 yuvSquareVertices = [_orientation getTextureCoordinates:_position];
     id<MTLBuffer> yuvBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&yuvSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     [encoder setVertexBuffer:yuvBuffer offset:0 atIndex:YZFullRangeVertexIndexY];
-    [encoder setFragmentTexture:textureY atIndex:YZFullRangeFragmentIndexTextureY];
+    [encoder setFragmentTexture:textureY atIndex:YZFullRangeFragmentIndexY];
     
     //id<MTLBuffer> uvBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&yuvSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
     [encoder setVertexBuffer:yuvBuffer offset:0 atIndex:YZFullRangeVertexIndexUV];
-    [encoder setFragmentTexture:textureUV atIndex:YZFullRangeFragmentIndexTextureUV];
+    [encoder setFragmentTexture:textureUV atIndex:YZFullRangeFragmentIndexUV];
 
     //coversion
     id<MTLBuffer> uniformBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:_colorConversion length:sizeof(float) * 12 options:MTLResourceCPUCacheModeDefaultCache];
-    [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:YZFullRangeUniform];
+    [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:YZFullRangeUniformIndex];
     
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];

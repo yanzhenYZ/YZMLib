@@ -29,17 +29,23 @@
 }
 
 - (void)addFilter:(id<YZFilterProtocol>)filter {
+    [YZMetalDevice semaphoreWaitForever];
     if (![self.filters containsObject:filter]) {
         [self.filters addObject:filter];
     }
+    [YZMetalDevice semaphoreSignal];
 }
 
 - (void)removeFilter:(id<YZFilterProtocol>)filter {
+    [YZMetalDevice semaphoreWaitForever];
     [self.filters removeObject:filter];
+    [YZMetalDevice semaphoreSignal];
 }
 
 - (void)removeAllFilters {
+    [YZMetalDevice semaphoreWaitForever];
     [self.filters removeAllObjects];
+    [YZMetalDevice semaphoreSignal];
 }
 
 - (NSArray<id<YZFilterProtocol>> *)allFilters {

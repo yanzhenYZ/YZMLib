@@ -16,7 +16,7 @@
 
 - (void)addFilter:(id<YZFilterProtocol>)filter;
 - (void)removeFilter:(id<YZFilterProtocol>)filter;
-- (NSArray<id<YZFilterProtocol>> *)allFilters;
+- (NSArray<id<YZFilterProtocol>> *)allFilters;//use in render queue
 - (void)removeAllFilters;
 @end
 

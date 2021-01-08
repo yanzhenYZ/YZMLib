@@ -9,8 +9,8 @@
 #import "AppDelegate.h"
 
 /**
- 3.0.5 Metal 抽出对外工具类
- 3.0.9 打包SDK
+ 3.0.8 打包SDK
+ 3.0.9 Metal 抽出对外工具类
  */
 
 /**iPhone6s 30fps

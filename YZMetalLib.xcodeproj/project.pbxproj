@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9B181506259DD573003CD13D /* YZPixelBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B181504259DD573003CD13D /* YZPixelBuffer.m */; };
 		9B878CBC25A8057800BB6D71 /* YZMetalFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B878CBB25A8057800BB6D71 /* YZMetalFilter.m */; };
 		9B878CC025A8091C00BB6D71 /* YZMetalOutput.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B878CBF25A8091C00BB6D71 /* YZMetalOutput.m */; };
 		9B878CC925A8307F00BB6D71 /* YZNewPixelBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B878CC825A8307F00BB6D71 /* YZNewPixelBuffer.m */; };
@@ -24,13 +23,10 @@
 		9BB000A12582019400207AF3 /* YZYUVToRGBConversion.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BB0009F2582019400207AF3 /* YZYUVToRGBConversion.metal */; };
 		9BB00123258365C900207AF3 /* YZMetalDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB00122258365C900207AF3 /* YZMetalDevice.m */; };
 		9BB001432583852000207AF3 /* YZMetalOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB001422583852000207AF3 /* YZMetalOrientation.m */; };
-		9BB0015D2584CB9400207AF3 /* YZYUVToRGBConversion.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB0015C2584CB9400207AF3 /* YZYUVToRGBConversion.m */; };
 		9BF4D17D25A70CC700DFFE5C /* YZVertexFragment.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BF4D17C25A70CC700DFFE5C /* YZVertexFragment.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		9B181504259DD573003CD13D /* YZPixelBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZPixelBuffer.m; sourceTree = "<group>"; };
-		9B181505259DD573003CD13D /* YZPixelBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZPixelBuffer.h; sourceTree = "<group>"; };
 		9B878CBA25A8057800BB6D71 /* YZMetalFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZMetalFilter.h; sourceTree = "<group>"; };
 		9B878CBB25A8057800BB6D71 /* YZMetalFilter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZMetalFilter.m; sourceTree = "<group>"; };
 		9B878CBE25A8091C00BB6D71 /* YZMetalOutput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZMetalOutput.h; sourceTree = "<group>"; };
@@ -61,8 +57,6 @@
 		9BB00122258365C900207AF3 /* YZMetalDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZMetalDevice.m; sourceTree = "<group>"; };
 		9BB001412583852000207AF3 /* YZMetalOrientation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZMetalOrientation.h; sourceTree = "<group>"; };
 		9BB001422583852000207AF3 /* YZMetalOrientation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZMetalOrientation.m; sourceTree = "<group>"; };
-		9BB0015B2584CB9400207AF3 /* YZYUVToRGBConversion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZYUVToRGBConversion.h; sourceTree = "<group>"; };
-		9BB0015C2584CB9400207AF3 /* YZYUVToRGBConversion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZYUVToRGBConversion.m; sourceTree = "<group>"; };
 		9BF4D17C25A70CC700DFFE5C /* YZVertexFragment.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = YZVertexFragment.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -147,8 +141,6 @@
 				9BB00122258365C900207AF3 /* YZMetalDevice.m */,
 				9BB001412583852000207AF3 /* YZMetalOrientation.h */,
 				9BB001422583852000207AF3 /* YZMetalOrientation.m */,
-				9BB0015B2584CB9400207AF3 /* YZYUVToRGBConversion.h */,
-				9BB0015C2584CB9400207AF3 /* YZYUVToRGBConversion.m */,
 				9B878CBA25A8057800BB6D71 /* YZMetalFilter.h */,
 				9B878CBB25A8057800BB6D71 /* YZMetalFilter.m */,
 				9B878CC225A80AA000BB6D71 /* YZFilterProtocol.h */,
@@ -161,8 +153,6 @@
 			children = (
 				9BB000952581FF7600207AF3 /* YZMTKView.h */,
 				9BB000962581FF7600207AF3 /* YZMTKView.m */,
-				9B181505259DD573003CD13D /* YZPixelBuffer.h */,
-				9B181504259DD573003CD13D /* YZPixelBuffer.m */,
 				9B878CBE25A8091C00BB6D71 /* YZMetalOutput.h */,
 				9B878CBF25A8091C00BB6D71 /* YZMetalOutput.m */,
 				9B878CC725A8307F00BB6D71 /* YZNewPixelBuffer.h */,
@@ -258,7 +248,6 @@
 				9BB00042257FB7F400207AF3 /* AppDelegate.m in Sources */,
 				9BB000A12582019400207AF3 /* YZYUVToRGBConversion.metal in Sources */,
 				9B878CC925A8307F00BB6D71 /* YZNewPixelBuffer.m in Sources */,
-				9BB0015D2584CB9400207AF3 /* YZYUVToRGBConversion.m in Sources */,
 				9BB0006A25806D4200207AF3 /* YZVideoCamera.m in Sources */,
 				9B878CBC25A8057800BB6D71 /* YZMetalFilter.m in Sources */,
 				9BB00062257FBA5500207AF3 /* FirstViewController.m in Sources */,
@@ -266,7 +255,6 @@
 				9BB00053257FB7F600207AF3 /* main.m in Sources */,
 				9BB001432583852000207AF3 /* YZMetalOrientation.m in Sources */,
 				9B878CC025A8091C00BB6D71 /* YZMetalOutput.m in Sources */,
-				9B181506259DD573003CD13D /* YZPixelBuffer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

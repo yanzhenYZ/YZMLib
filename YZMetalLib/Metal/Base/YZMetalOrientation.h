@@ -9,6 +9,10 @@
 #import <AVFoundation/AVFoundation.h>
 #import <MetalKit/MetalKit.h>
 
+extern float *kYZColorConversion601;
+extern float *kYZColorConversion601FullRange;
+extern float *kYZColorConversion709;
+
 typedef NS_ENUM(NSInteger, YZOrientation) {
     YZOrientationUnknown    = 0,
     YZOrientationPortrait   = 1,

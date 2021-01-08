@@ -11,7 +11,6 @@
 #import "YZVideoCamera.h"
 #import "YZShaderTypes.h"
 #import "YZMetalOrientation.h"
-#import "YZYUVToRGBConversion.h"
 
 @interface YZVideoCamera ()<AVCaptureVideoDataOutputSampleBufferDelegate>
 
@@ -56,7 +55,7 @@
         _orientation = [[YZMetalOrientation alloc] init];
         _cameraQueue = dispatch_queue_create("com.yanzhen.video.camera.queue", 0);
         _cameraRenderQueue = dispatch_queue_create("com.yanzhen.video.camera.render.queue", 0);
-        //_userBGRA = YES;
+        _userBGRA = YES;
         _preset = preset;
         [self _configVideoSession];
         [self _configMetal];

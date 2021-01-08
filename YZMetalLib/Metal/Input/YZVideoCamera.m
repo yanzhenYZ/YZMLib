@@ -219,7 +219,7 @@
     
     [self _converWH:texture outputTexture:outputTexture];
     
-    [self.filter newTextureAvailable:outputTexture];
+    [self.filter newTextureAvailable:outputTexture commandBuffer:nil];
 }
 
 - (void)_converWH:(id<MTLTexture>)bgraTexture outputTexture:(id<MTLTexture>)texture {
@@ -309,7 +309,7 @@
     }
     
     [self _convertYUVToRGB:textureY textureUV:textureUV outputTexture:outputTexture];
-    [self.filter newTextureAvailable:outputTexture];
+    [self.filter newTextureAvailable:outputTexture commandBuffer:nil];
 }
 
 - (void)_convertYUVToRGB:(id<MTLTexture>)textureY textureUV:(id<MTLTexture>)textureUV outputTexture:(id<MTLTexture>)texture {

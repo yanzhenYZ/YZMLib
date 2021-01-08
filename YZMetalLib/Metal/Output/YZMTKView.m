@@ -52,11 +52,13 @@
 }
 
 - (void)setBackgroundColorRed:(double)red green:(double)green blue:(double)blue alpha:(double)alpha {
-    
+    _red = red;
+    _green = green;
+    _blue = blue;
+    _alpha = alpha;
 }
 
-
--(void)newTextureAvailable:(id<MTLTexture>)texture {
+-(void)newTextureAvailable:(id<MTLTexture>)texture commandBuffer:(id<MTLCommandBuffer>)commandBuffer {
     _texture = texture;
     self.drawableSize = CGSizeMake(texture.width, texture.height);
     [self draw];
@@ -101,10 +103,7 @@
     
     [commandBuffer presentDrawable:view.currentDrawable];
     [commandBuffer commit];
-    if (_pixelBuffer) {//YZMTKViewFillModeScaleAspectFit outTexture will contain backColor
-        [commandBuffer waitUntilCompleted];
-        [_pixelBuffer newTextureAvailable:_texture];
-    }
+    [_pixelBuffer newTextureAvailable:_texture commandBuffer:commandBuffer];
     _texture = nil;
 }
 

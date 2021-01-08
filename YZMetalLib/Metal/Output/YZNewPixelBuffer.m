@@ -31,14 +31,9 @@
     return self;
 }
 
--(void)newTextureAvailable:(id<MTLTexture>)texture {
-    [self createRenderPixelBuffer:texture];
-    [self.filter newTextureAvailable:texture];
-}
-
-#pragma mark  - private render
-- (void)createRenderPixelBuffer:(id<MTLTexture>)texture {
-    [self dealWithSize:texture];
+-(void)newTextureAvailable:(id<MTLTexture>)texture commandBuffer:(id<MTLCommandBuffer>)commandBuffer {
+    [commandBuffer waitUntilCompleted];
+    [self dealPixelBuffer:texture];
     if (!_pixelBuffer) { return; }
     
     CVPixelBufferLockBaseAddress(_pixelBuffer, 0);
@@ -53,9 +48,11 @@
     if ([_delegate respondsToSelector:@selector(outputPixelBuffer:)]) {
         [_delegate outputPixelBuffer:_pixelBuffer];
     }
+    [self.filter newTextureAvailable:texture commandBuffer:nil];
 }
 
-- (void)dealWithSize:(id<MTLTexture>)texture {
+#pragma mark  - private render
+- (void)dealPixelBuffer:(id<MTLTexture>)texture {
     CGFloat width = texture.width;
     CGFloat height = texture.height;
     if (_lastTextureSize.width == height && _lastTextureSize.height == width) {//交换了宽高
@@ -66,7 +63,7 @@
     _lastTextureSize = CGSizeMake(width, height);
     if (CGSizeEqualToSize(_size, _lastTextureSize)) {
         if (!_pixelBuffer) {
-            [self createPixelBuffer];
+            [self generatePixelBuffer];
         }
         return;
     }
@@ -91,10 +88,10 @@
         CVPixelBufferRelease(_pixelBuffer);
         _pixelBuffer = nil;
     }
-    [self createPixelBuffer];
+    [self generatePixelBuffer];
 }
 
-- (BOOL)createPixelBuffer {
+- (void)generatePixelBuffer {
     NSDictionary *pixelAttributes = @{(NSString *)kCVPixelBufferIOSurfacePropertiesKey:@{}};
     CVReturn result = CVPixelBufferCreate(kCFAllocatorDefault,
                                             _size.width,
@@ -103,10 +100,7 @@
                                             (__bridge CFDictionaryRef)(pixelAttributes),
                                             &_pixelBuffer);
     if (result != kCVReturnSuccess) {
-        NSLog(@"YZPixelBuffer to create cvpixelbuffer %d", result);
-        return NO;
+        NSLog(@"YZNewPixelBuffer to create cvpixelbuffer %d", result);
     }
-    return YES;
 }
-
 @end

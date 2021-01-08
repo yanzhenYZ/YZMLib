@@ -9,9 +9,9 @@
 #import "AppDelegate.h"
 
 /**
- 3.0.3 名字重新定义
- 3.0.4 Metal 抽出对外工具类
- 3.0.5 new buffer- bytes
+ 3.0.4 new buffer- bytes
+ 3.0.5 Metal 抽出对外工具类
+
  
 
  3.0.9 打包SDK

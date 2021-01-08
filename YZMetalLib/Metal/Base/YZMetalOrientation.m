@@ -76,7 +76,7 @@ typedef NS_ENUM(NSInteger, YZRotation) {
 }
 
 
-+ (simd_float8)defaultTexture {
++ (simd_float8)defaultTextureCoordinates {
     return YZNoRotation;
 }
 

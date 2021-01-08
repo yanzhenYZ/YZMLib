@@ -28,8 +28,8 @@
         simd_float8 vertices = [YZMetalOrientation defaultVertices];
         _vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
         
-        simd_float8 texture = [YZMetalOrientation defaultTexture];
-        _textureBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&texture length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
+        simd_float8 textureCoordinates = [YZMetalOrientation defaultTextureCoordinates];
+        _textureBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&textureCoordinates length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
     }
     return self;
 }

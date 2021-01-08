@@ -30,7 +30,7 @@ typedef NS_ENUM(NSInteger, YZOrientation) {
 @property (nonatomic) BOOL mirror;
 
 + (simd_float8)defaultVertices;
-+ (simd_float8)defaultTexture;
++ (simd_float8)defaultTextureCoordinates;
 
 
 - (simd_float8)getTextureCoordinates;

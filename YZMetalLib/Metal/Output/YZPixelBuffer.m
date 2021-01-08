@@ -10,14 +10,13 @@
 #import "YZMetalDevice.h"
 #import "YZMetalOrientation.h"
 #import "YZShaderTypes.h"
-/**
- 3. 旋转方向后的size
- */
+
 @interface YZPixelBuffer ()
-@property (nonatomic, assign) BOOL render;
 @property (nonatomic, strong) id<MTLRenderPipelineState> pipelineState;
-@property (nonatomic, strong) id<MTLBuffer> vertexBuffer;
 @property (nonatomic, strong) id<MTLBuffer> textureCoordinateBuffer;
+@property (nonatomic, strong) id<MTLBuffer> vertexBuffer;
+@property (nonatomic, assign) BOOL render;
+@property (nonatomic) CGSize lastTextureSize;
 @end
 
 @implementation YZPixelBuffer {
@@ -58,9 +57,6 @@
     }
 }
 
-- (CVPixelBufferRef)outputPixelBuffer {
-    return _pixelBuffer;
-}
 #pragma mark  - private render
 - (void)createRenderPixelBuffer:(id<MTLTexture>)texture {
     [self dealWithSize:texture];
@@ -83,7 +79,13 @@
 - (void)dealWithSize:(id<MTLTexture>)texture {
     CGFloat width = texture.width;
     CGFloat height = texture.height;
-    if (CGSizeEqualToSize(_size, CGSizeMake(width, height))) {
+    if (_lastTextureSize.width == height && _lastTextureSize.height == width) {//交换了宽高
+        CVPixelBufferRelease(_pixelBuffer);
+        _pixelBuffer = nil;
+        _size = CGSizeMake(_size.height, _size.width);
+    }
+    _lastTextureSize = CGSizeMake(width, height);
+    if (CGSizeEqualToSize(_size, _lastTextureSize)) {
         if (!_pixelBuffer) {
             [self createPixelBuffer];
         }

@@ -24,7 +24,6 @@
 - (instancetype)initWithSize:(CGSize)size render:(BOOL)render;
 
 - (void)generatePixelBuffer:(id<MTLTexture>)texture;
-- (CVPixelBufferRef)outputPixelBuffer;
 
 @end
 

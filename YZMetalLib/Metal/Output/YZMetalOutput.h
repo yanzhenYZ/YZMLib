@@ -9,11 +9,14 @@
 
 @interface YZMetalOutput : NSObject
 @property (nonatomic, strong, readonly) id<MTLRenderPipelineState> pipelineState;
-@property (nonatomic, strong) id<YZFilterProtocol> filter;
-
 
 - (instancetype)initWithVertexFunctionName:(NSString *)vertex fragmentFunctionName:(NSString *)fragment;
 
 - (void)generatePipelineVertexFunctionName:(NSString *)vertex fragmentFunctionName:(NSString *)fragment;
+
+- (void)addFilter:(id<YZFilterProtocol>)filter;
+- (void)removeFilter:(id<YZFilterProtocol>)filter;
+- (NSArray<id<YZFilterProtocol>> *)allFilters;
+- (void)removeAllFilters;
 @end
 

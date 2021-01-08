@@ -42,7 +42,9 @@
         id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:desc];
         [self renderTexture:texture outputTexture:outputTexture];
     } else {
-        [self.filter newTextureAvailable:texture commandBuffer:commandBuffer];
+        [self.allFilters enumerateObjectsUsingBlock:^(id<YZFilterProtocol>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [obj newTextureAvailable:texture commandBuffer:commandBuffer];
+        }];
     }
 }
 
@@ -73,6 +75,8 @@
     [encoder endEncoding];
     
     [commandBuffer commit];
-    [self.filter newTextureAvailable:outputTexture commandBuffer:commandBuffer];
+    [self.allFilters enumerateObjectsUsingBlock:^(id<YZFilterProtocol>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [obj newTextureAvailable:texture commandBuffer:commandBuffer];
+    }];
 }
 @end

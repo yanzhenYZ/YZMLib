@@ -247,7 +247,9 @@
     [encoder endEncoding];
     
     [commandBuffer commit];
-    [self.filter newTextureAvailable:texture commandBuffer:commandBuffer];
+    [self.allFilters enumerateObjectsUsingBlock:^(id<YZFilterProtocol>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [obj newTextureAvailable:texture commandBuffer:commandBuffer];
+    }];
 }
 
 - (void)_processYUVVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
@@ -344,7 +346,9 @@
     [encoder endEncoding];
     
     [commandBuffer commit];
-    [self.filter newTextureAvailable:texture commandBuffer:commandBuffer];
+    [self.allFilters enumerateObjectsUsingBlock:^(id<YZFilterProtocol>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [obj newTextureAvailable:texture commandBuffer:commandBuffer];
+    }];
 }
 
 #pragma mark - private

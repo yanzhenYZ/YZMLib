@@ -50,9 +50,8 @@
     YZNewPixelBuffer *pixelBuffer = [[YZNewPixelBuffer alloc] initWithSize:CGSizeMake(360, 640)];
     pixelBuffer.delegate = self;
     
-    
-    _camera.filter = _brightness;
-    _brightness.filter = pixelBuffer;
+    [_camera addFilter:_brightness];
+    [_brightness addFilter:pixelBuffer];
     
     //2
 //    _mtkView.filter = pixelBuffer;

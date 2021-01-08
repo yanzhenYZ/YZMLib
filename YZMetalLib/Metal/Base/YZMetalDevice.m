@@ -8,7 +8,8 @@
 #import "YZMetalDevice.h"
 
 @interface YZMetalDevice ()
-
+@property (nonatomic, strong) id<MTLLibrary> defaultLibrary;
+@property (nonatomic, strong) id<MTLCommandQueue> commandQueue;
 @end
 
 @implementation YZMetalDevice {
@@ -66,7 +67,7 @@ static id _metalDevice;
     return self;
 }
 
-#pragma mark - pipeline
+#pragma mark - metal
 
 - (id<MTLRenderPipelineState>)newRenderPipeline:(NSString *)vertex fragment:(NSString *)fragment {
     id<MTLFunction> vertexFunction = [_defaultLibrary newFunctionWithName:vertex];
@@ -85,6 +86,9 @@ static id _metalDevice;
     return pipeline;
 }
 
+- (id<MTLCommandBuffer>)commandBuffer {
+    return [_commandQueue commandBuffer];
+}
 #pragma mark - semaphore
 + (void)semaphoreSignal {
     [[self defaultDevice] signalSemaphore];

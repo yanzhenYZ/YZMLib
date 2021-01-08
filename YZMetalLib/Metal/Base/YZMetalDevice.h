@@ -10,18 +10,16 @@
 
 @interface YZMetalDevice : NSObject
 @property (nonatomic, strong, readonly) id<MTLDevice> device;
-@property (nonatomic, strong) id<MTLCommandQueue> commandQueue;
-@property (nonatomic, strong) id<MTLLibrary> defaultLibrary;
 
 + (instancetype)defaultDevice;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)new NS_UNAVAILABLE;
 
-#pragma mark - pipeline
+#pragma mark - metal
 
 - (id<MTLRenderPipelineState>)newRenderPipeline:(NSString *)vertex fragment:(NSString *)fragment;
-
+- (id<MTLCommandBuffer>)commandBuffer;
 #pragma mark - semaphore
 + (void)semaphoreSignal;
 + (intptr_t)semaphoreWaitNow;

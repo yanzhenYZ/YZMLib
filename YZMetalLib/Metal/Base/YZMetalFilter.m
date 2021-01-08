@@ -9,7 +9,7 @@
 #import "YZMetalDevice.h"
 
 @interface YZMetalFilter ()
-@property (nonatomic, strong) id<MTLRenderPipelineState> pipelineState;
+
 @end
 
 @implementation YZMetalFilter

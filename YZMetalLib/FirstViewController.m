@@ -74,8 +74,12 @@
     _camera.outputOrientation = UIApplication.sharedApplication.statusBarOrientation;
     _brightness = [[YZBrightness alloc] init];
     
+    
+    
     _camera.filter = _brightness;
     _brightness.filter = _mtkView;
+    
+//    _camera.filter = _mtkView;
     
     _camera.delegate = self;
     [_camera startRunning];

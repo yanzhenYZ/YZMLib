@@ -12,7 +12,6 @@
 #import "YZMetalOrientation.h"
 
 @interface YZBrightness ()
-@property (nonatomic, strong) id<MTLRenderPipelineState> pipelineState;
 @property (nonatomic, strong) id<MTLBuffer> positionBuffer;
 @property (nonatomic, strong) id<MTLBuffer> textureBuffer;
 @end
@@ -20,13 +19,11 @@
 @implementation YZBrightness
 - (instancetype)init
 {
-    self = [super init];
+    self = [super initWithVertexFunctionName:@"YZBrightnessInputVertex" fragmentFunctionName:@"YZBrightnessFragment"];
     if (self) {
         _enable = YES;
         _beautyLevel = 0.5;
         _brightLevel = 0.5;
-        
-        _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZBrightnessInputVertex" fragment:@"YZBrightnessFragment"];
         
         simd_float8 vertices = [YZMetalOrientation defaultVertices];
         _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceStorageModeShared];

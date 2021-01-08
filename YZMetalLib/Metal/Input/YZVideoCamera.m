@@ -20,7 +20,6 @@
 @property (nonatomic, strong) AVCaptureDeviceInput *input;
 @property (nonatomic, strong) AVCaptureVideoDataOutput *output;
 @property (nonatomic, assign) AVCaptureDevicePosition position;
-@property (nonatomic, strong) id<MTLRenderPipelineState> renderPipelineState;
 @property (nonatomic, assign) CVMetalTextureCacheRef textureCache;
 @property (nonatomic, strong) id<MTLBuffer> vertexBuffer;
 @property (nonatomic, strong) YZMetalOrientation *orientation;
@@ -238,7 +237,7 @@
     
     //表示对顺时针顺序的三角形进行剔除。
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
-    [encoder setRenderPipelineState:self.renderPipelineState];
+    [encoder setRenderPipelineState:self.pipelineState];
     [encoder setVertexBuffer:_vertexBuffer offset:0 atIndex:YZVertexIndexPosition];
     
     simd_float8 coordinates = [_orientation getTextureCoordinates:_position];
@@ -326,7 +325,7 @@
         NSLog(@"YZVideoCamera render endcoder Fail");
     }
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
-    [encoder setRenderPipelineState:self.renderPipelineState];
+    [encoder setRenderPipelineState:self.pipelineState];
     [encoder setVertexBuffer:_vertexBuffer offset:0 atIndex:YZFullRangeVertexIndexPosition];
     
     //yuv
@@ -378,7 +377,7 @@
     [_output setSampleBufferDelegate:self queue:_cameraQueue];
         
     if (_userBGRA) {
-        _renderPipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZInputVertex" fragment:@"YZFragment"];
+        [self generatePipelineVertexFunctionName:@"YZInputVertex" fragmentFunctionName:@"YZFragment"];
         NSDictionary *dict = @{
             (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA)
         };
@@ -392,13 +391,13 @@
         }];
         
         if (_fullYUVRange) {
-            _renderPipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZYUVToRGBVertex" fragment:@"YZYUVConversionFullRangeFragment"];
+            [self generatePipelineVertexFunctionName:@"YZYUVToRGBVertex" fragmentFunctionName:@"YZYUVConversionFullRangeFragment"];
             NSDictionary *dict = @{
                 (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange)
             };
             _output.videoSettings = dict;
         } else {
-            _renderPipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZYUVToRGBVertex" fragment:@"YZYUVConversionVideoRangeFragment"];
+            [self generatePipelineVertexFunctionName:@"YZYUVToRGBVertex" fragmentFunctionName:@"YZYUVConversionVideoRangeFragment"];
             NSDictionary *dict = @{
                 (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)
             };

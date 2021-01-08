@@ -32,7 +32,6 @@
 @implementation YZVideoCamera {
     dispatch_queue_t _cameraQueue;
     dispatch_queue_t _cameraRenderQueue;
-    dispatch_semaphore_t _videoSemaphore;
     const float *_colorConversion; //4x3
 }
 
@@ -57,7 +56,6 @@
         _orientation = [[YZMetalOrientation alloc] init];
         _cameraQueue = dispatch_queue_create("com.yanzhen.video.camera.queue", 0);
         _cameraRenderQueue = dispatch_queue_create("com.yanzhen.video.camera.render.queue", 0);
-        _videoSemaphore = dispatch_semaphore_create(1);
         _userBGRA = YES;
         _preset = preset;
         [self _configVideoSession];
@@ -71,9 +69,9 @@
 
 #pragma mark - property
 -(void)setVideoMirrored:(BOOL)videoMirrored {
-    dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
+    [YZMetalDevice semaphoreWaitForever];
     _orientation.mirror = videoMirrored;
-    dispatch_semaphore_signal(_videoSemaphore);
+    [YZMetalDevice semaphoreSignal];
 }
 
 -(BOOL)videoMirrored {
@@ -81,7 +79,7 @@
 }
 
 - (void)setOutputOrientation:(UIInterfaceOrientation)outputOrientation {
-    dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
+    [YZMetalDevice semaphoreWaitForever];
     if (_position == AVCaptureDevicePositionBack) {//why
         if (outputOrientation == YZOrientationRight) {
             _orientation.outputOrientation = YZOrientationLeft;
@@ -93,7 +91,7 @@
     } else {
         _orientation.outputOrientation = (YZOrientation)outputOrientation;
     }
-    dispatch_semaphore_signal(_videoSemaphore);
+    [YZMetalDevice semaphoreSignal];
 }
 
 - (UIInterfaceOrientation)outputOrientation {
@@ -101,24 +99,24 @@
 }
 
 - (void)startRunning {
-    dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
+    [YZMetalDevice semaphoreWaitForever];
     if (!_session.isRunning) {
         [_session startRunning];
     }
-    dispatch_semaphore_signal(_videoSemaphore);
+    [YZMetalDevice semaphoreSignal];
 }
 
 - (void)stopRunning
 {
-    dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
+    [YZMetalDevice semaphoreWaitForever];
     if (_session.isRunning) {
         [_session stopRunning];
     }
-    dispatch_semaphore_signal(_videoSemaphore);
+    [YZMetalDevice semaphoreSignal];
 }
 
 - (void)switchCamera {
-    dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
+    [YZMetalDevice semaphoreWaitForever];
     if (_position == AVCaptureDevicePositionBack) {
         _position = AVCaptureDevicePositionFront;
     } else {
@@ -141,17 +139,17 @@
         _input = input;
     }
     [_orientation switchCamera];
-    dispatch_semaphore_signal(_videoSemaphore);
+    [YZMetalDevice semaphoreSignal];
 }
 
 - (void)setFrameRate:(int32_t)frameRate {
     _frameRate = frameRate;
-    dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
+    [YZMetalDevice semaphoreWaitForever];
     [_session beginConfiguration];
     _camera.activeVideoMinFrameDuration = CMTimeMake(1, frameRate);
     _camera.activeVideoMaxFrameDuration = CMTimeMake(1, frameRate);
     [_session commitConfiguration];
-    dispatch_semaphore_signal(_videoSemaphore);
+    [YZMetalDevice semaphoreSignal];
 }
 
 - (void)setPreset:(AVCaptureSessionPreset)preset {
@@ -159,7 +157,7 @@
         return;
     }
     _preset = preset;
-    dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
+    [YZMetalDevice semaphoreWaitForever];
     [_session beginConfiguration];
     if ([_session canSetSessionPreset:preset]) {
         _session.sessionPreset = preset;
@@ -167,13 +165,13 @@
     _camera.activeVideoMinFrameDuration = CMTimeMake(1, self.frameRate);
     _camera.activeVideoMaxFrameDuration = CMTimeMake(1, self.frameRate);
     [_session commitConfiguration];
-    dispatch_semaphore_signal(_videoSemaphore);
+    [YZMetalDevice semaphoreSignal];
 }
 #pragma mark - AVCaptureVideoDataOutputSampleBufferDelegate and metal frame
 - (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
     if (!_session.isRunning || _pause) { return; }
     if (_output != output) { return; }
-    if (dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_NOW) != 0) {
+    if ([YZMetalDevice semaphoreWaitNow] != 0) {
         _dropFrames++;
         return;
     }
@@ -188,7 +186,7 @@
             [self _processYUVVideoSampleBuffer:sampleBuffer];
         }
         CFRelease(sampleBuffer);
-        dispatch_semaphore_signal(self->_videoSemaphore);
+        [YZMetalDevice semaphoreSignal];
     });
 }
 

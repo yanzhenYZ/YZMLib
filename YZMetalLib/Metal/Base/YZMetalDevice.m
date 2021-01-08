@@ -86,15 +86,27 @@ static id _metalDevice;
 }
 
 #pragma mark - semaphore
-- (void)semaphoreWaitForever {
-    dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
++ (void)semaphoreSignal {
+    [[self defaultDevice] signalSemaphore];
 }
 
-- (void)semaphoreSignal {
++ (intptr_t)semaphoreWaitNow {
+    return [[self defaultDevice] waitNowSemaphore];
+}
+
++ (void)semaphoreWaitForever {
+    [[self defaultDevice] waitForeverSemaphore];
+}
+//private
+- (void)signalSemaphore {
     dispatch_semaphore_signal(_videoSemaphore);
 }
 
-- (intptr_t)semaphoreWaitNow {
+- (intptr_t)waitNowSemaphore {
     return dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_NOW);
+}
+
+- (void)waitForeverSemaphore {
+    dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
 }
 @end

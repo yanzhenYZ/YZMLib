@@ -23,8 +23,8 @@
 - (id<MTLRenderPipelineState>)newRenderPipeline:(NSString *)vertex fragment:(NSString *)fragment;
 
 #pragma mark - semaphore
-- (void)semaphoreSignal;
-- (intptr_t)semaphoreWaitNow;
-- (void)semaphoreWaitForever;
++ (void)semaphoreSignal;
++ (intptr_t)semaphoreWaitNow;
++ (void)semaphoreWaitForever;
 @end
 

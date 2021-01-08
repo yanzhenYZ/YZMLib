@@ -73,6 +73,6 @@
     [encoder endEncoding];
     
     [commandBuffer commit];
-    [super newTextureAvailable:texture commandBuffer:commandBuffer];
+    [super newTextureAvailable:outputTexture commandBuffer:commandBuffer];
 }
 @end

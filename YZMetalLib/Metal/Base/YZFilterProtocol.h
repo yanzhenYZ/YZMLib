@@ -10,6 +10,7 @@
 
 @protocol YZFilterProtocol <NSObject>
 
+//in render queue
 - (void)newTextureAvailable:(id<MTLTexture>)texture commandBuffer:(id<MTLCommandBuffer>)commandBuffer;
 
 @end

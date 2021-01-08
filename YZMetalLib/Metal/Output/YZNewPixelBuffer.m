@@ -48,10 +48,7 @@
     if ([_delegate respondsToSelector:@selector(outputPixelBuffer:)]) {
         [_delegate outputPixelBuffer:_pixelBuffer];
     }
-    
-    [self.allFilters enumerateObjectsUsingBlock:^(id<YZFilterProtocol>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [obj newTextureAvailable:texture commandBuffer:nil];
-    }];
+    [super newTextureAvailable:texture commandBuffer:commandBuffer];
 }
 
 #pragma mark  - private render

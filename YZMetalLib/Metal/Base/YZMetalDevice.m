@@ -11,7 +11,12 @@
 
 @end
 
-@implementation YZMetalDevice
+@implementation YZMetalDevice {
+    /** 保证渲染线程安全
+     1. filter
+     */
+    dispatch_semaphore_t _videoSemaphore;
+}
 static id _metalDevice;
 
 + (instancetype)defaultDevice
@@ -41,6 +46,7 @@ static id _metalDevice;
 {
     self = [super init];
     if (self) {
+        _videoSemaphore = dispatch_semaphore_create(1);
         _device = MTLCreateSystemDefaultDevice();
         _commandQueue = [_device newCommandQueue];
         //BOOL support = MPSSupportsMTLDevice(_device);
@@ -77,5 +83,18 @@ static id _metalDevice;
         NSLog(@"YZMetalDevice new renderPipelineState failed: %@", error);
     }
     return pipeline;
+}
+
+#pragma mark - semaphore
+- (void)semaphoreWaitForever {
+    dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_FOREVER);
+}
+
+- (void)semaphoreSignal {
+    dispatch_semaphore_signal(_videoSemaphore);
+}
+
+- (intptr_t)semaphoreWaitNow {
+    return dispatch_semaphore_wait(_videoSemaphore, DISPATCH_TIME_NOW);
 }
 @end

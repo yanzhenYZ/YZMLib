@@ -58,7 +58,7 @@
         _cameraQueue = dispatch_queue_create("com.yanzhen.video.camera.queue", 0);
         _cameraRenderQueue = dispatch_queue_create("com.yanzhen.video.camera.render.queue", 0);
         _videoSemaphore = dispatch_semaphore_create(1);
-        //_userBGRA = YES;
+        _userBGRA = YES;
         _preset = preset;
         [self _configVideoSession];
         [self _configMetal];

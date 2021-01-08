@@ -20,7 +20,9 @@
 
 
 #pragma mark - YZFilterProtocol
--(void)newTextureAvailable:(id<MTLTexture>)texture {
-    //[self.filter newTextureAvailable:texture];
+-(void)newTextureAvailable:(id<MTLTexture>)texture commandBuffer:(id<MTLCommandBuffer>)commandBuffer {
+    [self.allFilters enumerateObjectsUsingBlock:^(id<YZFilterProtocol>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [obj newTextureAvailable:texture commandBuffer:commandBuffer];
+    }];
 }
 @end

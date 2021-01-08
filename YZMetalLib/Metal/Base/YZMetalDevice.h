@@ -18,8 +18,10 @@
 
 #pragma mark - metal
 
-- (id<MTLRenderPipelineState>)newRenderPipeline:(NSString *)vertex fragment:(NSString *)fragment;
 - (id<MTLCommandBuffer>)commandBuffer;
++ (MTLRenderPassDescriptor *)newRenderPassDescriptor:(id<MTLTexture>)texture;
+- (id<MTLRenderPipelineState>)newRenderPipeline:(NSString *)vertex fragment:(NSString *)fragment;
+
 #pragma mark - semaphore
 + (void)semaphoreSignal;
 + (intptr_t)semaphoreWaitNow;

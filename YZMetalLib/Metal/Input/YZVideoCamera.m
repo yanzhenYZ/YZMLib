@@ -219,12 +219,7 @@
 }
 
 - (void)_converWH:(id<MTLTexture>)bgraTexture outputTexture:(id<MTLTexture>)texture {
-    MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
-    desc.colorAttachments[0].texture = texture;
-    desc.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 1, 1);
-    desc.colorAttachments[0].storeAction = MTLStoreActionStore;
-    desc.colorAttachments[0].loadAction = MTLLoadActionClear;
-    
+    MTLRenderPassDescriptor *desc = [YZMetalDevice newRenderPassDescriptor:texture];
     id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice commandBuffer];
     id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:desc];
     if (!encoder) {
@@ -311,12 +306,8 @@
 }
 
 - (void)_convertYUVToRGB:(id<MTLTexture>)textureY textureUV:(id<MTLTexture>)textureUV outputTexture:(id<MTLTexture>)texture {
-    MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
-    desc.colorAttachments[0].texture = texture;
-    desc.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 1, 1);
-    desc.colorAttachments[0].storeAction = MTLStoreActionStore;
-    desc.colorAttachments[0].loadAction = MTLLoadActionClear;
     
+    MTLRenderPassDescriptor *desc = [YZMetalDevice newRenderPassDescriptor:texture];
     id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice commandBuffer];
     id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:desc];
     if (!encoder) {

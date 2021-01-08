@@ -124,12 +124,7 @@
     textureDesc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
     id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:textureDesc];
     
-    MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
-    desc.colorAttachments[0].texture = outputTexture;
-    desc.colorAttachments[0].clearColor = MTLClearColorMake(1, 0, 0, 1);
-    desc.colorAttachments[0].storeAction = MTLStoreActionStore;
-    desc.colorAttachments[0].loadAction = MTLLoadActionClear;
-    
+    MTLRenderPassDescriptor *desc = [YZMetalDevice newRenderPassDescriptor:outputTexture];
     id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice commandBuffer];
     id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:desc];
     if (!encoder) {

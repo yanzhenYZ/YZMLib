@@ -47,7 +47,7 @@
 }
 
 - (void)renderTexture:(id<MTLTexture>)texture outputTexture:(id<MTLTexture>)outputTexture {
-    MTLRenderPassDescriptor *desc = [[MTLRenderPassDescriptor alloc] init];
+    MTLRenderPassDescriptor *desc = [YZMetalDevice newRenderPassDescriptor:outputTexture];
     desc.colorAttachments[0].texture = outputTexture;
     desc.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 1, 1);
     desc.colorAttachments[0].storeAction = MTLStoreActionStore;

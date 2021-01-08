@@ -11,11 +11,6 @@
 #import "YZShaderTypes.h"
 #import "YZMetalOrientation.h"
 
-@interface YZBrightness ()
-@property (nonatomic, strong) id<MTLBuffer> vertexBuffer;
-@property (nonatomic, strong) id<MTLBuffer> textureBuffer;
-@end
-
 @implementation YZBrightness
 - (instancetype)init
 {
@@ -25,11 +20,12 @@
         _beautyLevel = 0.5;
         _brightLevel = 0.5;
         
+        /*
         simd_float8 vertices = [YZMetalOrientation defaultVertices];
         _vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
         
         simd_float8 textureCoordinates = [YZMetalOrientation defaultTextureCoordinates];
-        _textureBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&textureCoordinates length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
+        _textureBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&textureCoordinates length:sizeof(simd_float8) options:MTLResourceStorageModeShared];*/
     }
     return self;
 }
@@ -56,14 +52,15 @@
     }
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
     [encoder setRenderPipelineState:self.pipelineState];
-    [encoder setVertexBuffer:_vertexBuffer offset:0 atIndex:YZVertexIndexPosition];
+    simd_float8 vertices = [YZMetalOrientation defaultVertices];
+    [encoder setVertexBytes:&vertices length:sizeof(simd_float8) atIndex:YZVertexIndexPosition];
     
-    [encoder setVertexBuffer:_textureBuffer offset:0 atIndex:YZVertexIndexTextureCoordinate];
+    simd_float8 textureCoordinates = [YZMetalOrientation defaultTextureCoordinates];
+    [encoder setVertexBytes:&textureCoordinates length:sizeof(simd_float8) atIndex:YZVertexIndexTextureCoordinate];
     [encoder setFragmentTexture:texture atIndex:YZFragmentTextureIndexNormal];
 
     simd_float2 uniform = {_brightLevel, _beautyLevel};
-    id<MTLBuffer> uniformBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&uniform length:sizeof(simd_float2) options:MTLResourceCPUCacheModeDefaultCache];
-    [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:YZUniformIndexNormal];
+    [encoder setFragmentBytes:&uniform length:sizeof(simd_float2) atIndex:YZUniformIndexNormal];
     
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];

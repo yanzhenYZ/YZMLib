@@ -13,7 +13,6 @@
 @interface YZMTKView ()<MTKViewDelegate>
 @property (nonatomic, strong) id<MTLRenderPipelineState> pipelineState;
 @property (nonatomic, strong) id<MTLTexture> texture;
-@property (nonatomic, strong) id<MTLBuffer> textureBuffer;
 @property (nonatomic) CGRect currentBounds;
 @property (nonatomic) double red;
 @property (nonatomic) double green;
@@ -90,10 +89,10 @@
         h = insetRect.size.height / bounds.size.height;
     }
     simd_float8 vertices = {-w, h, w, h, -w, -h, w, -h};
-    id<MTLBuffer> positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
-    [encoder setVertexBuffer:positionBuffer offset:0 atIndex:YZVertexIndexPosition];
+    [encoder setVertexBytes:&vertices length:sizeof(simd_float8) atIndex:YZVertexIndexPosition];
     
-    [encoder setVertexBuffer:_textureBuffer offset:0 atIndex:YZVertexIndexTextureCoordinate];
+    simd_float8 textureCoordinates = [YZMetalOrientation defaultTextureCoordinates];
+    [encoder setVertexBytes:&textureCoordinates length:sizeof(simd_float8) atIndex:YZVertexIndexTextureCoordinate];
     [encoder setFragmentTexture:_texture atIndex:YZFragmentTextureIndexNormal];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];
@@ -118,9 +117,6 @@
     self.device = YZMetalDevice.defaultDevice.device;
     self.contentMode = UIViewContentModeScaleToFill;
     _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:@"YZInputVertex" fragment:@"YZFragment"];
-  
-    simd_float8 textureCoordinates = [YZMetalOrientation defaultTextureCoordinates];
-    _textureBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&textureCoordinates length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
 }
 
 - (void)layoutSubviews {

@@ -20,7 +20,6 @@
 @property (nonatomic, strong) AVCaptureVideoDataOutput *output;
 @property (nonatomic, assign) AVCaptureDevicePosition position;
 @property (nonatomic, assign) CVMetalTextureCacheRef textureCache;
-@property (nonatomic, strong) id<MTLBuffer> vertexBuffer;
 @property (nonatomic, strong) YZMetalOrientation *orientation;
 @property (nonatomic, assign) BOOL userBGRA;
 @property (nonatomic, assign) BOOL fullYUVRange;
@@ -227,11 +226,15 @@
     //表示对顺时针顺序的三角形进行剔除。
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
     [encoder setRenderPipelineState:self.pipelineState];
-    [encoder setVertexBuffer:_vertexBuffer offset:0 atIndex:YZVertexIndexPosition];
+    simd_float8 vertices = [YZMetalOrientation defaultVertices];
+    [encoder setVertexBytes:&vertices length:sizeof(simd_float8) atIndex:YZVertexIndexPosition];
     
     simd_float8 textureCoordinates = [_orientation getTextureCoordinates:_position];
-    id<MTLBuffer> textureBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&textureCoordinates length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
-    [encoder setVertexBuffer:textureBuffer offset:0 atIndex:YZVertexIndexTextureCoordinate];
+    /**
+     https://developer.apple.com/documentation/metal/mtlrendercommandencoder/1515846-setvertexbytes
+     Use this method for single-use data smaller than 4 KB. Create a MTLBuffer object if your data exceeds 4 KB in length or persists for multiple uses.
+     */
+    [encoder setVertexBytes:&textureCoordinates length:sizeof(simd_float8) atIndex:YZVertexIndexTextureCoordinate];
     [encoder setFragmentTexture:texture atIndex:YZFragmentTextureIndexNormal];
     
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
@@ -313,18 +316,19 @@
     }
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
     [encoder setRenderPipelineState:self.pipelineState];
-    [encoder setVertexBuffer:_vertexBuffer offset:0 atIndex:YZFullRangeVertexIndexPosition];
+    
+    simd_float8 vertices = [YZMetalOrientation defaultVertices];
+    [encoder setVertexBytes:&vertices length:sizeof(simd_float8) atIndex:YZFullRangeVertexIndexPosition];
     
     //yuv
     simd_float8 textureCoordinates = [_orientation getTextureCoordinates:_position];
-    id<MTLBuffer> textureBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&textureCoordinates length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
-    [encoder setVertexBuffer:textureBuffer offset:0 atIndex:YZFullRangeVertexIndexY];
+    [encoder setVertexBytes:&textureCoordinates length:sizeof(simd_float8) atIndex:YZFullRangeVertexIndexY];
     [encoder setFragmentTexture:textureY atIndex:YZFullRangeFragmentIndexY];
-    
-    [encoder setVertexBuffer:textureBuffer offset:0 atIndex:YZFullRangeVertexIndexUV];
+    [encoder setVertexBytes:&textureCoordinates length:sizeof(simd_float8) atIndex:YZFullRangeVertexIndexUV];
     [encoder setFragmentTexture:textureUV atIndex:YZFullRangeFragmentIndexUV];
 
     //coversion
+    
     id<MTLBuffer> uniformBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:_colorConversion length:sizeof(float) * 12 options:MTLResourceCPUCacheModeDefaultCache];
     [encoder setFragmentBuffer:uniformBuffer offset:0 atIndex:YZUniformIndexNormal];
     
@@ -340,9 +344,6 @@
 #pragma mark - private
 - (void)_configMetal {
     CVMetalTextureCacheCreate(kCFAllocatorDefault, NULL, YZMetalDevice.defaultDevice.device, NULL, &_textureCache);
-    
-    simd_float8 vertices = [YZMetalOrientation defaultVertices];
-    _vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
 }
 
 - (void)_configVideoSession {

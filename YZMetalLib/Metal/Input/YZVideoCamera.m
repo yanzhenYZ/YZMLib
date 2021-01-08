@@ -56,7 +56,7 @@
         _orientation = [[YZMetalOrientation alloc] init];
         _cameraQueue = dispatch_queue_create("com.yanzhen.video.camera.queue", 0);
         _cameraRenderQueue = dispatch_queue_create("com.yanzhen.video.camera.render.queue", 0);
-        _userBGRA = YES;
+        //_userBGRA = YES;
         _preset = preset;
         [self _configVideoSession];
         [self _configMetal];
@@ -181,16 +181,16 @@
             [self.delegate videoCamera:self output:sampleBuffer];
         }
         if (self.userBGRA) {
-            [self _processBGRAVideoSampleBuffer:sampleBuffer];
+            [self processBGRAVideoSampleBuffer:sampleBuffer];
         } else {
-            [self _processYUVVideoSampleBuffer:sampleBuffer];
+            [self processYUVVideoSampleBuffer:sampleBuffer];
         }
         CFRelease(sampleBuffer);
         [YZMetalDevice semaphoreSignal];
     });
 }
 
-- (void)_processBGRAVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
+- (void)processBGRAVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
     CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     size_t width = CVPixelBufferGetWidth(pixelBuffer);
     size_t height = CVPixelBufferGetHeight(pixelBuffer);
@@ -211,19 +211,18 @@
         outputH = width;
     }
     
-    MTLTextureDescriptor *desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:outputW height:outputH mipmapped:NO];
-    desc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
-    id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:desc];
+    //output texture
+    MTLTextureDescriptor *textureDesc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:outputW height:outputH mipmapped:NO];
+    textureDesc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
+    id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:textureDesc];
     
-    [self _converWH:texture outputTexture:outputTexture];
-}
-
-- (void)_converWH:(id<MTLTexture>)bgraTexture outputTexture:(id<MTLTexture>)texture {
-    MTLRenderPassDescriptor *desc = [YZMetalDevice newRenderPassDescriptor:texture];
+    //[self converWH:texture outputTexture:outputTexture];
+    MTLRenderPassDescriptor *desc = [YZMetalDevice newRenderPassDescriptor:outputTexture];
     id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice commandBuffer];
     id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:desc];
     if (!encoder) {
         NSLog(@"YZVideoCamera render endcoder Fail");
+        return;
     }
     
     //表示对顺时针顺序的三角形进行剔除。
@@ -231,21 +230,22 @@
     [encoder setRenderPipelineState:self.pipelineState];
     [encoder setVertexBuffer:_vertexBuffer offset:0 atIndex:YZVertexIndexPosition];
     
-    simd_float8 coordinates = [_orientation getTextureCoordinates:_position];
-    id<MTLBuffer> rgbBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&coordinates length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
-    [encoder setVertexBuffer:rgbBuffer offset:0 atIndex:YZVertexIndexTextureCoordinate];
-    [encoder setFragmentTexture:bgraTexture atIndex:YZFragmentTextureIndexNormal];
+    simd_float8 textureCoordinates = [_orientation getTextureCoordinates:_position];
+    id<MTLBuffer> textureBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&textureCoordinates length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
+    [encoder setVertexBuffer:textureBuffer offset:0 atIndex:YZVertexIndexTextureCoordinate];
+    [encoder setFragmentTexture:texture atIndex:YZFragmentTextureIndexNormal];
     
     [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
     [encoder endEncoding];
     
     [commandBuffer commit];
     [self.allFilters enumerateObjectsUsingBlock:^(id<YZFilterProtocol>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [obj newTextureAvailable:texture commandBuffer:commandBuffer];
+        [obj newTextureAvailable:outputTexture commandBuffer:commandBuffer];
     }];
 }
 
-- (void)_processYUVVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
+
+- (void)processYUVVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
     CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     CVMetalTextureRef textureRef = NULL;
     id<MTLTexture> textureY = NULL;
@@ -302,11 +302,10 @@
         }
     }
     
-    [self _convertYUVToRGB:textureY textureUV:textureUV outputTexture:outputTexture];
+    [self convertYUVToRGB:textureY textureUV:textureUV outputTexture:outputTexture];
 }
 
-- (void)_convertYUVToRGB:(id<MTLTexture>)textureY textureUV:(id<MTLTexture>)textureUV outputTexture:(id<MTLTexture>)texture {
-    
+- (void)convertYUVToRGB:(id<MTLTexture>)textureY textureUV:(id<MTLTexture>)textureUV outputTexture:(id<MTLTexture>)texture {
     MTLRenderPassDescriptor *desc = [YZMetalDevice newRenderPassDescriptor:texture];
     id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice commandBuffer];
     id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:desc];
@@ -318,13 +317,12 @@
     [encoder setVertexBuffer:_vertexBuffer offset:0 atIndex:YZFullRangeVertexIndexPosition];
     
     //yuv
-    simd_float8 yuvSquareVertices = [_orientation getTextureCoordinates:_position];
-    id<MTLBuffer> yuvBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&yuvSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
-    [encoder setVertexBuffer:yuvBuffer offset:0 atIndex:YZFullRangeVertexIndexY];
+    simd_float8 textureCoordinates = [_orientation getTextureCoordinates:_position];
+    id<MTLBuffer> textureBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&textureCoordinates length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
+    [encoder setVertexBuffer:textureBuffer offset:0 atIndex:YZFullRangeVertexIndexY];
     [encoder setFragmentTexture:textureY atIndex:YZFullRangeFragmentIndexY];
     
-    //id<MTLBuffer> uvBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&yuvSquareVertices length:sizeof(simd_float8) options:MTLResourceCPUCacheModeDefaultCache];
-    [encoder setVertexBuffer:yuvBuffer offset:0 atIndex:YZFullRangeVertexIndexUV];
+    [encoder setVertexBuffer:textureBuffer offset:0 atIndex:YZFullRangeVertexIndexUV];
     [encoder setFragmentTexture:textureUV atIndex:YZFullRangeFragmentIndexUV];
 
     //coversion

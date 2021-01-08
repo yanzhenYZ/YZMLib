@@ -12,7 +12,7 @@
 #import "YZMetalOrientation.h"
 
 @interface YZBrightness ()
-@property (nonatomic, strong) id<MTLBuffer> positionBuffer;
+@property (nonatomic, strong) id<MTLBuffer> vertexBuffer;
 @property (nonatomic, strong) id<MTLBuffer> textureBuffer;
 @end
 
@@ -26,7 +26,7 @@
         _brightLevel = 0.5;
         
         simd_float8 vertices = [YZMetalOrientation defaultVertices];
-        _positionBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
+        _vertexBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&vertices length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
         
         simd_float8 texture = [YZMetalOrientation defaultTexture];
         _textureBuffer = [YZMetalDevice.defaultDevice.device newBufferWithBytes:&texture length:sizeof(simd_float8) options:MTLResourceStorageModeShared];
@@ -48,19 +48,15 @@
 
 - (void)renderTexture:(id<MTLTexture>)texture outputTexture:(id<MTLTexture>)outputTexture {
     MTLRenderPassDescriptor *desc = [YZMetalDevice newRenderPassDescriptor:outputTexture];
-    desc.colorAttachments[0].texture = outputTexture;
-    desc.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 1, 1);
-    desc.colorAttachments[0].storeAction = MTLStoreActionStore;
-    desc.colorAttachments[0].loadAction = MTLLoadActionClear;
-    
     id<MTLCommandBuffer> commandBuffer = [YZMetalDevice.defaultDevice commandBuffer];
     id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:desc];
     if (!encoder) {
         NSLog(@"YZBrightness render endcoder Fail");
+        return;
     }
     [encoder setFrontFacingWinding:MTLWindingCounterClockwise];
     [encoder setRenderPipelineState:self.pipelineState];
-    [encoder setVertexBuffer:_positionBuffer offset:0 atIndex:YZVertexIndexPosition];
+    [encoder setVertexBuffer:_vertexBuffer offset:0 atIndex:YZVertexIndexPosition];
     
     [encoder setVertexBuffer:_textureBuffer offset:0 atIndex:YZVertexIndexTextureCoordinate];
     [encoder setFragmentTexture:texture atIndex:YZFragmentTextureIndexNormal];

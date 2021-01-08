@@ -67,20 +67,30 @@
         }
         return;
     }
+    
     CGFloat bufferRatio = width / height;
     CGFloat outoutRatio = _size.width / _size.height;
     if (bufferRatio > outoutRatio * 1.1 || bufferRatio < outoutRatio * 0.9) {
         CGSize outputSize = _size;
         if (bufferRatio > outoutRatio) {
             CGFloat outputW = width * outoutRatio / bufferRatio;
-            outputSize = CGSizeMake(outputW, height);
+            if (_size.height > height) {
+                outputSize = CGSizeMake(outputW / (_size.height / height), height);
+            } else {
+                outputSize = CGSizeMake(outputW, height);
+            }
         } else {
             CGFloat outoutH = height * bufferRatio / outoutRatio;
-            outputSize = CGSizeMake(width, outoutH);
+            if (_size.width > width) {
+                outputSize = CGSizeMake(width, outoutH / (_size.width / width));
+            } else {
+                outputSize = CGSizeMake(width, outoutH);
+            }
         }
         if (CGSizeEqualToSize(_size, outputSize) && _pixelBuffer) {
             return;
         }
+        _size = outputSize;
     } else {
         _size = CGSizeMake(width, height);
     }

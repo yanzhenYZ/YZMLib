@@ -47,7 +47,7 @@
     _camera.outputOrientation = UIApplication.sharedApplication.statusBarOrientation;
     _brightness = [[YZBrightness alloc] init];
     
-    YZNewPixelBuffer *pixelBuffer = [[YZNewPixelBuffer alloc] initWithSize:CGSizeMake(360, 640)];
+    YZNewPixelBuffer *pixelBuffer = [[YZNewPixelBuffer alloc] initWithSize:CGSizeMake(180, 320)];
     pixelBuffer.delegate = self;
     
     [_camera addFilter:_brightness];

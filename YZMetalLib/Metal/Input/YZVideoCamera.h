@@ -5,10 +5,9 @@
 //  Created by yanzhen on 2020/12/9.
 //
 
-#import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import "YZMTKView.h"
-#import "YZBrightness.h"
+#import <UIKit/UIKit.h>
+#import "YZMetalOutput.h"
 
 @class YZVideoCamera;
 @protocol YZVideoCameraOutputDelegate <NSObject>
@@ -17,10 +16,8 @@
 
 @end
 
-@interface YZVideoCamera : NSObject
+@interface YZVideoCamera : YZMetalOutput//use filter
 @property (nonatomic, weak) id<YZVideoCameraOutputDelegate> delegate;
-@property (nonatomic, strong) YZBrightness *brightness;
-@property (nonatomic, strong) YZMTKView *view;
 /**default is 15*/
 @property (nonatomic, assign) int32_t frameRate;
 @property (nonatomic, copy) AVCaptureSessionPreset preset;

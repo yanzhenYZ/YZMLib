@@ -51,6 +51,7 @@
     pixelBuffer.delegate = self;
     
     [_camera addFilter:_brightness];
+    [_brightness addFilter:_mtkView];
     [_brightness addFilter:pixelBuffer];
     
     //2

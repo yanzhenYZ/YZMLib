@@ -58,7 +58,7 @@
         _cameraQueue = dispatch_queue_create("com.yanzhen.video.camera.queue", 0);
         _cameraRenderQueue = dispatch_queue_create("com.yanzhen.video.camera.render.queue", 0);
         _videoSemaphore = dispatch_semaphore_create(1);
-        _userBGRA = YES;
+        //_userBGRA = YES;
         _preset = preset;
         [self _configVideoSession];
         [self _configMetal];
@@ -218,8 +218,6 @@
     id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:desc];
     
     [self _converWH:texture outputTexture:outputTexture];
-    
-    [self.filter newTextureAvailable:outputTexture commandBuffer:nil];
 }
 
 - (void)_converWH:(id<MTLTexture>)bgraTexture outputTexture:(id<MTLTexture>)texture {
@@ -249,6 +247,7 @@
     [encoder endEncoding];
     
     [commandBuffer commit];
+    [self.filter newTextureAvailable:texture commandBuffer:commandBuffer];
 }
 
 - (void)_processYUVVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer {
@@ -309,7 +308,6 @@
     }
     
     [self _convertYUVToRGB:textureY textureUV:textureUV outputTexture:outputTexture];
-    [self.filter newTextureAvailable:outputTexture commandBuffer:nil];
 }
 
 - (void)_convertYUVToRGB:(id<MTLTexture>)textureY textureUV:(id<MTLTexture>)textureUV outputTexture:(id<MTLTexture>)texture {
@@ -346,6 +344,7 @@
     [encoder endEncoding];
     
     [commandBuffer commit];
+    [self.filter newTextureAvailable:texture commandBuffer:commandBuffer];
 }
 
 #pragma mark - private

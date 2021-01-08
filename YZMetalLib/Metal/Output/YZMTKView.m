@@ -103,7 +103,6 @@
     
     [commandBuffer presentDrawable:view.currentDrawable];
     [commandBuffer commit];
-    [_pixelBuffer newTextureAvailable:_texture commandBuffer:commandBuffer];
     _texture = nil;
 }
 

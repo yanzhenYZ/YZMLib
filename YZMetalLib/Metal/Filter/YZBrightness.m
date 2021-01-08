@@ -41,10 +41,8 @@
         desc.usage = MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
         id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:desc];
         [self renderTexture:texture outputTexture:outputTexture];
-
-        [self.filter newTextureAvailable:outputTexture commandBuffer:nil];
     } else {
-        [self.filter newTextureAvailable:texture commandBuffer:nil];
+        [self.filter newTextureAvailable:texture commandBuffer:commandBuffer];
     }
 }
 
@@ -75,5 +73,6 @@
     [encoder endEncoding];
     
     [commandBuffer commit];
+    [self.filter newTextureAvailable:outputTexture commandBuffer:commandBuffer];
 }
 @end

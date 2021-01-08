@@ -51,12 +51,13 @@
     pixelBuffer.delegate = self;
     
     
-//    _camera.buffer = pixelBuffer;
+    _camera.filter = _brightness;
+    _brightness.filter = pixelBuffer;
     
     //2
-    _mtkView.pixelBuffer = pixelBuffer;
-    _camera.filter = _brightness;
-    _brightness.filter = _mtkView;
+//    _mtkView.filter = pixelBuffer;
+//    _camera.filter = _brightness;
+//    _brightness.filter = _mtkView;
     
     //1
 //    _camera.filter = _mtkView;

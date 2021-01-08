@@ -103,7 +103,7 @@
     [commandBuffer commit];
     if (_pixelBuffer) {//YZMTKViewFillModeScaleAspectFit outTexture will contain backColor
         [commandBuffer waitUntilCompleted];
-        [_pixelBuffer generatePixelBuffer:_texture];
+        [_pixelBuffer newTextureAvailable:_texture];
     }
     _texture = nil;
 }

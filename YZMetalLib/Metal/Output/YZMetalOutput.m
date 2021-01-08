@@ -24,6 +24,8 @@
 }
 
 - (void)generatePipelineVertexFunctionName:(NSString *)vertex fragmentFunctionName:(NSString *)fragment {
-    _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:vertex fragment:fragment];
+    if (vertex.length > 0 && fragment.length > 0) {
+        _pipelineState = [YZMetalDevice.defaultDevice newRenderPipeline:vertex fragment:fragment];
+    }
 }
 @end

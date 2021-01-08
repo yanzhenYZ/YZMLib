@@ -9,10 +9,10 @@
 #import "YZVideoCamera.h"
 #import "YZMTKView.h"
 #import "YZBrightness.h"
-#import "YZPixelBuffer.h"
+#import "YZNewPixelBuffer.h"
 
 
-@interface FirstViewController ()<YZVideoCameraOutputDelegate, YZPixelBufferDelegate>
+@interface FirstViewController ()<YZVideoCameraOutputDelegate, YZNewPixelBufferDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *player;
 @property (weak, nonatomic) IBOutlet YZMTKView *mtkView;
 @property (nonatomic, strong) YZVideoCamera *camera;
@@ -36,10 +36,33 @@
     
     _fillSegmentControll.selectedSegmentIndex = 1;
     _mtkView.fillMode = YZMTKViewFillModeScaleAspectFit;
-    YZPixelBuffer *pixelBuffer = [[YZPixelBuffer alloc] initWithSize:CGSizeMake(360, 640) render:YES];
-    pixelBuffer.delegate = self;
-    _mtkView.pixelBuffer = pixelBuffer;
+    
     [self test003];
+}
+
+- (void)test003 {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarDidChanged:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+    
+    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
+    _camera.outputOrientation = UIApplication.sharedApplication.statusBarOrientation;
+    _brightness = [[YZBrightness alloc] init];
+    
+    YZNewPixelBuffer *pixelBuffer = [[YZNewPixelBuffer alloc] initWithSize:CGSizeMake(360, 640)];
+    pixelBuffer.delegate = self;
+    
+    
+//    _camera.buffer = pixelBuffer;
+    
+    //2
+    _mtkView.pixelBuffer = pixelBuffer;
+    _camera.filter = _brightness;
+    _brightness.filter = _mtkView;
+    
+    //1
+//    _camera.filter = _mtkView;
+    
+    _camera.delegate = self;
+    [_camera startRunning];
 }
 
 - (IBAction)fillModel:(UISegmentedControl *)sender {
@@ -67,23 +90,6 @@
 //    }
 }
 
-- (void)test003 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarDidChanged:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
-    
-    _camera = [[YZVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480];
-    _camera.outputOrientation = UIApplication.sharedApplication.statusBarOrientation;
-    _brightness = [[YZBrightness alloc] init];
-    
-    
-    
-    _camera.filter = _brightness;
-    _brightness.filter = _mtkView;
-    
-//    _camera.filter = _mtkView;
-    
-    _camera.delegate = self;
-    [_camera startRunning];
-}
 
 - (IBAction)beautyValueChange:(UISlider *)sender {
     _brightness.beautyLevel = sender.value;

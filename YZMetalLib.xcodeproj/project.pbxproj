@@ -10,6 +10,7 @@
 		9B181506259DD573003CD13D /* YZPixelBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B181504259DD573003CD13D /* YZPixelBuffer.m */; };
 		9B878CBC25A8057800BB6D71 /* YZMetalFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B878CBB25A8057800BB6D71 /* YZMetalFilter.m */; };
 		9B878CC025A8091C00BB6D71 /* YZMetalOutput.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B878CBF25A8091C00BB6D71 /* YZMetalOutput.m */; };
+		9B878CC925A8307F00BB6D71 /* YZNewPixelBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B878CC825A8307F00BB6D71 /* YZNewPixelBuffer.m */; };
 		9BA2CAD2258DF89B0048F5E6 /* YZBrightness.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BA2CAD1258DF89B0048F5E6 /* YZBrightness.m */; };
 		9BA2CAD6258DF8A60048F5E6 /* YZBrightness.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9BA2CAD5258DF8A60048F5E6 /* YZBrightness.metal */; };
 		9BB00042257FB7F400207AF3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB00041257FB7F400207AF3 /* AppDelegate.m */; };
@@ -35,6 +36,8 @@
 		9B878CBE25A8091C00BB6D71 /* YZMetalOutput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZMetalOutput.h; sourceTree = "<group>"; };
 		9B878CBF25A8091C00BB6D71 /* YZMetalOutput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZMetalOutput.m; sourceTree = "<group>"; };
 		9B878CC225A80AA000BB6D71 /* YZFilterProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZFilterProtocol.h; sourceTree = "<group>"; };
+		9B878CC725A8307F00BB6D71 /* YZNewPixelBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZNewPixelBuffer.h; sourceTree = "<group>"; };
+		9B878CC825A8307F00BB6D71 /* YZNewPixelBuffer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZNewPixelBuffer.m; sourceTree = "<group>"; };
 		9BA2CAD0258DF89B0048F5E6 /* YZBrightness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZBrightness.h; sourceTree = "<group>"; };
 		9BA2CAD1258DF89B0048F5E6 /* YZBrightness.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZBrightness.m; sourceTree = "<group>"; };
 		9BA2CAD5258DF8A60048F5E6 /* YZBrightness.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = YZBrightness.metal; sourceTree = "<group>"; };
@@ -162,6 +165,8 @@
 				9B181504259DD573003CD13D /* YZPixelBuffer.m */,
 				9B878CBE25A8091C00BB6D71 /* YZMetalOutput.h */,
 				9B878CBF25A8091C00BB6D71 /* YZMetalOutput.m */,
+				9B878CC725A8307F00BB6D71 /* YZNewPixelBuffer.h */,
+				9B878CC825A8307F00BB6D71 /* YZNewPixelBuffer.m */,
 			);
 			path = Output;
 			sourceTree = "<group>";
@@ -252,6 +257,7 @@
 				9BA2CAD2258DF89B0048F5E6 /* YZBrightness.m in Sources */,
 				9BB00042257FB7F400207AF3 /* AppDelegate.m in Sources */,
 				9BB000A12582019400207AF3 /* YZYUVToRGBConversion.metal in Sources */,
+				9B878CC925A8307F00BB6D71 /* YZNewPixelBuffer.m in Sources */,
 				9BB0015D2584CB9400207AF3 /* YZYUVToRGBConversion.m in Sources */,
 				9BB0006A25806D4200207AF3 /* YZVideoCamera.m in Sources */,
 				9B878CBC25A8057800BB6D71 /* YZMetalFilter.m in Sources */,

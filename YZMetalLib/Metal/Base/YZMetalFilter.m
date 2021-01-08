@@ -21,6 +21,6 @@
 
 #pragma mark - YZFilterProtocol
 -(void)newTextureAvailable:(id<MTLTexture>)texture {
-    
+    //[self.filter newTextureAvailable:texture];
 }
 @end

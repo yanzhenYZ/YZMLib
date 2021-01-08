@@ -7,7 +7,7 @@
 
 #import <MetalKit/MetalKit.h>
 #import "YZFilterProtocol.h"
-#import "YZPixelBuffer.h"
+#import "YZNewPixelBuffer.h"
 
 typedef NS_ENUM(NSInteger, YZMTKViewFillMode) {
     YZMTKViewFillModeScaleToFill,       // Same as UIViewContentModeScaleToFill
@@ -18,7 +18,7 @@ typedef NS_ENUM(NSInteger, YZMTKViewFillMode) {
 @class YZTexture;
 @interface YZMTKView : MTKView<YZFilterProtocol>
 @property (nonatomic) YZMTKViewFillMode fillMode;
-@property (nonatomic, strong) YZPixelBuffer *pixelBuffer;
+@property (nonatomic, strong) YZNewPixelBuffer *pixelBuffer;
 
 - (void)setBackgroundColorRed:(double)red green:(double)green blue:(double)blue alpha:(double)alpha;
 @end

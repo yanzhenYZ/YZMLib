@@ -55,7 +55,8 @@
     
 }
 
-- (void)newTextureAvailable:(id<MTLTexture>)texture index:(NSInteger)index {
+
+-(void)newTextureAvailable:(id<MTLTexture>)texture {
     _texture = texture;
     self.drawableSize = CGSizeMake(texture.width, texture.height);
     [self draw];

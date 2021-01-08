@@ -75,7 +75,7 @@
     _brightness = [[YZBrightness alloc] init];
     
     _camera.brightness = _brightness;
-    _brightness.view = _mtkView;
+    _brightness.render = _mtkView;
     
     _camera.delegate = self;
     [_camera startRunning];

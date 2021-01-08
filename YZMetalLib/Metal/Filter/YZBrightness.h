@@ -15,7 +15,8 @@
 @property (nonatomic, assign) float beautyLevel;
 /** default is 0.5 */
 @property (nonatomic, assign) float brightLevel;
-@property (nonatomic, strong) YZMTKView *view;
+
+@property (nonatomic, strong) id<YZFilterProtocol> render;
 
 - (void)newTextureAvailable:(id<MTLTexture>)texture index:(NSInteger)index;
 

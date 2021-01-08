@@ -45,9 +45,10 @@
         id<MTLTexture> outputTexture = [YZMetalDevice.defaultDevice.device newTextureWithDescriptor:desc];
         [self renderTexture:texture outputTexture:outputTexture];
 
-        [self.view newTextureAvailable:outputTexture index:index];
+        [self .render newTextureAvailable:outputTexture];
+        //[self.render newTextureAvailable:outputTexture index:index];
     } else {
-        [self.view newTextureAvailable:texture index:index];
+        [self.render newTextureAvailable:texture];
     }
 }
 

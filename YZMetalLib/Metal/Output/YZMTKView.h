@@ -6,6 +6,7 @@
 //
 
 #import <MetalKit/MetalKit.h>
+#import "YZFilterProtocol.h"
 #import "YZPixelBuffer.h"
 
 typedef NS_ENUM(NSInteger, YZMTKViewFillMode) {
@@ -15,11 +16,9 @@ typedef NS_ENUM(NSInteger, YZMTKViewFillMode) {
 };
 
 @class YZTexture;
-@interface YZMTKView : MTKView
+@interface YZMTKView : MTKView<YZFilterProtocol>
 @property (nonatomic) YZMTKViewFillMode fillMode;
 @property (nonatomic, strong) YZPixelBuffer *pixelBuffer;
-
-- (void)newTextureAvailable:(id<MTLTexture>)texture index:(NSInteger)index;
 
 - (void)setBackgroundColorRed:(double)red green:(double)green blue:(double)blue alpha:(double)alpha;
 @end
